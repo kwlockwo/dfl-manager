@@ -18,22 +18,19 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import net.dflmngr.exceptions.HtmlPageLoadException;
 import net.dflmngr.exceptions.UnexpectedHtmlException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflPlayer;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 
-public class AflPlayerLoaderHtmlHandler {
-	private LoggingUtils loggerUtils;
+public class AflPlayerLoaderHtmlHandler extends BaseHandler {
 
 	private static final String TXT_CONT_ATTR = "textContent";
 
 	GlobalsService globalsService;
 
 	public AflPlayerLoaderHtmlHandler() {
-		loggerUtils = new LoggingUtils("AflPlayerLoader");
-
-		globalsService = new GlobalsServiceImpl();
+		super("AflPlayerLoader");
+		globalsService = serviceFactory.createGlobalsService();
+		ensureLoggingConfigured();
 	}
 
 	public List<AflPlayer> execute(String teamId, String url, boolean useOfficialPlayers) {

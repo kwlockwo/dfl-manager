@@ -11,50 +11,37 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.reports.ResultsReport;
 
-public class ResultsHandler {
-	private LoggingUtils loggerUtils;
-	
+public class ResultsHandler extends BaseHandler {
+
 	AflFixtureService aflFixtureService;
 	DflRoundInfoService dflRoundInfoService;
 	GlobalsService globalsService;
-	
-	boolean isExecutable;
-	String defaultLogfile = "RoundProgress";
-	String logfile;
-	
+
 	String emailOverride;
-	
+
 	public ResultsHandler() {
-		aflFixtureService = new AflFixtureServiceImpl();
-		dflRoundInfoService = new DflRoundInfoServiceImpl();
-		globalsService = new GlobalsServiceImpl();
+		super("RoundProgress");
+		aflFixtureService = serviceFactory.createAflFixtureService();
+		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		globalsService = serviceFactory.createGlobalsService();
 	}
-	
+
 	public void configureLogging(String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.logfile = logfile;
-		isExecutable = true;
+		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
 		emailOverride = null;
 	}
-	
+
 	public void execute(int inputRound, boolean isFinal, String emailOverride, boolean skipStats, boolean sendReport) {
-		
+
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 			
 			loggerUtils.log("info", "ResultsHandler excuting ....");
 

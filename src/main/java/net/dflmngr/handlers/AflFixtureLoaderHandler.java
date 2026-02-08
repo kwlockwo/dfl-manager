@@ -9,35 +9,30 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.AflTeamService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.AflTeamServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 
-public class AflFixtureLoaderHandler {
-	private LoggingUtils loggerUtils;
-		
+public class AflFixtureLoaderHandler extends BaseHandler {
+
 	GlobalsService globalsService;
 	AflFixtureService aflFixtureService;
 	AflTeamService aflTeamService;
 	AflFixtureHtmlHandler aflFixtureHtmlHandler;
-	
+
 	public AflFixtureLoaderHandler() {
-		
-		loggerUtils = new LoggingUtils("AflFixtureLoader");
-		
+		super("AflFixtureLoader");
+
 		try {
-			globalsService = new GlobalsServiceImpl();
-			aflFixtureService = new AflFixtureServiceImpl();
-			aflTeamService = new AflTeamServiceImpl();
+			globalsService = serviceFactory.createGlobalsService();
+			aflFixtureService = serviceFactory.createAflFixtureService();
+			aflTeamService = serviceFactory.createAflTeamService();
 			aflFixtureHtmlHandler = new AflFixtureHtmlHandler();
+			ensureLoggingConfigured();
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);
-		}	
+		}
 	}
 	
 	public void execute(List<Integer> aflRounds) {

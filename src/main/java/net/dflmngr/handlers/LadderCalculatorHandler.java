@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflFixture;
 import net.dflmngr.model.entity.DflLadder;
 import net.dflmngr.model.entity.DflPlayerPredictedScores;
@@ -17,49 +16,34 @@ import net.dflmngr.model.service.DflPlayerPredictedScoresService;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamScoresService;
-import net.dflmngr.model.service.impl.DflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflLadderServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerPredictedScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamScoresServiceImpl;
 
-public class LadderCalculatorHandler {
-	private LoggingUtils loggerUtils;
-	
-	boolean isExecutable;
-	String defaultLogfile = "RoundProgress";
-	String logfile;
-	
+public class LadderCalculatorHandler extends BaseHandler {
+
 	DflLadderService dflLadderService;
 	DflFixtureService dflFixtureService;
 	DflTeamScoresService dflTeamScoresService;
 	DflSelectedTeamService dflSelectedTeamService;
 	DflPlayerScoresService dflPlayerScoresService;
 	DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
-	
+
 	public LadderCalculatorHandler() {
-		dflLadderService = new DflLadderServiceImpl();
-		dflFixtureService = new DflFixtureServiceImpl();
-		dflTeamScoresService = new DflTeamScoresServiceImpl();
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
-		dflPlayerScoresService = new DflPlayerScoresServiceImpl();
-		dflPlayerPredictedScoresService = new DflPlayerPredictedScoresServiceImpl();
+		super("RoundProgress");
+		dflLadderService = serviceFactory.createDflLadderService();
+		dflFixtureService = serviceFactory.createDflFixtureService();
+		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
+		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
 	}
-	
+
 	public void configureLogging(String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.logfile = logfile;
-		isExecutable = true;
+		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
 	}
-	
+
 	public void execute(int round, boolean liveLadderOveride) {
-		
+
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 						
 			loggerUtils.log("info", "LadderCalculatorHandler executing round={} ...", round);			
 			handleLadder(round, liveLadderOveride);

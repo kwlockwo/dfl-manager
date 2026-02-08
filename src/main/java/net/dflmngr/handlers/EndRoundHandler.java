@@ -15,7 +15,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import net.dflmngr.exceptions.UnknownPositionException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflAdamGoodes;
 import net.dflmngr.model.entity.DflBest22;
 import net.dflmngr.model.entity.DflCallumChambers;
@@ -43,35 +42,12 @@ import net.dflmngr.model.service.DflTeamScoresService;
 import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.InsAndOutsService;
-import net.dflmngr.model.service.impl.DflBest22ServiceImpl;
-import net.dflmngr.model.service.impl.DflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflLadderServiceImpl;
-import net.dflmngr.model.service.impl.DflMatthewAllenServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
-import net.dflmngr.model.service.impl.InsAndOutsServiceImpl;
 import net.dflmngr.utils.EmailUtils;
 
-public class EndRoundHandler {
-	private LoggingUtils loggerUtils;
+public class EndRoundHandler extends BaseHandler {
 
 	private static final String EMAIL_MSG_001 = "Good luck,\nDFL Manager Admin";
 	private static final String EMAIL_MSG_002 = " has been eliminated. Better luck next year ";
-
-	boolean isExecutable;
-
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "EndRound";
-
-	String mdcKey;
-	String loggerName;
-	String logfile;
 
 	DflMatthewAllenService dflMatthewAllenService;
 	GlobalsService globalsService;
@@ -89,35 +65,25 @@ public class EndRoundHandler {
 	String emailOverride;
 
 	public EndRoundHandler() {
-		dflMatthewAllenService = new DflMatthewAllenServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-		dflPlayerService = new DflPlayerServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-		dflTeamService = new DflTeamServiceImpl();
-		dflBest22Service = new DflBest22ServiceImpl();
-		dflLadderService = new DflLadderServiceImpl();
-		dflFixtureService = new DflFixtureServiceImpl();
-		dflTeamScoresService = new DflTeamScoresServiceImpl();
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
-		dflRoundInfoService = new DflRoundInfoServiceImpl();
-		insAndOutsService = new InsAndOutsServiceImpl();
-	}
-
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
+		super("EndRound");
+		dflMatthewAllenService = serviceFactory.createDflMatthewAllenService();
+		globalsService = serviceFactory.createGlobalsService();
+		dflPlayerService = serviceFactory.createDflPlayerService();
+		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
+		dflTeamService = serviceFactory.createDflTeamService();
+		dflBest22Service = serviceFactory.createDflBest22Service();
+		dflLadderService = serviceFactory.createDflLadderService();
+		dflFixtureService = serviceFactory.createDflFixtureService();
+		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		insAndOutsService = serviceFactory.createInsAndOutsService();
 	}
 
 	public void execute(int round, String emailOverride) {
 
 		try {
-			if (!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			loggerUtils.log("info", "Executing end round for round={}", round);
 

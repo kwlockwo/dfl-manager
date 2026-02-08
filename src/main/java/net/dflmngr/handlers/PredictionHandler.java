@@ -12,7 +12,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflPlayerPredictedScores;
 import net.dflmngr.model.entity.DflPlayerScores;
 import net.dflmngr.model.entity.DflSelectedPlayer;
@@ -24,14 +23,8 @@ import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamPredictedScoresService;
 import net.dflmngr.model.service.DflTeamService;
-import net.dflmngr.model.service.impl.DflPlayerPredictedScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPredictedScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamServiceImpl;
 
-public class PredictionHandler {
-	private LoggingUtils loggerUtils;
+public class PredictionHandler extends BaseHandler {
 
 	DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
 	DflTeamPredictedScoresService dflTeamPredictedScoresService;
@@ -39,39 +32,19 @@ public class PredictionHandler {
 	DflTeamService dflTeamService;
 	DflSelectedTeamService dflSelectedTeamService;
 
-	boolean isExecutable;
-
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "Predictions";
-
-	String mdcKey;
-	String loggerName;
-	String logfile;
-
 	public PredictionHandler() {
-		dflPlayerPredictedScoresService = new DflPlayerPredictedScoresServiceImpl();
-		dflTeamPredictedScoresService = new DflTeamPredictedScoresServiceImpl();
-		dflPlayerScoresService = new DflPlayerScoresServiceImpl();
-		dflTeamService = new DflTeamServiceImpl();
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
-	}
-
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
+		super("Predictions");
+		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
+		dflTeamPredictedScoresService = serviceFactory.createDflTeamPredictedScoresService();
+		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
+		dflTeamService = serviceFactory.createDflTeamService();
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
 	}
 
 	public void execute(int round, String teamCode, boolean doPlayers) {
 
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			loggerUtils.log("info", "PredictionHandler excuting, round={} ....", round);
 

@@ -13,57 +13,29 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPreseasonScores;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflPreseasonScoresService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflPreseasonScoresServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.utils.DflmngrUtils;
 
-public class PreSeasonStatsHandler {
-	
-	private LoggingUtils loggerUtils;
-	
+public class PreSeasonStatsHandler extends BaseHandler {
+
 	DflPlayerService dflPlayerService;
 	GlobalsService globalsService;
 	DflPreseasonScoresService dflPreseasonScoresService;
-	
-	boolean isExecutable;
-		
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "PreSeasonStats";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
-	
-	public PreSeasonStatsHandler() {		
-		dflPlayerService = new DflPlayerServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-		dflPreseasonScoresService = new DflPreseasonScoresServiceImpl();
-		
-		isExecutable = false;
+
+	public PreSeasonStatsHandler() {
+		super("PreSeasonStats");
+		dflPlayerService = serviceFactory.createDflPlayerService();
+		globalsService = serviceFactory.createGlobalsService();
+		dflPreseasonScoresService = serviceFactory.createDflPreseasonScoresService();
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-	}
-	
+
 	public void execute(int round) {
-		
-		if(!isExecutable) {
-			configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-			loggerUtils.log("info", "Default logging configured");
-		}
+
+		ensureLoggingConfigured();
 		
 		loggerUtils.log("info", "Downloading Pre-season Stats");
 		

@@ -16,39 +16,26 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import net.dflmngr.exceptions.UnexpectedHtmlException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 
-public class StatsHtmlHandler {
-    private LoggingUtils loggerUtils;
-
-    boolean isExecutable;
-
-    String defaultLogfile = "RoundProgress";
-    String logfile;
+public class StatsHtmlHandler extends BaseHandler {
 
     GlobalsService globalsService;
 
     public StatsHtmlHandler() {
-        globalsService = new GlobalsServiceImpl();
-        isExecutable = false;
+        super("RoundProgress");
+        globalsService = serviceFactory.createGlobalsService();
     }
 
     public void configureLogging(String logfile) {
-        loggerUtils = new LoggingUtils(logfile);
-        this.logfile = logfile;
-        isExecutable = true;
+        configureLogging(defaultMdcKey, defaultLoggerName, logfile);
     }
 
     public List<RawPlayerStats> execute(int round, String homeTeam, String awayTeam, String statsUrl,
             boolean includeHomeTeam, boolean includeAwayTeam, String scrapingStatus) {
 
-        if (!isExecutable) {
-            configureLogging(defaultLogfile);
-            loggerUtils.log("info", "Default logging configured");
-        }
+        ensureLoggingConfigured();
 
         loggerUtils.log("info", "Loading Stats HTML: round={}, homeTeam={} awayTeam={} url={}", round, homeTeam,
                 awayTeam, statsUrl);

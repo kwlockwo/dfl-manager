@@ -33,34 +33,19 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflTeam;
 import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.utils.DflmngrUtils;
 import net.dflmngr.utils.oauth2.OAuth2Authenticator;
 import net.dflmngr.validation.SelectedTeamValidation;
 import net.freeutils.tnef.Attachment;
 import net.freeutils.tnef.TNEFInputStream;
 
-public class EmailSelectionsHandler {
-	private LoggingUtils loggerUtils;
-
-	boolean isExecutable;
-
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "Selections";
-
-	String mdcKey;
-	String loggerName;
-	String logfile;
+public class EmailSelectionsHandler extends BaseHandler {
 
 	private String dflmngrEmailAddr;
 	private String incomingMailHost;
@@ -82,27 +67,15 @@ public class EmailSelectionsHandler {
 	Map<String, String> selectionsIdsCurrent;
 
 	public EmailSelectionsHandler() {
-		globalsService = new GlobalsServiceImpl();
-		dflTeamService = new DflTeamServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-
-		isExecutable = false;
-	}
-
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
+		super("Selections");
+		globalsService = serviceFactory.createGlobalsService();
+		dflTeamService = serviceFactory.createDflTeamService();
+		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
 	}
 
 	public void execute() {
 		try {
-			if (!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			validationResults = new ArrayList<>();
 			selectionsIdsCurrent = new HashMap<>();

@@ -21,43 +21,29 @@ import com.gargoylesoftware.htmlunit.WebClient;
 
 import net.dflmngr.exceptions.HtmlPageLoadException;
 import net.dflmngr.exceptions.ProxyUrlException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.utils.DflmngrUtils;
 
-public class AflGameCompletionCheckerHandler {
-	private LoggingUtils loggerUtils;
+public class AflGameCompletionCheckerHandler extends BaseHandler {
 
 	private AflFixtureService aflFixtureService;
 	private GlobalsService globalsService;
 
-	boolean isExecutable;
-	String defaultLogfile = "AflGameCompletionChecker";
-	String logfile;
-
 	public AflGameCompletionCheckerHandler() {
-		aflFixtureService = new AflFixtureServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-
-		isExecutable = false;
+		super("AflGameCompletionChecker");
+		aflFixtureService = serviceFactory.createAflFixtureService();
+		globalsService = serviceFactory.createGlobalsService();
 	}
 
 	public void configureLogging(String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.logfile = logfile;
-		isExecutable = true;
+		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
 	}
 
 	public void execute() {
 		try {
-			if (!isExecutable) {
-				configureLogging(defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			loggerUtils.log("info", "AflGameCompletionChecker excuting ....");
 

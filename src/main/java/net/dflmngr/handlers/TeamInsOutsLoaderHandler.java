@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.DomainDecodes;
 import net.dflmngr.model.entity.DflEarlyInsAndOuts;
 import net.dflmngr.model.entity.DflSelectedPlayer;
@@ -16,56 +15,35 @@ import net.dflmngr.model.service.DflEarlyInsAndOutsService;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.InsAndOutsService;
-import net.dflmngr.model.service.impl.DflEarlyInsAndOutsServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.InsAndOutsServiceImpl;
 
-public class TeamInsOutsLoaderHandler {
-	private LoggingUtils loggerUtils;
-	
-	boolean isExecutable;
-	
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "Selections";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
+public class TeamInsOutsLoaderHandler extends BaseHandler {
 
 	DflSelectedTeamService dflSelectedTeamService;
 	DflTeamPlayerService dflTeamPlayerService;
-		
+	DflEarlyInsAndOutsService dflEarlyInsAndOutsService;
+	InsAndOutsService insAndOutsService;
+
 	public TeamInsOutsLoaderHandler() {
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-		
-		isExecutable = false;
+		super("Selections");
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
+		dflEarlyInsAndOutsService = serviceFactory.createDflEarlyInsAndOutsService();
+		insAndOutsService = serviceFactory.createInsAndOutsService();
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-	}
-	
+
 	public void execute(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Double> emgs, boolean earlyGames) {
-		
+
 		try {
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 			
 			loggerUtils.log("info", "Processing ins and out selections for: teamCode={}; round={}; ins={}; outs={}; emergencies={}", teamCode, round, ins, outs, emgs);
 			
 			if(earlyGames) {
 				handleEarlyGames(teamCode, round, ins, outs, emgs);
+				dflEarlyInsAndOutsService.close();
 			} else {
 				handleWithoutEarlyGames(teamCode, round, ins, outs, emgs);
+				insAndOutsService.close();
 			}
 
 			dflSelectedTeamService.close();
@@ -78,14 +56,13 @@ public class TeamInsOutsLoaderHandler {
 
 	private void handleEarlyGames(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Double> emgs) {
 		loggerUtils.log("info", "Early Games, saving to early games ins and outs");
-				
-		DflEarlyInsAndOutsService dflEarlyInsAndOutsService = new DflEarlyInsAndOutsServiceImpl();
+
 		List<DflEarlyInsAndOuts> earlyInsAndOuts = new ArrayList<>();
-		
-		setEarlyIns(teamCode, round, ins);
-		setEarlyOuts(teamCode, round, outs);
-		setEarlyEmgs(teamCode, round, emgs);
-		
+
+		earlyInsAndOuts.addAll(setEarlyIns(teamCode, round, ins));
+		earlyInsAndOuts.addAll(setEarlyOuts(teamCode, round, outs));
+		earlyInsAndOuts.addAll(setEarlyEmgs(teamCode, round, emgs));
+
 		loggerUtils.log("info", "Saving early ins and outs to database: ", earlyInsAndOuts);
 		dflEarlyInsAndOutsService.saveTeamInsAndOuts(earlyInsAndOuts);
 		loggerUtils.log("info", "Ins and outs saved");
@@ -93,10 +70,9 @@ public class TeamInsOutsLoaderHandler {
 
 	private void handleWithoutEarlyGames(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Double> emgs) {
 		loggerUtils.log("info", "Not early games, saving to regular ins and outs");
-				
-		InsAndOutsService insAndOutsService = new InsAndOutsServiceImpl();
+
 		List<InsAndOuts> insAndOuts = new ArrayList<>();
-		
+
 		insAndOuts.addAll(setIns(teamCode, round, ins));
 		insAndOuts.addAll(setOuts(teamCode, round, outs));
 		insAndOuts.addAll(setEmgs(teamCode, round, emgs));
@@ -104,10 +80,8 @@ public class TeamInsOutsLoaderHandler {
 		loggerUtils.log("info", "Saving ins and outs to database: ", insAndOuts);
 		insAndOutsService.saveTeamInsAndOuts(insAndOuts);
 		loggerUtils.log("info", "Ins and outs saved");
-		
+
 		createTeamSelections(round, teamCode, insAndOuts);
-						
-		insAndOutsService.close();
 	}
 
 	private List<DflEarlyInsAndOuts> setEarlyIns(String teamCode, int round, List<Integer> ins) {

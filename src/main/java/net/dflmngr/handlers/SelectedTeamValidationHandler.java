@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.dflmngr.exceptions.UnknownPositionException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
@@ -20,28 +19,9 @@ import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflSelectionIdsService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflEarlyInsAndOutsServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectionIdsServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.validation.SelectedTeamValidation;
 
-public class SelectedTeamValidationHandler {
-	private LoggingUtils loggerUtils;
-
-	boolean isExecutable;
-
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "SelectedTeamValidationHandler";
-
-	String mdcKey;
-	String loggerName;
-	String logfile;
+public class SelectedTeamValidationHandler extends BaseHandler {
 
 	private DflSelectedTeamService dflSelectedTeamService;
 	private DflTeamPlayerService dflTeamPlayerService;
@@ -53,23 +33,15 @@ public class SelectedTeamValidationHandler {
 	private DflSelectionIdsService dflSelectionIdsService;
 
 	public SelectedTeamValidationHandler() {
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-		dflPlayerService = new DflPlayerServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-		dflRoundInfoService = new DflRoundInfoServiceImpl();
-		dflEarlyInsAndOutsService = new DflEarlyInsAndOutsServiceImpl();
-		aflFixtureService = new AflFixtureServiceImpl();
-		dflSelectionIdsService = new DflSelectionIdsServiceImpl();
-		isExecutable = false;
-	}
-
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
+		super("SelectedTeamValidationHandler");
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
+		dflPlayerService = serviceFactory.createDflPlayerService();
+		globalsService = serviceFactory.createGlobalsService();
+		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		dflEarlyInsAndOutsService = serviceFactory.createDflEarlyInsAndOutsService();
+		aflFixtureService = serviceFactory.createAflFixtureService();
+		dflSelectionIdsService = serviceFactory.createDflSelectionIdsService();
 	}
 
 	public SelectedTeamValidation execute(int round, String teamCode, Map<String, List<Integer>> insAndOuts, List<Double> emergencies, String selectionId) {
@@ -77,10 +49,7 @@ public class SelectedTeamValidationHandler {
 		SelectedTeamValidation validationResult = null;
 
 		try {
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			loggerUtils.log("info", "Validating selectionds for teamCode={}; round={};", teamCode, round);
 

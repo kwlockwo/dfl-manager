@@ -13,7 +13,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflAdamGoodes;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPlayerScores;
@@ -21,57 +20,32 @@ import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflSelectedTeamService;
-import net.dflmngr.model.service.impl.DflPlayerScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
 
-public class AdamGoodesHandler {
-	private LoggingUtils loggerUtils;
-	
-	boolean isExecutable;
-	
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "AdamGoodesHandler";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
-	
+public class AdamGoodesHandler extends BaseHandler {
+
 	String emailOverride;
-	
+
 	List<DflAdamGoodes> medalStandings;
 	List<DflAdamGoodes> topFirstYears;
-	
+
 	DflPlayerService dflPlayerService;
 	DflPlayerScoresService dflPlayerScoresService;
 	DflSelectedTeamService dflSelectedTeamService;
-	
+
 	public AdamGoodesHandler() {
+		super("AdamGoodesHandler");
 		medalStandings = new ArrayList<>();
 		topFirstYears = new ArrayList<>();
-		
-		dflPlayerService = new DflPlayerServiceImpl();
-		dflPlayerScoresService = new DflPlayerScoresServiceImpl();
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
+
+		dflPlayerService = serviceFactory.createDflPlayerService();
+		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-		emailOverride = null;
-	}
-	
+
 	public void execute(int round) {
-		
+
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 			
 			List<DflPlayer> adamGoodesEligible = dflPlayerService.getAdamGoodesEligible();
 			

@@ -11,7 +11,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.DomainDecodes;
 import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflTeam;
@@ -19,52 +18,28 @@ import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.entity.InsAndOuts;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamPlayerService;
+import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.InsAndOutsService;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamServiceImpl;
-import net.dflmngr.model.service.impl.InsAndOutsServiceImpl;
 
-public class SelectionsHandler {
-	private LoggingUtils loggerUtils;
+public class SelectionsHandler extends BaseHandler {
 
-	boolean isExecutable;
-
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "SelectionsHandler";
-
-	String mdcKey;
-	String loggerName;
-	String logfile;
-
-	DflTeamServiceImpl dflTeamService;
+	DflTeamService dflTeamService;
 	InsAndOutsService insAndOutsService;
 	DflSelectedTeamService dflSelectedTeamService;
 	DflTeamPlayerService dflTeamPlayerService;
 
 	public SelectionsHandler() {
-		dflTeamService = new DflTeamServiceImpl();
-		insAndOutsService = new InsAndOutsServiceImpl();
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-	}
-
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
+		super("SelectionsHandler");
+		dflTeamService = serviceFactory.createDflTeamService();
+		insAndOutsService = serviceFactory.createInsAndOutsService();
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
 	}
 
 	public void execute(int round) {
 
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			loggerUtils.log("info", "Creating team selections");
 

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn versions:display-dependency-updates:*)",
+      "Bash(mvn clean compile:*)"
+    ]
+  }
+}

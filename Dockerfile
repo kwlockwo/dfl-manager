@@ -1,27 +1,38 @@
-FROM eclipse-temurin:17-jdk-jammy AS base
+# Build stage
+FROM eclipse-temurin:25-jdk-jammy AS build
 WORKDIR /app
+
+# Copy Maven wrapper and POM first for better layer caching
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
-RUN ./mvnw -T 2 dependency:resolve dependency:resolve-plugins
-COPY src src
 
-FROM base AS build
+# Download dependencies (cached unless POM changes)
+RUN ./mvnw -T 2 dependency:go-offline
+
+# Copy source and build
+COPY src src
 RUN ./mvnw -T 2 clean package -DskipTests
 
-FROM eclipse-temurin:17-jre-jammy
-
-# Install chrome
-RUN apt-get update && apt-get install -y wget gnupg && apt-get clean
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
-RUN apt-get update && apt-get -y install google-chrome-stable && apt-get clean
-
+# Runtime stage
+FROM eclipse-temurin:25-jre-jammy
 WORKDIR /app
 
+# Install Chrome in a single layer with cleanup
+RUN apt-get update && \
+    apt-get install -y wget gnupg && \
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy application artifacts
 COPY --from=build /app/target/dflmngr.jar target/
 COPY --from=build /app/target/dependency/*.jar target/dependency/
 COPY bin/*.sh bin/
 
-RUN mkdir "$HOME"/.ssh && chmod 700 "$HOME"/.ssh
+# Create SSH directory
+RUN mkdir -p "$HOME"/.ssh && chmod 700 "$HOME"/.ssh
 
-CMD java -classpath /app/target/dflmngr.jar:/app/target/dependency/* net.dflmngr.scheduler.JobScheduler
+CMD ["java", "-classpath", "/app/target/dflmngr.jar:/app/target/dependency/*", "net.dflmngr.scheduler.JobScheduler"]

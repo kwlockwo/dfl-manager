@@ -1,0 +1,26 @@
+name: Docker Build & Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Docker image with tests
+      run: |
+        # Build and tag the build stage (has Maven + JDK)
+        docker build --target build -t dfl-manager:build .
+
+        # Run tests in the build stage container
+        docker run --rm dfl-manager:build ./mvnw test --batch-mode
+
+        # Build final production image to verify it works
+        docker build -t dfl-manager:test .

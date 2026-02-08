@@ -14,15 +14,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build Docker image
-      run: docker build -t dfl-manager:test .
+    - name: Build Docker image with tests
+      run: |
+        # Build and tag the build stage (has Maven + JDK)
+        docker build --target build -t dfl-manager:build .
 
-    - name: Run tests in Docker
-      run: docker run --rm dfl-manager:test mvn test --batch-mode
+        # Run tests in the build stage container
+        docker run --rm dfl-manager:build ./mvnw test --batch-mode
 
-    - name: Upload Docker test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: docker-test-results
-        path: target/surefire-reports/
+        # Build final production image to verify it works
+        docker build -t dfl-manager:test .

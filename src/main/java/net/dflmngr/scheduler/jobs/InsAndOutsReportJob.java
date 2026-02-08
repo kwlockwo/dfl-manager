@@ -5,18 +5,16 @@ import org.quartz.JobDataMap;
 import org.quartz.PersistJobDataAfterExecution;
 
 import net.dflmngr.reports.InsAndOutsReport;
+import net.dflmngr.scheduler.JobParameterConstants;
 
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class InsAndOutsReportJob extends BaseJob {
 
-	public static String ROUND = "ROUND";
-	public static String REPORT_TYPE = "REPORT_TYPE";
-
 	@Override
 	protected void executeJob(JobDataMap data) throws Exception {
-		int round = getIntParam(data, ROUND);
-		String reportType = getStringParam(data, REPORT_TYPE);
+		int round = getIntParam(data, JobParameterConstants.PARAM_ROUND);
+		String reportType = getStringParam(data, JobParameterConstants.PARAM_REPORT_TYPE);
 
 		InsAndOutsReport insAndOutsReport = new InsAndOutsReport();
 

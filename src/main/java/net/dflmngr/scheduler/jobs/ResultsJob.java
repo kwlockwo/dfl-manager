@@ -3,17 +3,15 @@ package net.dflmngr.scheduler.jobs;
 import org.quartz.JobDataMap;
 
 import net.dflmngr.handlers.ResultsHandler;
+import net.dflmngr.scheduler.JobParameterConstants;
 
 public class ResultsJob extends BaseJob {
-	private static final String ROUND = "ROUND";
-	private static final String IS_FINAL = "IS_FINAL";
-	private static final String ONGOING = "ONGOING";
 
 	@Override
 	protected void executeJob(JobDataMap data) throws Exception {
-		int round = getIntParam(data, ROUND);
-		boolean isFinal = getBooleanParam(data, IS_FINAL);
-		boolean ongoing = getBooleanParam(data, ONGOING);
+		int round = getIntParam(data, JobParameterConstants.PARAM_ROUND);
+		boolean isFinal = getBooleanParam(data, JobParameterConstants.PARAM_IS_FINAL);
+		boolean ongoing = getBooleanParam(data, JobParameterConstants.PARAM_ONGOING);
 
 		String logFile = "";
 		boolean sendReport = false;

@@ -8,6 +8,7 @@ import java.util.List;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 
@@ -15,10 +16,6 @@ public class EndRoundJobGenerator extends BaseJobGenerator {
 
 	private DflRoundInfoService dflRoundInfoService;
 	private GlobalsService globalsService;
-
-	private static final String JOB_NAME = "EndRoundJob";
-	private static final String JOB_GROUP = "EndRound";
-	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.EndRoundJob";
 
 	public EndRoundJobGenerator() {
 		super("EndRoundJobGenerator");
@@ -28,7 +25,7 @@ public class EndRoundJobGenerator extends BaseJobGenerator {
 
 	@Override
 	protected void generateJobs() throws Exception {
-		JobScheduler.deleteGroup(JOB_GROUP);
+		JobScheduler.deleteGroup(JobParameterConstants.END_ROUND_JOB_GROUP);
 
 		List<DflRoundInfo> dflRounds = dflRoundInfoService.findAll();
 
@@ -52,7 +49,14 @@ public class EndRoundJobGenerator extends BaseJobGenerator {
 		ZonedDateTime runTime = time.with(TemporalAdjusters.nextOrSame(DayOfWeek.WEDNESDAY));
 		runTime = runTime.withHour(16).withMinute(0);
 
-		JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, "ROUND", round, runTime);
+		JobScheduleHelper.scheduleJob(
+			JobParameterConstants.END_ROUND_JOB_NAME,
+			JobParameterConstants.END_ROUND_JOB_GROUP,
+			JobParameterConstants.END_ROUND_JOB_CLASS,
+			JobParameterConstants.PARAM_ROUND,
+			round,
+			runTime
+		);
 	}
 	
 	public static void main(String[] args) {		

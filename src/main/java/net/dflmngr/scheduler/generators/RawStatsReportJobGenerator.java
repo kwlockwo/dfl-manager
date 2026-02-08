@@ -14,14 +14,11 @@ import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.keys.AflFixturePK;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.DflRoundInfoService;
+import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 
 public class RawStatsReportJobGenerator extends BaseJobGenerator {
-
-	private static final String JOB_NAME = "RawStatsReport";
-	private static final String JOB_GROUP = "StatsReports";
-	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.RawStatsReportJob";
 
 	private DflRoundInfoService dflRoundInfoService;
 	private AflFixtureService aflFixtureService;
@@ -34,7 +31,7 @@ public class RawStatsReportJobGenerator extends BaseJobGenerator {
 
 	@Override
 	protected void generateJobs() throws Exception {
-		JobScheduler.deleteGroup(JOB_GROUP);
+		JobScheduler.deleteGroup(JobParameterConstants.RAW_STATS_REPORT_JOB_GROUP);
 
 		List<DflRoundInfo> dflSeason = dflRoundInfoService.findAll();
 
@@ -137,10 +134,10 @@ public class RawStatsReportJobGenerator extends BaseJobGenerator {
 	private void scheduleJob(int round, boolean isFinal, Calendar time) throws Exception {
 		ZonedDateTime scheduledTime = ZonedDateTime.ofInstant(time.toInstant(), time.getTimeZone().toZoneId());
 
-		Map<String, Object> jobParams = JobScheduleHelper.createJobParams("ROUND", round);
-		jobParams.put("IS_FINAL", isFinal);
+		Map<String, Object> jobParams = JobScheduleHelper.createJobParams(JobParameterConstants.PARAM_ROUND, round);
+		jobParams.put(JobParameterConstants.PARAM_IS_FINAL, isFinal);
 
-		JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, scheduledTime);
+		JobScheduleHelper.scheduleJob(JobParameterConstants.RAW_STATS_REPORT_JOB_NAME, JobParameterConstants.RAW_STATS_REPORT_JOB_GROUP, JobParameterConstants.RAW_STATS_REPORT_JOB_CLASS, jobParams, scheduledTime);
 	}
 	
 	public static void main(String[] args) {		

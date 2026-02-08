@@ -7,14 +7,11 @@ import java.util.List;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 
 public class StatsRoundJobGenerator extends BaseJobGenerator {
-
-	private static final String JOB_NAME = "StatsRoundPlayerStats";
-	private static final String JOB_GROUP = "StatsRound";
-	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.StatsRoundJob";
 
 	private GlobalsService globalsService;
 	private AflFixtureService aflFixtureService;
@@ -27,7 +24,7 @@ public class StatsRoundJobGenerator extends BaseJobGenerator {
 
 	@Override
 	protected void generateJobs() throws Exception {
-		JobScheduler.deleteGroup(JOB_GROUP);
+		JobScheduler.deleteGroup(JobParameterConstants.STATS_ROUND_JOB_GROUP);
 
 		List<Integer> statsRounds = globalsService.getStatRounds();
 
@@ -66,7 +63,7 @@ public class StatsRoundJobGenerator extends BaseJobGenerator {
 	private void scheduleJob(int round, ZonedDateTime time) throws Exception {
 		loggerUtils.log("info", "Scheduling StatsRoundJob");
 
-		JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, "ROUND", round, time);
+		JobScheduleHelper.scheduleJob(JobParameterConstants.STATS_ROUND_JOB_NAME, JobParameterConstants.STATS_ROUND_JOB_GROUP, JobParameterConstants.STATS_ROUND_JOB_CLASS, JobParameterConstants.PARAM_ROUND, round, time);
 	}
 	
 	public static void main(String[] args) {		

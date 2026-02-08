@@ -16,55 +16,30 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import net.dflmngr.exceptions.UnknownPositionException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflBest22;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPlayerScores;
 import net.dflmngr.model.service.DflBest22Service;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflPlayerService;
-import net.dflmngr.model.service.impl.DflBest22ServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
 
-public class Best22Handler {
-	private LoggingUtils loggerUtils;
-	
-	boolean isExecutable;
-	
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "Best22Handler";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
-	
+public class Best22Handler extends BaseHandler {
+
 	DflPlayerScoresService dflPlayerScoresService;
 	DflPlayerService dflPlayerService;
 	DflBest22Service dflBest22Service;
-	
+
 	public Best22Handler() {
-		dflPlayerScoresService = new DflPlayerScoresServiceImpl();
-		dflPlayerService = new DflPlayerServiceImpl();
-		dflBest22Service = new DflBest22ServiceImpl();
+		super("Best22Handler");
+		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
+		dflPlayerService = serviceFactory.createDflPlayerService();
+		dflBest22Service = serviceFactory.createDflBest22Service();
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-	}
-	
+
 	public void execute(int round) {
-		
+
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 			
 			loggerUtils.log("info", "Best22Handler excuting, round={} ....", round);
 			

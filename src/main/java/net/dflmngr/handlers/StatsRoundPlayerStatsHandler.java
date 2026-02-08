@@ -13,56 +13,29 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.utils.DflmngrUtils;
 
-public class StatsRoundPlayerStatsHandler {
-	private LoggingUtils loggerUtils;
+public class StatsRoundPlayerStatsHandler extends BaseHandler {
 
 	DflRoundInfoService dflRoundInfoService;
 	AflFixtureService aflFixtureService;
 	GlobalsService globalsService;
 
-	boolean isExecutable;
-
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "RawPlayerStatsHandler";
-
-	String mdcKey;
-	String loggerName;
-	String logfile;
-
 	public StatsRoundPlayerStatsHandler() {
-		dflRoundInfoService = new DflRoundInfoServiceImpl();
-		aflFixtureService = new AflFixtureServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-		
-		isExecutable = false;
-	}
-
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
+		super("RawPlayerStatsHandler");
+		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		aflFixtureService = serviceFactory.createAflFixtureService();
+		globalsService = serviceFactory.createGlobalsService();
 	}
 
 	public void execute(int round) {
 
 		try {
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			loggerUtils.log("info", "Downloading stats round player stats for AFL round: {}", round);
 

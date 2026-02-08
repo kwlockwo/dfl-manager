@@ -16,22 +16,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import net.dflmngr.exceptions.AflFixtureException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflTeamService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflTeamServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 
-public class AflFixtureHtmlHandler {
-    private LoggingUtils loggerUtils;
+public class AflFixtureHtmlHandler extends BaseHandler {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MMMM d h:mma yyyy");
-
-    boolean isExecutable;
-
-    String defaultLogfile = "AflFixuterDownload";
-    String logfile;
 
     GlobalsService globalsService;
     AflTeamService aflTeamService;
@@ -42,19 +33,18 @@ public class AflFixtureHtmlHandler {
     static final String HTML_CLASS_STRING = "class";
 
     public AflFixtureHtmlHandler() {
-        loggerUtils = new LoggingUtils("AflFixtureLoader");
+        super("AflFixtureLoader");
 
-        globalsService = new GlobalsServiceImpl();
-        aflTeamService = new AflTeamServiceImpl();
+        globalsService = serviceFactory.createGlobalsService();
+        aflTeamService = serviceFactory.createAflTeamService();
 
         currentYear = globalsService.getCurrentYear();
         defaultTimezone = globalsService.getGroundTimeZone("default");
+        ensureLoggingConfigured();
     }
 
     public void configureLogging(String logfile) {
-        loggerUtils = new LoggingUtils(logfile);
-        this.logfile = logfile;
-        isExecutable = true;
+        configureLogging(defaultMdcKey, defaultLoggerName, logfile);
     }
 
     public List<AflFixture> execute(Integer aflRound, String aflFixtureUrl) {

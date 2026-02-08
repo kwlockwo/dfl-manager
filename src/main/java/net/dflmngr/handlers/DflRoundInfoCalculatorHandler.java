@@ -20,7 +20,6 @@ import java.util.TreeSet;
 
 import net.dflmngr.exceptions.MissingNonStandardLockoutException;
 import net.dflmngr.exceptions.StatsRoundMissingTeamException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.DomainDecodes;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.entity.AflTeam;
@@ -31,68 +30,43 @@ import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.AflTeamService;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.AflTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 
-public class DflRoundInfoCalculatorHandler {
-	private LoggingUtils loggerUtils;
-	
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "DflRoundInfoCalculatorHandler";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
-	
-	boolean isExecutable;
-	
+public class DflRoundInfoCalculatorHandler extends BaseHandler {
+
 	SimpleDateFormat lockoutFormat = new SimpleDateFormat("dd/MM/yyyy h:mm a");
-	
+
 	GlobalsService globalsService;
 	AflFixtureService aflFixtureService;
 	DflRoundInfoService dflRoundInfoService;
 	AflTeamService aflTeamService;
-	
+
 	String standardLockout;
 
 	List<String> statsRoundTracking;
-	
+
 	public DflRoundInfoCalculatorHandler() {
-				
-		try{			
-			globalsService = new GlobalsServiceImpl();
-			aflFixtureService = new AflFixtureServiceImpl();
-			dflRoundInfoService = new DflRoundInfoServiceImpl();
-			aflTeamService = new AflTeamServiceImpl();
-			
+		super("DflRoundInfoCalculatorHandler");
+
+		try{
+			globalsService = serviceFactory.createGlobalsService();
+			aflFixtureService = serviceFactory.createAflFixtureService();
+			dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+			aflTeamService = serviceFactory.createAflTeamService();
+
 			String defaultTimezone = globalsService.getGroundTimeZone("default");
 			lockoutFormat.setTimeZone(TimeZone.getTimeZone(defaultTimezone));
 
 			configureStatsRoundTracking();
-			
+
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);
 		}
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-	}
 
 	public void execute() {
-		
+
 		try {
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 			
 			standardLockout = globalsService.getStandardLockoutTime();
 			int aflRoundsMax = aflFixtureService.getMaxAflRound();

@@ -16,7 +16,6 @@ import org.apache.commons.cli.ParseException;
 
 import net.dflmngr.exceptions.MissingGlobalConfig;
 import net.dflmngr.exceptions.UnknownPositionException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPlayerPredictedScores;
@@ -40,25 +39,9 @@ import net.dflmngr.model.service.DflTeamScoresService;
 import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.RawPlayerStatsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerPredictedScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
-import net.dflmngr.model.service.impl.RawPlayerStatsServiceImpl;
 import net.dflmngr.utils.DflmngrUtils;
 
-public class ScoresCalculatorHandler {
-	private LoggingUtils loggerUtils;
-
-	boolean isExecutable;
-	String defaultLogfile = "RoundProgress";
-	String logfile;
+public class ScoresCalculatorHandler extends BaseHandler {
 
 	RawPlayerStatsService rawPlayerStatsService;
 	DflPlayerService dflPlayerService;
@@ -73,32 +56,28 @@ public class ScoresCalculatorHandler {
 	DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
 
 	public ScoresCalculatorHandler() {
-		rawPlayerStatsService = new RawPlayerStatsServiceImpl();
-		dflPlayerService = new DflPlayerServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-		dflPlayerScoresService = new DflPlayerScoresServiceImpl();
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
-		dflTeamService = new DflTeamServiceImpl();
-		dflTeamScoresService = new DflTeamScoresServiceImpl();
-		dflRoundInfoService = new DflRoundInfoServiceImpl();
-		aflFixtureService = new AflFixtureServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-		dflPlayerPredictedScoresService = new DflPlayerPredictedScoresServiceImpl();
+		super("RoundProgress");
+		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
+		dflPlayerService = serviceFactory.createDflPlayerService();
+		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
+		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflTeamService = serviceFactory.createDflTeamService();
+		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
+		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		aflFixtureService = serviceFactory.createAflFixtureService();
+		globalsService = serviceFactory.createGlobalsService();
+		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
 	}
 
 	public void configureLogging(String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.logfile = logfile;
-		isExecutable = true;
+		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
 	}
 
 	public void execute(int round) {
 
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			loggerUtils.log("info", "ScoresCalculator executing round={} ...", round);
 			loggerUtils.log("info", "Handling player scores");

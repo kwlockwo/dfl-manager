@@ -6,23 +6,13 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.StatsRoundPlayerStats;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.RawPlayerStatsService;
 import net.dflmngr.model.service.StatsRoundPlayerStatsService;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
-import net.dflmngr.model.service.impl.RawPlayerStatsServiceImpl;
-import net.dflmngr.model.service.impl.StatsRoundPlayerStatsServiceImpl;
 
-public class StatsDownloaderHandler {
-	private LoggingUtils loggerUtils;
-
-	boolean isExecutable;
-
-	String defaultLogfile = "RoundProgress";
-	String logfile;
+public class StatsDownloaderHandler extends BaseHandler {
 
 	RawPlayerStatsService rawPlayerStatsService;
 	StatsRoundPlayerStatsService statsRoundPlayerStatsService;
@@ -32,29 +22,23 @@ public class StatsDownloaderHandler {
 	String statsUrl;
 
 	public StatsDownloaderHandler(int round, String statsUrl) {
-		rawPlayerStatsService = new RawPlayerStatsServiceImpl();
-		statsRoundPlayerStatsService = new StatsRoundPlayerStatsServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-
-		isExecutable = false;
+		super("RoundProgress");
+		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
+		statsRoundPlayerStatsService = serviceFactory.createStatsRoundPlayerStatsService();
+		globalsService = serviceFactory.createGlobalsService();
 
 		this.round = round;
 		this.statsUrl = statsUrl;
 	}
 
 	public void configureLogging(String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.logfile = logfile;
-		isExecutable = true;
+		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
 	}
 
 	public void execute(String homeTeam, String awayTeam, boolean includeHomeTeam, boolean includeAwayTeam, String scrapingStatus, boolean isStatsRound) {
 
 		try {
-			if(!isExecutable) {
-				configureLogging(defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			if(isStatsRound) {
 				loggerUtils.log("info", "Running for Stats round: AFL round={}", round);

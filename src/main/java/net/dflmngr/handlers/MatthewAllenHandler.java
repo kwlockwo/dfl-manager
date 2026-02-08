@@ -13,7 +13,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflFixture;
 import net.dflmngr.model.entity.DflMatthewAllen;
 import net.dflmngr.model.entity.DflPlayer;
@@ -24,54 +23,28 @@ import net.dflmngr.model.service.DflMatthewAllenService;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflSelectedTeamService;
-import net.dflmngr.model.service.impl.DflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflMatthewAllenServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflSelectedTeamServiceImpl;
 
-public class MatthewAllenHandler {
-	private LoggingUtils loggerUtils;
-	
-	boolean isExecutable;
-	
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "RoundProgress";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
-	
+public class MatthewAllenHandler extends BaseHandler {
+
 	DflFixtureService dflFixtureService;
-	DflPlayerScoresService dflPlayerScoresService; 
+	DflPlayerScoresService dflPlayerScoresService;
 	DflSelectedTeamService dflSelectedTeamService;
 	DflMatthewAllenService dflMatthewAllenService;
 	DflPlayerService dflPlayerService;
-	
+
 	public MatthewAllenHandler() {
-		dflFixtureService = new DflFixtureServiceImpl();
-		dflPlayerScoresService = new DflPlayerScoresServiceImpl();
-		dflSelectedTeamService = new DflSelectedTeamServiceImpl();
-		dflMatthewAllenService = new DflMatthewAllenServiceImpl();
-		dflPlayerService = new DflPlayerServiceImpl();
+		super("RoundProgress");
+		dflFixtureService = serviceFactory.createDflFixtureService();
+		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
+		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflMatthewAllenService = serviceFactory.createDflMatthewAllenService();
+		dflPlayerService = serviceFactory.createDflPlayerService();
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-	}
-	
+
 	public void execute(int round) {
-		
+
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 			
 			loggerUtils.log("info", "MatthewAllenHandler excuting, rount={} ....", round);
 			

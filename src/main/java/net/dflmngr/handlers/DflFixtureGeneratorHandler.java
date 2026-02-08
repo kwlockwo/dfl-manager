@@ -4,49 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflFixture;
 import net.dflmngr.model.service.DflFixtureService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.DflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 
-public class DflFixtureGeneratorHandler {
-	private LoggingUtils loggerUtils;
-	
-	boolean isExecutable;
-	
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "DflFixtureGeneratorHandler";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
-	
+public class DflFixtureGeneratorHandler extends BaseHandler {
+
 	private GlobalsService globalsService;
 	private DflFixtureService dflFixtureService;
-	
+
 	public DflFixtureGeneratorHandler() {
-		globalsService = new GlobalsServiceImpl();
-		dflFixtureService = new DflFixtureServiceImpl();
+		super("DflFixtureGeneratorHandler");
+		globalsService = serviceFactory.createGlobalsService();
+		dflFixtureService = serviceFactory.createDflFixtureService();
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-	}
-	
+
 	public void execute() {
-		
+
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 			
 			loggerUtils.log("info", "DflFixtureGeneratorHandler excuting....");
 			

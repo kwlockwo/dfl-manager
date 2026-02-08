@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflPlayer;
 import net.dflmngr.model.entity.AflTeam;
 import net.dflmngr.model.entity.DflPlayer;
@@ -15,14 +14,8 @@ import net.dflmngr.model.service.AflTeamService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflUnmatchedPlayerService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.AflTeamServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflUnmatchedPlayerServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 
-public class AflPlayerLoaderHandler {
-	private LoggingUtils loggerUtils;
+public class AflPlayerLoaderHandler extends BaseHandler {
 
 	private static final String NOT_ALPHA_REGEX = "[^a-zA-Z]";
 
@@ -33,15 +26,16 @@ public class AflPlayerLoaderHandler {
 	private DflUnmatchedPlayerService dflUnmatchedPlayerService;
 
 	public AflPlayerLoaderHandler() {
-
-		loggerUtils = new LoggingUtils("AflPlayerLoader");
+		super("AflPlayerLoader");
 
 		try {
-			aflTeamService = new AflTeamServiceImpl();
-			aflPlayerService = new AflPlayerServiceImpl();
-			dflPlayerService = new DflPlayerServiceImpl();
-			globalsService = new GlobalsServiceImpl();
-			dflUnmatchedPlayerService = new DflUnmatchedPlayerServiceImpl();
+			aflTeamService = serviceFactory.createAflTeamService();
+			aflPlayerService = serviceFactory.createAflPlayerService();
+			dflPlayerService = serviceFactory.createDflPlayerService();
+			globalsService = serviceFactory.createGlobalsService();
+			dflUnmatchedPlayerService = serviceFactory.createDflUnmatchedPlayerService();
+
+			ensureLoggingConfigured();
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);
 		}

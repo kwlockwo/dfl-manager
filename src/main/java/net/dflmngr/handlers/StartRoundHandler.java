@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.dflmngr.exceptions.UnknownSelectionIndicatorException;
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.entity.DflFixture;
 import net.dflmngr.model.entity.DflPlayer;
@@ -25,30 +24,10 @@ import net.dflmngr.model.service.DflTeamPredictedScoresService;
 import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.InsAndOutsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPredictedScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
-import net.dflmngr.model.service.impl.InsAndOutsServiceImpl;
 import net.dflmngr.utils.EmailUtils;
 
-public class StartRoundHandler {
-	private LoggingUtils loggerUtils;
-	
-	boolean isExecutable;
-	
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "StartRound";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
-	
+public class StartRoundHandler extends BaseHandler {
+
 	DflTeamService dflTeamService;
 	GlobalsService globalsService;
 	DflFixtureService dflFixtureService;
@@ -60,35 +39,23 @@ public class StartRoundHandler {
 	AflFixtureService aflFixtureService;
 	
 	String emailOverride;
-	
+
 	public StartRoundHandler() {
-		dflTeamService = new DflTeamServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-		dflFixtureService = new DflFixtureServiceImpl();
-		dflTeamPredictedScoresService = new DflTeamPredictedScoresServiceImpl();
-		dflPlayerService = new DflPlayerServiceImpl();
-		insAndOutsService = new InsAndOutsServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-		dflRoundInfoService = new DflRoundInfoServiceImpl();
-		aflFixtureService = new AflFixtureServiceImpl();
-		
+		super("StartRound");
+		dflTeamService = serviceFactory.createDflTeamService();
+		globalsService = serviceFactory.createGlobalsService();
+		dflFixtureService = serviceFactory.createDflFixtureService();
+		dflTeamPredictedScoresService = serviceFactory.createDflTeamPredictedScoresService();
+		dflPlayerService = serviceFactory.createDflPlayerService();
+		insAndOutsService = serviceFactory.createInsAndOutsService();
+		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
+		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		aflFixtureService = serviceFactory.createAflFixtureService();
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-	}
-	
+
 	public void execute(int round, String emailOveride, boolean fromScoresCalculator) {
-		
-		try{
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+		try {
+			ensureLoggingConfigured();
 			
 			if(emailOveride != null && !emailOveride.equals("")) {
 				this.emailOverride = emailOveride;

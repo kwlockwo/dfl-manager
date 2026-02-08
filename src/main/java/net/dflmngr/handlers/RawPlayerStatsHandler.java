@@ -13,7 +13,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
@@ -24,14 +23,8 @@ import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.RawPlayerStatsService;
 import net.dflmngr.model.service.StatsRoundPlayerStatsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
-import net.dflmngr.model.service.impl.RawPlayerStatsServiceImpl;
-import net.dflmngr.model.service.impl.StatsRoundPlayerStatsServiceImpl;
 
-public class RawPlayerStatsHandler {
-	private LoggingUtils loggerUtils;
+public class RawPlayerStatsHandler extends BaseHandler {
 
 	DflRoundInfoService dflRoundInfoService;
 	AflFixtureService aflFixtureService;
@@ -39,33 +32,23 @@ public class RawPlayerStatsHandler {
 	StatsRoundPlayerStatsService statsRoundPlayerStatsService;
 	RawPlayerStatsService rawPlayerStatsService;
 
-	boolean isExecutable;
-	String defaultLogfile = "RawPlayerStatsHandler";
-	String logfile;
-
 	public RawPlayerStatsHandler() {
-		dflRoundInfoService = new DflRoundInfoServiceImpl();
-		aflFixtureService = new AflFixtureServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-		statsRoundPlayerStatsService = new StatsRoundPlayerStatsServiceImpl();
-		rawPlayerStatsService = new RawPlayerStatsServiceImpl();
-		
-		isExecutable = false;
+		super("RawPlayerStatsHandler");
+		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		aflFixtureService = serviceFactory.createAflFixtureService();
+		globalsService = serviceFactory.createGlobalsService();
+		statsRoundPlayerStatsService = serviceFactory.createStatsRoundPlayerStatsService();
+		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
 	}
 
 	public void configureLogging(String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.logfile = logfile;
-		isExecutable = true;
+		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
 	}
 
 	public void execute(int round, boolean scrapeAll) {
 
 		try {
-			if(!isExecutable) {
-				configureLogging(defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 
 			loggerUtils.log("info", "Downloading player stats for DFL round: {}", round);
 

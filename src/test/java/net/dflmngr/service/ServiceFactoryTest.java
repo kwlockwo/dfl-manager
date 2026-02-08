@@ -1,0 +1,51 @@
+package net.dflmngr.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * Tests for ServiceFactory singleton.
+ * Verifies that the factory maintains singleton pattern and creates instances.
+ *
+ * Note: These tests verify the factory pattern without database connectivity.
+ * Service instances are created but not tested for database functionality.
+ */
+class ServiceFactoryTest {
+
+	@Test
+	void getInstance_shouldReturnSameInstance() {
+		// Given & When
+		ServiceFactory instance1 = ServiceFactory.getInstance();
+		ServiceFactory instance2 = ServiceFactory.getInstance();
+
+		// Then
+		assertThat(instance1).isNotNull();
+		assertThat(instance1).isSameAs(instance2);
+	}
+
+	@Test
+	void getInstance_shouldNeverReturnNull() {
+		// When
+		ServiceFactory factory = ServiceFactory.getInstance();
+
+		// Then
+		assertThat(factory).isNotNull();
+	}
+
+	@Test
+	void factoryPattern_shouldCreateNewInstancesEachTime() {
+		// Given
+		ServiceFactory factory = ServiceFactory.getInstance();
+
+		// When
+		var service1 = factory.createDflRoundInfoService();
+		var service2 = factory.createDflRoundInfoService();
+
+		// Then
+		assertThat(service1)
+			.isNotNull()
+			.isNotSameAs(service2);
+		assertThat(service2).isNotNull();
+	}
+}

@@ -13,7 +13,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflCallumChambers;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPlayerScores;
@@ -22,58 +21,32 @@ import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.DflPlayerScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 
-public class CallumChambersHandler {
-	private LoggingUtils loggerUtils;
-	
-	boolean isExecutable;
-	
-	String defaultMdcKey = "batch.name";
-	String defaultLoggerName = "batch-logger";
-	String defaultLogfile = "CallumChambersHandler";
-	
-	String mdcKey;
-	String loggerName;
-	String logfile;
-	
+public class CallumChambersHandler extends BaseHandler {
+
 	String emailOverride;
-	
+
 	List<DflCallumChambers> medalStandings;
-	
+
 	DflPlayerService dflPlayerService;
 	DflPlayerScoresService dflPlayerScoresService;
 	DflTeamPlayerService dflTeamPlayerService;
 	GlobalsService globalsService;
-	
+
 	public CallumChambersHandler() {
+		super("CallumChambersHandler");
 		medalStandings = new ArrayList<>();
-		
-		dflPlayerService = new DflPlayerServiceImpl();
-		dflPlayerScoresService = new DflPlayerScoresServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-		globalsService = new GlobalsServiceImpl();
+
+		dflPlayerService = serviceFactory.createDflPlayerService();
+		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
+		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
+		globalsService = serviceFactory.createGlobalsService();
 	}
-	
-	public void configureLogging(String mdcKey, String loggerName, String logfile) {
-		loggerUtils = new LoggingUtils(logfile);
-		this.mdcKey = mdcKey;
-		this.loggerName = loggerName;
-		this.logfile = logfile;
-		isExecutable = true;
-		emailOverride = null;
-	}
-	
+
 	public void execute(int round) {
-		
+
 		try{
-			if(!isExecutable) {
-				configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
-				loggerUtils.log("info", "Default logging configured");
-			}
+			ensureLoggingConfigured();
 			
 			List<DflPlayer> players = dflPlayerService.findAll();
 			List<Map<Integer, DflPlayerScores>> playerScores = new ArrayList<>();

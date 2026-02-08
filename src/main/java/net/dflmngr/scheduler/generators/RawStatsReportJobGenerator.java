@@ -107,7 +107,7 @@ public class RawStatsReportJobGenerator extends BaseJobGenerator {
 			loggerUtils.log("info", "Creating final run, start time={}", startTimeCal);
 			createFinalRunSchedule(dflRound, startTimeCal);
 		} else {
-			loggerUtils.log("warn", "No AFL games found for DFL round={}, skipping final run schedule", dflRound);
+			loggerUtils.log("info", "No AFL games found for DFL round={}, skipping final run schedule", dflRound);
 		}
 	}
 	

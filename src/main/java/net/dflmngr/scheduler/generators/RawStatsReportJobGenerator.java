@@ -1,11 +1,10 @@
 package net.dflmngr.scheduler.generators;
 
-import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +14,8 @@ import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.keys.AflFixturePK;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.DflRoundInfoService;
+import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
-import net.dflmngr.utils.CronExpressionCreator;
 
 public class RawStatsReportJobGenerator extends BaseJobGenerator {
 
@@ -26,9 +25,6 @@ public class RawStatsReportJobGenerator extends BaseJobGenerator {
 
 	private DflRoundInfoService dflRoundInfoService;
 	private AflFixtureService aflFixtureService;
-
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
 	public RawStatsReportJobGenerator() {
 		super("RawStatsReportJobGenerator");
@@ -135,15 +131,12 @@ public class RawStatsReportJobGenerator extends BaseJobGenerator {
 	}
 	
 	private void scheduleJob(int round, boolean isFinal, Calendar time) throws Exception {
-		CronExpressionCreator cronExpression = new CronExpressionCreator();
-		cronExpression.setTime(timeFormat.format(time.getTime()));
-		cronExpression.setStartDate(dateFormat.format(time.getTime()));
+		ZonedDateTime scheduledTime = ZonedDateTime.ofInstant(time.toInstant(), time.getTimeZone().toZoneId());
 
-		Map<String, Object> jobParams = new HashMap<>();
-		jobParams.put("ROUND", round);
+		Map<String, Object> jobParams = JobScheduleHelper.createJobParams("ROUND", round);
 		jobParams.put("IS_FINAL", isFinal);
 
-		JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
+		JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, scheduledTime);
 	}
 	
 	public static void main(String[] args) {		

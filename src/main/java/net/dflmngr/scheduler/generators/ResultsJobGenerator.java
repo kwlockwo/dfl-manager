@@ -3,7 +3,6 @@ package net.dflmngr.scheduler.generators;
 import java.time.DayOfWeek;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,8 +15,8 @@ import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.keys.AflFixturePK;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.DflRoundInfoService;
+import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
-import net.dflmngr.utils.CronExpressionCreator;
 import net.dflmngr.utils.DflmngrUtils;
 
 public class ResultsJobGenerator extends BaseJobGenerator {
@@ -169,14 +168,7 @@ public class ResultsJobGenerator extends BaseJobGenerator {
 		} else {
 			loggerUtils.log("info", "Scheduling fixed ResultsJob, isFinal={}", isFinal);
 
-			CronExpressionCreator cronExpression = new CronExpressionCreator();
-			cronExpression.setTime(time.format(DateTimeFormatter.ofPattern("hh:mm a")));
-			cronExpression.setStartDate(time.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-
-			loggerUtils.log("info", "Cron date={}; time={};", cronExpression.getStartDate(), cronExpression.getTime());
-
-			Map<String, Object> jobParams = new HashMap<>();
-			jobParams.put("ROUND", round);
+			Map<String, Object> jobParams = JobScheduleHelper.createJobParams("ROUND", round);
 			jobParams.put("IS_FINAL", isFinal);
 			jobParams.put("ONGOING", ongoing);
 
@@ -188,7 +180,7 @@ public class ResultsJobGenerator extends BaseJobGenerator {
 				jobName = JOB_NAME_ROUND_PROGRESS;
 			}
 
-			JobScheduler.schedule(jobName, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
+			JobScheduleHelper.scheduleJob(jobName, JOB_GROUP, JOB_CLASS, jobParams, time);
 		}
 	}
 	

@@ -1,17 +1,14 @@
 package net.dflmngr.scheduler.generators;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
-import net.dflmngr.utils.CronExpressionCreator;
 
 public class StatsRoundJobGenerator extends BaseJobGenerator {
 
@@ -69,14 +66,7 @@ public class StatsRoundJobGenerator extends BaseJobGenerator {
 	private void scheduleJob(int round, ZonedDateTime time) throws Exception {
 		loggerUtils.log("info", "Scheduling StatsRoundJob");
 
-		CronExpressionCreator cronExpression = new CronExpressionCreator();
-		cronExpression.setTime(time.format(DateTimeFormatter.ofPattern("hh:mm a")));
-		cronExpression.setStartDate(time.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-
-		Map<String, Object> jobParams = new HashMap<>();
-		jobParams.put("ROUND", round);
-
-		JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
+		JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, "ROUND", round, time);
 	}
 	
 	public static void main(String[] args) {		

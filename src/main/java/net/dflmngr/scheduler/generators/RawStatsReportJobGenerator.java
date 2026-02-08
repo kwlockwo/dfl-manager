@@ -102,9 +102,13 @@ public class RawStatsReportJobGenerator extends BaseJobGenerator {
 			}
 			
 		}
-		
-		loggerUtils.log("info", "Creating final run, start time={}", startTimeCal);
-		createFinalRunSchedule(dflRound, startTimeCal);
+
+		if (startTimeCal != null) {
+			loggerUtils.log("info", "Creating final run, start time={}", startTimeCal);
+			createFinalRunSchedule(dflRound, startTimeCal);
+		} else {
+			loggerUtils.log("warn", "No AFL games found for DFL round={}, skipping final run schedule", dflRound);
+		}
 	}
 	
 	private void createWeekendSchedule(int dflRound, Calendar time) throws Exception {

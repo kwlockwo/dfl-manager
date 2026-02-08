@@ -17,12 +17,13 @@
 
 		<!-- Dependency versions -->
 		<eclipselink.version>5.0.0-B13</eclipselink.version>
-		<log4j.version>2.24.3</log4j.version>
+		<log4j.version>2.25.3</log4j.version>
 		<jackson.version>2.21.0</jackson.version>
 		<selenium.version>4.40.0</selenium.version>
 		<poi.version>5.5.1</poi.version>
 		<quartz.version>2.5.2</quartz.version>
 		<jacoco.version>0.8.12</jacoco.version>
+		<assertj.version>3.27.7</assertj.version>
 	</properties>
 
 	<dependencies>
@@ -188,7 +189,7 @@
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
-			<version>3.27.3</version>
+			<version>${assertj.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

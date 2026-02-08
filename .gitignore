@@ -14,3 +14,4 @@ reports
 .vscode/settings.json
 .attach_pid*
 .env
+.claude/

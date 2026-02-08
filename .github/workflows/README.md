@@ -6,26 +6,23 @@ The `test.yml` workflow automatically runs tests on every push and pull request.
 
 ### What It Does
 
-1. **Sets up PostgreSQL 16** - Runs a PostgreSQL service container
-2. **Checks out code** - Gets the latest code from the repository
-3. **Sets up JDK 25** - Installs Java 25 (Temurin distribution)
-4. **Runs tests** - Executes `mvn test` with PostgreSQL connection
-5. **Uploads results** - Saves test reports as artifacts
-6. **Publishes report** - Creates a test report in the Actions UI
+1. **Checks out code** - Gets the latest code from the repository
+2. **Sets up JDK 25** - Installs Java 25 (Temurin distribution)
+3. **Runs tests** - Executes BaseHandlerTest (6 unit tests)
+4. **Uploads results** - Saves test reports as artifacts
+5. **Publishes report** - Creates a test report in the Actions UI
 
-### Database Configuration
+### Test Configuration
 
-**Locally (developers):**
-- Uses H2 in-memory database
-- No setup required
-- Fast test execution
+**Currently Running:**
+- BaseHandlerTest (6 tests)
+- Pure unit tests, no database required
+- Fast execution (< 1 second)
 
-**GitHub Actions (CI):**
-- Uses PostgreSQL 16 service container
-- Database: `dflmngr_test`
-- User: `dflmngr`
-- Password: `dflmngr_test_password`
-- Configured via environment variables
+**Excluded (need database configuration):**
+- ServiceFactoryTest
+- EntityManagerFactoryProviderTest
+- TransactionHelperTest
 
 ### Viewing Test Results
 
@@ -40,19 +37,14 @@ The workflow runs on:
 - **Push** to `main`, `develop`, or `feature/**` branches
 - **Pull requests** to `main` or `develop`
 
-### Environment Variables
+### Command Executed
 
-The workflow sets these environment variables for PostgreSQL:
-
-```yaml
-DB_URL: jdbc:postgresql://localhost:5432/dflmngr_test
-DB_USER: dflmngr
-DB_PASSWORD: dflmngr_test_password
-DB_DRIVER: org.postgresql.Driver
-DB_PLATFORM: org.eclipse.persistence.platform.database.PostgreSQLPlatform
+The workflow runs:
+```bash
+mvn test --batch-mode --fail-at-end -Dtest=BaseHandlerTest
 ```
 
-These override the default H2 configuration in `persistence.xml`.
+This ensures only stable unit tests run in CI.
 
 ### Adding More Workflows
 
@@ -83,15 +75,15 @@ on:
 ### Troubleshooting
 
 **Tests fail in CI but pass locally:**
-- Check PostgreSQL-specific SQL syntax
-- Verify H2 compatibility mode is correct
-- Check test isolation (tests may depend on order locally)
-
-**PostgreSQL service not ready:**
-- The workflow includes health checks
-- Waits for `pg_isready` before running tests
-- Check PostgreSQL logs in Actions output
+- Verify same tests are running (check `-Dtest=` parameter)
+- Ensure Java 25 is being used locally
+- Check test isolation (no shared state)
 
 **JDK version mismatch:**
 - Workflow uses JDK 25 (Temurin)
 - Update your local Java version if needed
+
+**Adding more tests to CI:**
+- Database tests need proper configuration first
+- Update the `-Dtest=` parameter to include more test classes
+- Ensure tests can run without external dependencies

@@ -17,11 +17,23 @@ public class EntityManagerFactoryProvider {
 	private final EntityManagerFactory factory;
 
 	private EntityManagerFactoryProvider() {
+		// Allow switching to test persistence unit via system property
+		String persistenceUnitName = System.getProperty("persistence.unit.name", "dflmngr");
+
 		String url = System.getenv("JDBC_DATABASE_URL");
 
 		Map<String, Object> configOverrides = new HashMap<>();
 		configOverrides.put("javax.persistence.jdbc.url", url);
 		configOverrides.put("jakarta.persistence.jdbc.url", url);
+
+		// Add system property overrides (these take precedence for tests)
+		for (String propName : System.getProperties().stringPropertyNames()) {
+			if (propName.startsWith("jakarta.persistence")
+				|| propName.startsWith("javax.persistence")
+				|| propName.startsWith("eclipselink")) {
+				configOverrides.put(propName, System.getProperty(propName));
+			}
+		}
 
 		// Add environment variable overrides for JPA/EclipseLink properties
 		Map<String, String> env = System.getenv();
@@ -35,7 +47,7 @@ public class EntityManagerFactoryProvider {
 			}
 		}
 
-		this.factory = Persistence.createEntityManagerFactory("dflmngr", configOverrides);
+		this.factory = Persistence.createEntityManagerFactory(persistenceUnitName, configOverrides);
 	}
 
 	public static synchronized EntityManagerFactoryProvider getInstance() {

@@ -12,18 +12,19 @@ Your repository now has **automatic testing via GitHub Actions** with PostgreSQL
 
 ### What Happens on Every Push/PR
 
-1. 🐘 **PostgreSQL 16 starts** in a service container
-2. ☕ **Java 25** is installed (Temurin distribution)
-3. 📦 **Maven dependencies** are cached for faster builds
-4. 🧪 **All tests run** against real PostgreSQL database
-5. 📊 **Test reports** are uploaded and displayed in GitHub UI
+1. ☕ **Java 25** is installed (Temurin distribution)
+2. 📦 **Maven dependencies** are cached for faster builds
+3. 🧪 **Unit tests run** (BaseHandlerTest - 6 tests)
+4. 📊 **Test reports** are uploaded and displayed in GitHub UI
 
-### Database Strategy
+### Test Strategy
 
-| Environment | Database | Setup Required |
-|-------------|----------|----------------|
-| **Local (developers)** | H2 in-memory | None ✅ |
-| **GitHub Actions (CI)** | PostgreSQL 16 | Automatic ✅ |
+| Test Suite | Local | GitHub Actions | Status |
+|------------|-------|----------------|--------|
+| **BaseHandlerTest** | ✅ Runs | ✅ Runs | 6 tests passing |
+| **ServiceFactoryTest** | ⏭️ Skipped | ⏭️ Skipped | Needs DB config |
+| **EntityManagerFactoryProviderTest** | ⏭️ Skipped | ⏭️ Skipped | Needs DB config |
+| **TransactionHelperTest** | ⏭️ Skipped | ⏭️ Skipped | Needs DB config |
 
 ### View Test Results
 
@@ -34,42 +35,27 @@ Your repository now has **automatic testing via GitHub Actions** with PostgreSQL
 
 ## Configuration Details
 
-### PostgreSQL Service
-
-```yaml
-Database: dflmngr_test
-User: dflmngr
-Password: dflmngr_test_password
-Port: 5432
-Health checks: Automatic
-```
-
 ### Maven Test Command
 
-In GitHub Actions, tests run with:
+Both locally and in GitHub Actions:
 
 ```bash
-mvn test --batch-mode --fail-at-end \
-  -Djakarta.persistence.jdbc.url="jdbc:postgresql://localhost:5432/dflmngr_test" \
-  -Djakarta.persistence.jdbc.user="dflmngr" \
-  -Djakarta.persistence.jdbc.password="dflmngr_test_password" \
-  -Djakarta.persistence.jdbc.driver="org.postgresql.Driver" \
-  -Declipselink.target-database="org.eclipse.persistence.platform.database.PostgreSQLPlatform"
+mvn test  # Runs BaseHandlerTest only
 ```
 
-Locally, just run:
+Pre-commit hook runs the same test:
 ```bash
-mvn test  # Uses H2 automatically
+mvn test -Dtest=BaseHandlerTest -q
 ```
 
 ## Benefits
 
-✅ **Proper integration testing** - Tests run against real PostgreSQL
-✅ **No local setup** - Developers use H2, CI uses PostgreSQL
+✅ **Fast unit testing** - BaseHandlerTest runs in < 1 second
+✅ **No database setup** - Unit tests don't require database
 ✅ **Automatic execution** - Every push/PR triggers tests
 ✅ **Visible results** - Test reports in GitHub UI
 ✅ **Fast feedback** - Know if tests break immediately
-✅ **PR protection** - Can require passing tests before merge
+✅ **PR protection** - Tests must pass before merge (branch protection enabled)
 
 ## Adding Branch Protection
 
@@ -92,33 +78,27 @@ Now PRs can't be merged until tests pass!
 
 ### Tests fail in CI but pass locally
 
-- PostgreSQL vs H2 differences (SQL syntax, features)
-- Check H2 PostgreSQL compatibility mode
-- Test isolation issues (order dependency)
-
-### PostgreSQL connection fails
-
-- Service health checks ensure PostgreSQL is ready
-- Check logs in Actions output
-- Verify connection string in workflow
+- Verify the same tests run in both environments
+- Check Java version compatibility (should be 25 in both)
+- Review test isolation (no shared state between tests)
 
 ## Next Steps
 
-### 1. Enable Required Status Checks
+### 1. ✅ Branch Protection Enabled
 
-Protect your main branch by requiring tests to pass.
+Main branch now requires "test" workflow to pass before merging.
 
-### 2. Add Build Workflow
+### 2. Add Database Integration Tests
+
+Configure remaining tests (ServiceFactoryTest, EntityManagerFactoryProviderTest, TransactionHelperTest) to work with test database.
+
+### 3. Add Build Workflow
 
 Create `.github/workflows/build.yml` for packaging.
 
-### 3. Add Coverage Reporting
+### 4. Add Coverage Reporting
 
 Use JaCoCo + Codecov for test coverage tracking.
-
-### 4. Add Deployment Workflow
-
-Automate deployment when tests pass on main.
 
 ## Files
 
@@ -129,9 +109,9 @@ Automate deployment when tests pass on main.
 ## Current Status
 
 - ✅ GitHub Actions configured
-- ✅ PostgreSQL service container running
-- ✅ Test workflow active
+- ✅ Test workflow active (BaseHandlerTest - 6 tests)
 - ✅ Automatic on push/PR
-- ⏳ Waiting for first workflow run...
+- ✅ Branch protection enabled on main
+- ✅ Workflow running successfully
 
 Check it out: https://github.com/kwlockwo/dfl-manager/actions

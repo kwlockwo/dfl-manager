@@ -2,6 +2,7 @@ package net.dflmngr.model.service.impl;
 
 import java.util.List;
 
+import net.dflmngr.jpa.TransactionHelper;
 import net.dflmngr.model.dao.GenericDao;
 import net.dflmngr.model.service.GenericService;
 
@@ -22,9 +23,7 @@ public class GenericServiceImpl<E, K> implements GenericService<E, K>  {
 	}
 	
 	public void insert(E entity) {
-		d.beginTransaction();
-		d.persist(entity);
-		d.commit();
+		TransactionHelper.executeInTransaction(d.getEntityManager(), () -> d.persist(entity));
 	}
 	
 	public void update(E entity) {
@@ -32,32 +31,30 @@ public class GenericServiceImpl<E, K> implements GenericService<E, K>  {
 	}
 	
 	public void insertAll(List<E> entitys, boolean inTx) {
-		
-		if(!inTx) {
-			d.beginTransaction();
-		}
-		
-		for(E e : entitys) {
-			d.persist(e);
-		}
-		
-		if(!inTx) {
-			d.commit();
+		if (!inTx) {
+			TransactionHelper.executeInTransaction(d.getEntityManager(), () -> {
+				for (E e : entitys) {
+					d.persist(e);
+				}
+			});
+		} else {
+			for (E e : entitys) {
+				d.persist(e);
+			}
 		}
 	}
 	
 	public void updateAll(List<E> entitys, boolean inTx) {
-		
-		if(!inTx) {
-			d.beginTransaction();
-		}
-		
-		for(E e : entitys) {
-			d.merge(e);
-		}
-		
-		if(!inTx) {
-			d.commit();
+		if (!inTx) {
+			TransactionHelper.executeInTransaction(d.getEntityManager(), () -> {
+				for (E e : entitys) {
+					d.merge(e);
+				}
+			});
+		} else {
+			for (E e : entitys) {
+				d.merge(e);
+			}
 		}
 	}
 	
@@ -66,18 +63,18 @@ public class GenericServiceImpl<E, K> implements GenericService<E, K>  {
 	}
 	
 	public void replaceAll(List<E> entitys) {
-		d.beginTransaction();
-		List<E> existingEntitys = findAll();
-		for(E entity : existingEntitys) {
-			d.remove(entity);
-		}
-		
-		d.flush();
-		
-		for(E entity : entitys) {
-			d.persist(entity);
-		}
-		d.commit();
+		TransactionHelper.executeInTransaction(d.getEntityManager(), () -> {
+			List<E> existingEntitys = findAll();
+			for (E entity : existingEntitys) {
+				d.remove(entity);
+			}
+
+			d.flush();
+
+			for (E entity : entitys) {
+				d.persist(entity);
+			}
+		});
 	}
 	
 	public void refresh(E entity) {

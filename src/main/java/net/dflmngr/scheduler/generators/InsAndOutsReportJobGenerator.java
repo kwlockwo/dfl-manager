@@ -25,7 +25,7 @@ public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
 	private DflRoundInfoService dflRoundInfoService;
 	private GlobalsService globalsService;
 
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
 	public InsAndOutsReportJobGenerator() {
 		super("InsAndOutsReportJobGenerator");

@@ -9,74 +9,69 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.keys.AflFixturePK;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
 import net.dflmngr.scheduler.JobScheduler;
 import net.dflmngr.utils.CronExpressionCreator;
 
-public class RawStatsReportJobGenerator {
-	private LoggingUtils loggerUtils;
-	
-	private static String jobName = "RawStatsReport";
-	private static String jobGroup = "StatsReports";
-	private static String jobClass = "net.dflmngr.scheduler.jobs.RawStatsReportJob";
-	
-	DflRoundInfoService dflRoundInfoService;
-	AflFixtureService aflFixtureService;
-	
+public class RawStatsReportJobGenerator extends BaseJobGenerator {
+
+	private static final String JOB_NAME = "RawStatsReport";
+	private static final String JOB_GROUP = "StatsReports";
+	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.RawStatsReportJob";
+
+	private DflRoundInfoService dflRoundInfoService;
+	private AflFixtureService aflFixtureService;
+
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-	
+
 	public RawStatsReportJobGenerator() {
-		loggerUtils = new LoggingUtils("RawStatsReportJobGenerator");
-		
-		try {			
-			dflRoundInfoService = new DflRoundInfoServiceImpl();
-			aflFixtureService = new AflFixtureServiceImpl();
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+		super("RawStatsReportJobGenerator");
+		this.dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		this.aflFixtureService = serviceFactory.createAflFixtureService();
+	}
+
+	@Override
+	protected void generateJobs() throws Exception {
+		JobScheduler.deleteGroup(JOB_GROUP);
+
+		List<DflRoundInfo> dflSeason = dflRoundInfoService.findAll();
+
+		for(DflRoundInfo roundInfo : dflSeason) {
+			List<DflRoundMapping> roundMapping = roundInfo.getRoundMapping();
+
+			List<AflFixture> dflAflGames = new ArrayList<>();
+			for(DflRoundMapping mapping : roundMapping) {
+				loggerUtils.log("info", "Finding AFL games for: DFL round={}; AFL round={};", roundInfo.getRound(), mapping.getAflRound());
+				if(mapping.getAflGame() == 0) {
+					loggerUtils.log("info", "No AFL game mapping adding all games");
+					dflAflGames.addAll(aflFixtureService.getAflFixturesForRound(mapping.getAflRound()));
+				} else {
+					loggerUtils.log("info", "Bye round adding: AFL round={}; game={};", mapping.getAflRound(), mapping.getAflGame());
+					AflFixturePK aflFixturePK = new AflFixturePK();
+					aflFixturePK.setRound(mapping.getAflRound());
+					aflFixturePK.setGame(mapping.getAflGame());
+					dflAflGames.add(aflFixtureService.get(aflFixturePK));
+				}
+			}
+
+			loggerUtils.log("info", "Processing fixtures: DFL round={}; fixtures={}", roundInfo.getRound(), dflAflGames);
+			processFixtures(roundInfo.getRound(), dflAflGames);
 		}
 	}
-	
-	public void execute() {
-		
-		try {
-			loggerUtils.log("info","Executing RawStatsReportJobGenerator ....");
-			
-			List<DflRoundInfo> dflSeason = dflRoundInfoService.findAll();
-			
-			for(DflRoundInfo roundInfo : dflSeason) {
-				List<DflRoundMapping> roundMapping = roundInfo.getRoundMapping();
-				
-				List<AflFixture> dflAflGames = new ArrayList<>();
-				for(DflRoundMapping mapping : roundMapping) {
-					loggerUtils.log("info", "Finding AFL games for: DFL round={}; AFL round={};", roundInfo.getRound(), mapping.getAflRound());
-					if(mapping.getAflGame() == 0) {
-						loggerUtils.log("info", "No AFL game mapping adding all games");
-						dflAflGames.addAll(aflFixtureService.getAflFixturesForRound(mapping.getAflRound()));
-					} else {
-						loggerUtils.log("info", "Bye round adding: AFL round={}; game={};", mapping.getAflRound(), mapping.getAflGame());
-						AflFixturePK aflFixturePK = new AflFixturePK();
-						aflFixturePK.setRound(mapping.getAflRound());
-						aflFixturePK.setGame(mapping.getAflGame());
-						dflAflGames.add(aflFixtureService.get(aflFixturePK));
-					}
-				}
-				
-				loggerUtils.log("info", "Processing fixtures: DFL round={}; fixtures={}", roundInfo.getRound(), dflAflGames);
-				processFixtures(roundInfo.getRound(), dflAflGames);
-				
-				loggerUtils.log("info", "RawStatsReportJobGenerator completed");
-			}
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+
+	@Override
+	protected void closeServices() {
+		if (dflRoundInfoService != null) {
+			dflRoundInfoService.close();
+		}
+		if (aflFixtureService != null) {
+			aflFixtureService.close();
 		}
 	}
 	
@@ -143,12 +138,12 @@ public class RawStatsReportJobGenerator {
 		CronExpressionCreator cronExpression = new CronExpressionCreator();
 		cronExpression.setTime(timeFormat.format(time.getTime()));
 		cronExpression.setStartDate(dateFormat.format(time.getTime()));
-		
+
 		Map<String, Object> jobParams = new HashMap<>();
 		jobParams.put("ROUND", round);
 		jobParams.put("IS_FINAL", isFinal);
-		
-		JobScheduler.schedule(jobName, jobGroup, jobClass, jobParams, cronExpression.getCronExpression(), false);
+
+		JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
 	}
 	
 	public static void main(String[] args) {		

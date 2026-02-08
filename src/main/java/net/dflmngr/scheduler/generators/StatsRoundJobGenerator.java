@@ -7,56 +7,46 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.scheduler.JobScheduler;
 import net.dflmngr.utils.CronExpressionCreator;
 
-public class StatsRoundJobGenerator {
-	private LoggingUtils loggerUtils;
-	
-	private static String jobName = "StatsRoundPlayerStats";
-	private static String jobGroup = "StatsRound";
-	private static String jobClass = "net.dflmngr.scheduler.jobs.StatsRoundJob";
-	
-	GlobalsService globalsService;
-	AflFixtureService aflFixtureService;
-	
+public class StatsRoundJobGenerator extends BaseJobGenerator {
+
+	private static final String JOB_NAME = "StatsRoundPlayerStats";
+	private static final String JOB_GROUP = "StatsRound";
+	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.StatsRoundJob";
+
+	private GlobalsService globalsService;
+	private AflFixtureService aflFixtureService;
+
 	public StatsRoundJobGenerator() {
-		loggerUtils = new LoggingUtils("StatsRoundJobGenerator");
-		
-		try {
-			globalsService = new GlobalsServiceImpl();
-			aflFixtureService = new AflFixtureServiceImpl();
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+		super("StatsRoundJobGenerator");
+		this.globalsService = serviceFactory.createGlobalsService();
+		this.aflFixtureService = serviceFactory.createAflFixtureService();
+	}
+
+	@Override
+	protected void generateJobs() throws Exception {
+		JobScheduler.deleteGroup(JOB_GROUP);
+
+		List<Integer> statsRounds = globalsService.getStatRounds();
+
+		for(int aflRound : statsRounds) {
+			loggerUtils.log("info", "Create stats round job for AFL round={};", aflRound);
+			List<AflFixture> aflFixtures = aflFixtureService.getAflFixturesForRound(aflRound);
+			processFixtures(aflRound, aflFixtures);
 		}
 	}
-	
-	public void execute() {
-		
-		try {
-			loggerUtils.log("info","Executing StatsRoundJobGenerator ....");
 
-			JobScheduler.deleteGroup(jobGroup);
-						
-			List<Integer> statsRounds = globalsService.getStatRounds();
-
-			for(int aflRound : statsRounds) {
-				loggerUtils.log("info", "Create stats round job for AFL round={};", aflRound);
-				List<AflFixture> aflFixtures = aflFixtureService.getAflFixturesForRound(aflRound);
-				processFixtures(aflRound, aflFixtures);
-			}
-								
-			loggerUtils.log("info", "StatsRoundJobGenerator completed");
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
-		} finally {
+	@Override
+	protected void closeServices() {
+		if (globalsService != null) {
 			globalsService.close();
+		}
+		if (aflFixtureService != null) {
 			aflFixtureService.close();
 		}
 	}
@@ -79,14 +69,14 @@ public class StatsRoundJobGenerator {
 	private void scheduleJob(int round, ZonedDateTime time) throws Exception {
 		loggerUtils.log("info", "Scheduling StatsRoundJob");
 
-		CronExpressionCreator cronExpression = new CronExpressionCreator();		
+		CronExpressionCreator cronExpression = new CronExpressionCreator();
 		cronExpression.setTime(time.format(DateTimeFormatter.ofPattern("hh:mm a")));
 		cronExpression.setStartDate(time.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-			
+
 		Map<String, Object> jobParams = new HashMap<>();
 		jobParams.put("ROUND", round);
-		
-		JobScheduler.schedule(jobName, jobGroup, jobClass, jobParams, cronExpression.getCronExpression(), false);
+
+		JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
 	}
 	
 	public static void main(String[] args) {		

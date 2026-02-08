@@ -1,5 +1,5 @@
 # Build stage
-FROM eclipse-temurin:25-jdk-jammy AS build
+FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /app
 
 # Copy Maven wrapper and POM first for better layer caching
@@ -14,7 +14,7 @@ COPY src src
 RUN ./mvnw -T 2 clean package -DskipTests
 
 # Runtime stage
-FROM eclipse-temurin:25-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Install Chrome in a single layer with cleanup

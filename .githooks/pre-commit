@@ -8,11 +8,10 @@
 #   chmod +x .githooks/pre-commit
 #
 
-echo "🧪 Running unit tests before commit..."
+echo "🧪 Running all tests before commit..."
 
-# Run all stable unit and integration tests
-# Excludes TransactionHelperTest (Mockito + Java 25 compatibility issue)
-mvn test -Dtest=BaseHandlerTest,EntityManagerFactoryProviderTest,ServiceFactoryTest -q
+# Run all tests
+mvn test -q
 
 # Capture the exit code
 TEST_RESULT=$?

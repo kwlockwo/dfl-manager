@@ -14,18 +14,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up JDK 25
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '25'
+        java-version: '21'
         distribution: 'temurin'
         cache: maven
 
     - name: Run tests
       run: |
-        # Run stable unit and integration tests
-        # TransactionHelperTest excluded (Mockito + Java 25 compatibility issue)
-        mvn test --batch-mode --fail-at-end -Dtest=BaseHandlerTest,EntityManagerFactoryProviderTest,ServiceFactoryTest
+        # Run all tests with code coverage
+        mvn test --batch-mode --fail-at-end
 
     - name: Upload test results
       uses: actions/upload-artifact@v4

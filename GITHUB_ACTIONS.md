@@ -2,7 +2,7 @@
 
 ## ✅ What's Configured
 
-Your repository now has **automatic testing via GitHub Actions** with PostgreSQL!
+Your repository now has **automatic testing via GitHub Actions** with H2 database!
 
 ### Workflow Overview
 
@@ -14,17 +14,19 @@ Your repository now has **automatic testing via GitHub Actions** with PostgreSQL
 
 1. ☕ **Java 25** is installed (Temurin distribution)
 2. 📦 **Maven dependencies** are cached for faster builds
-3. 🧪 **Unit tests run** (BaseHandlerTest - 6 tests)
+3. 🧪 **Tests run** (12 tests: unit + integration with H2)
 4. 📊 **Test reports** are uploaded and displayed in GitHub UI
 
 ### Test Strategy
 
-| Test Suite | Local | GitHub Actions | Status |
-|------------|-------|----------------|--------|
-| **BaseHandlerTest** | ✅ Runs | ✅ Runs | 6 tests passing |
-| **ServiceFactoryTest** | ⏭️ Skipped | ⏭️ Skipped | Needs DB config |
-| **EntityManagerFactoryProviderTest** | ⏭️ Skipped | ⏭️ Skipped | Needs DB config |
-| **TransactionHelperTest** | ⏭️ Skipped | ⏭️ Skipped | Needs DB config |
+| Test Suite | Tests | Local | CI | Database |
+|------------|-------|-------|----|----------|
+| **BaseHandlerTest** | 6 | ✅ | ✅ | None (pure unit) |
+| **EntityManagerFactoryProviderTest** | 3 | ✅ | ✅ | H2 in-memory |
+| **ServiceFactoryTest** | 3 | ✅ | ✅ | H2 in-memory |
+| **TransactionHelperTest** | 4 | ⏭️ | ⏭️ | Skipped (Mockito/Java 25) |
+
+**Total: 12 tests passing** (4 excluded due to Mockito compatibility)
 
 ### View Test Results
 
@@ -40,18 +42,24 @@ Your repository now has **automatic testing via GitHub Actions** with PostgreSQL
 Both locally and in GitHub Actions:
 
 ```bash
-mvn test  # Runs BaseHandlerTest only
+mvn test  # Runs all 12 stable tests
 ```
 
-Pre-commit hook runs the same test:
+Or run specific tests:
 ```bash
-mvn test -Dtest=BaseHandlerTest -q
+mvn test -Dtest=BaseHandlerTest,EntityManagerFactoryProviderTest,ServiceFactoryTest
+```
+
+Pre-commit hook runs:
+```bash
+mvn test -Dtest=BaseHandlerTest,EntityManagerFactoryProviderTest,ServiceFactoryTest -q
 ```
 
 ## Benefits
 
-✅ **Fast unit testing** - BaseHandlerTest runs in < 1 second
-✅ **No database setup** - Unit tests don't require database
+✅ **Fast testing** - 12 tests run in ~1 second
+✅ **Integration testing** - Tests use real H2 database
+✅ **No setup required** - H2 runs in-memory automatically
 ✅ **Automatic execution** - Every push/PR triggers tests
 ✅ **Visible results** - Test reports in GitHub UI
 ✅ **Fast feedback** - Know if tests break immediately
@@ -88,9 +96,10 @@ Now PRs can't be merged until tests pass!
 
 Main branch now requires "test" workflow to pass before merging.
 
-### 2. Add Database Integration Tests
+### 2. ✅ Database Integration Tests Added
 
-Configure remaining tests (ServiceFactoryTest, EntityManagerFactoryProviderTest, TransactionHelperTest) to work with test database.
+EntityManagerFactoryProviderTest and ServiceFactoryTest now use H2 in-memory database.
+TransactionHelperTest excluded due to Mockito/Java 25 compatibility issue.
 
 ### 3. Add Build Workflow
 
@@ -109,9 +118,10 @@ Use JaCoCo + Codecov for test coverage tracking.
 ## Current Status
 
 - ✅ GitHub Actions configured
-- ✅ Test workflow active (BaseHandlerTest - 6 tests)
+- ✅ Test workflow active (12 tests: 6 unit + 6 integration)
+- ✅ H2 database integration tests working
 - ✅ Automatic on push/PR
 - ✅ Branch protection enabled on main
-- ✅ Workflow running successfully
+- ✅ Pre-commit hooks running same tests
 
 Check it out: https://github.com/kwlockwo/dfl-manager/actions

@@ -8,21 +8,20 @@ The `test.yml` workflow automatically runs tests on every push and pull request.
 
 1. **Checks out code** - Gets the latest code from the repository
 2. **Sets up JDK 25** - Installs Java 25 (Temurin distribution)
-3. **Runs tests** - Executes BaseHandlerTest (6 unit tests)
+3. **Runs tests** - Executes 12 tests (unit + H2 integration)
 4. **Uploads results** - Saves test reports as artifacts
 5. **Publishes report** - Creates a test report in the Actions UI
 
 ### Test Configuration
 
-**Currently Running:**
-- BaseHandlerTest (6 tests)
-- Pure unit tests, no database required
-- Fast execution (< 1 second)
+**Currently Running (12 tests total):**
+- BaseHandlerTest (6 tests) - Pure unit tests
+- EntityManagerFactoryProviderTest (3 tests) - H2 integration
+- ServiceFactoryTest (3 tests) - H2 integration
+- Fast execution (~1 second total)
 
-**Excluded (need database configuration):**
-- ServiceFactoryTest
-- EntityManagerFactoryProviderTest
-- TransactionHelperTest
+**Excluded:**
+- TransactionHelperTest (4 tests) - Mockito/Java 25 compatibility issue
 
 ### Viewing Test Results
 
@@ -41,10 +40,10 @@ The workflow runs on:
 
 The workflow runs:
 ```bash
-mvn test --batch-mode --fail-at-end -Dtest=BaseHandlerTest
+mvn test --batch-mode --fail-at-end -Dtest=BaseHandlerTest,EntityManagerFactoryProviderTest,ServiceFactoryTest
 ```
 
-This ensures only stable unit tests run in CI.
+This runs all stable unit and integration tests in CI.
 
 ### Adding More Workflows
 

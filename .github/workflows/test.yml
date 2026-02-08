@@ -23,9 +23,9 @@ jobs:
 
     - name: Run tests
       run: |
-        # Run only stable unit tests (BaseHandlerTest)
-        # Database-dependent tests excluded until properly configured
-        mvn test --batch-mode --fail-at-end -Dtest=BaseHandlerTest
+        # Run stable unit and integration tests
+        # TransactionHelperTest excluded (Mockito + Java 25 compatibility issue)
+        mvn test --batch-mode --fail-at-end -Dtest=BaseHandlerTest,EntityManagerFactoryProviderTest,ServiceFactoryTest
 
     - name: Upload test results
       uses: actions/upload-artifact@v4

@@ -9,8 +9,9 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for EntityManagerFactoryProvider singleton.
  * Verifies that only one EntityManagerFactory instance exists and it creates EntityManagers correctly.
+ * Uses H2 in-memory database for testing.
  */
-class EntityManagerFactoryProviderTest {
+class EntityManagerFactoryProviderTest extends AbstractDatabaseTest {
 
 	@Test
 	void getInstance_shouldReturnSameInstance() {

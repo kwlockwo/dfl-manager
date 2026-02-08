@@ -10,9 +10,9 @@
 
 echo "🧪 Running unit tests before commit..."
 
-# Run only the passing unit tests (excluding tests that require database)
-# Add more tests here as they become stable
-mvn test -Dtest=BaseHandlerTest -q
+# Run all stable unit and integration tests
+# Excludes TransactionHelperTest (Mockito + Java 25 compatibility issue)
+mvn test -Dtest=BaseHandlerTest,EntityManagerFactoryProviderTest,ServiceFactoryTest -q
 
 # Capture the exit code
 TEST_RESULT=$?

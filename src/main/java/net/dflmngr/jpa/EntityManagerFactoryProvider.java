@@ -20,18 +20,24 @@ public class EntityManagerFactoryProvider {
 		// Allow switching to test persistence unit via system property
 		String persistenceUnitName = System.getProperty("persistence.unit.name", "dflmngr");
 
-		String url = System.getenv("JDBC_DATABASE_URL");
-
 		Map<String, Object> configOverrides = new HashMap<>();
-		configOverrides.put("javax.persistence.jdbc.url", url);
-		configOverrides.put("jakarta.persistence.jdbc.url", url);
+
+		// Only add JDBC_DATABASE_URL if it's set
+		String url = System.getenv("JDBC_DATABASE_URL");
+		if (url != null && !url.isEmpty()) {
+			configOverrides.put("javax.persistence.jdbc.url", url);
+			configOverrides.put("jakarta.persistence.jdbc.url", url);
+		}
 
 		// Add system property overrides (these take precedence for tests)
 		for (String propName : System.getProperties().stringPropertyNames()) {
 			if (propName.startsWith("jakarta.persistence")
 				|| propName.startsWith("javax.persistence")
 				|| propName.startsWith("eclipselink")) {
-				configOverrides.put(propName, System.getProperty(propName));
+				String value = System.getProperty(propName);
+				if (value != null && !value.isEmpty()) {
+					configOverrides.put(propName, value);
+				}
 			}
 		}
 
@@ -40,9 +46,10 @@ public class EntityManagerFactoryProvider {
 		for (Map.Entry<String, String> envVar : env.entrySet()) {
 			String envVarName = envVar.getKey();
 			String envVarValue = envVar.getValue();
-			if (envVarName.contains("javax.persistence")
+			if ((envVarName.contains("javax.persistence")
 				|| envVarName.contains("eclipselink")
-				|| envVarName.contains("jakarta.persistence")) {
+				|| envVarName.contains("jakarta.persistence"))
+				&& envVarValue != null && !envVarValue.isEmpty()) {
 				configOverrides.put(envVarName, envVarValue);
 			}
 		}
@@ -68,6 +75,17 @@ public class EntityManagerFactoryProvider {
 	public void close() {
 		if (factory != null && factory.isOpen()) {
 			factory.close();
+		}
+	}
+
+	/**
+	 * Reset the singleton instance. For testing purposes only.
+	 * WARNING: This will close the current EntityManagerFactory if it exists.
+	 */
+	public static synchronized void resetForTesting() {
+		if (instance != null) {
+			instance.close();
+			instance = null;
 		}
 	}
 }

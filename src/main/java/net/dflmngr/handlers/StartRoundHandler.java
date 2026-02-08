@@ -25,15 +25,7 @@ import net.dflmngr.model.service.DflTeamPredictedScoresService;
 import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.InsAndOutsService;
-import net.dflmngr.model.service.impl.AflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflFixtureServiceImpl;
-import net.dflmngr.model.service.impl.DflPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPlayerServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamPredictedScoresServiceImpl;
-import net.dflmngr.model.service.impl.DflTeamServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
-import net.dflmngr.model.service.impl.InsAndOutsServiceImpl;
+import net.dflmngr.service.ServiceFactory;
 import net.dflmngr.utils.EmailUtils;
 
 public class StartRoundHandler {
@@ -62,16 +54,16 @@ public class StartRoundHandler {
 	String emailOverride;
 	
 	public StartRoundHandler() {
-		dflTeamService = new DflTeamServiceImpl();
-		globalsService = new GlobalsServiceImpl();
-		dflFixtureService = new DflFixtureServiceImpl();
-		dflTeamPredictedScoresService = new DflTeamPredictedScoresServiceImpl();
-		dflPlayerService = new DflPlayerServiceImpl();
-		insAndOutsService = new InsAndOutsServiceImpl();
-		dflTeamPlayerService = new DflTeamPlayerServiceImpl();
-		dflRoundInfoService = new DflRoundInfoServiceImpl();
-		aflFixtureService = new AflFixtureServiceImpl();
-		
+		ServiceFactory factory = ServiceFactory.getInstance();
+		dflTeamService = factory.createDflTeamService();
+		globalsService = factory.createGlobalsService();
+		dflFixtureService = factory.createDflFixtureService();
+		dflTeamPredictedScoresService = factory.createDflTeamPredictedScoresService();
+		dflPlayerService = factory.createDflPlayerService();
+		insAndOutsService = factory.createInsAndOutsService();
+		dflTeamPlayerService = factory.createDflTeamPlayerService();
+		dflRoundInfoService = factory.createDflRoundInfoService();
+		aflFixtureService = factory.createAflFixtureService();
 	}
 	
 	public void configureLogging(String mdcKey, String loggerName, String logfile) {

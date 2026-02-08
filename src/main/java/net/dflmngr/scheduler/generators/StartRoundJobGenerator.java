@@ -7,98 +7,88 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflRoundEarlyGames;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.scheduler.JobScheduler;
 import net.dflmngr.utils.CronExpressionCreator;
 
-public class StartRoundJobGenerator {
-	private LoggingUtils loggerUtils;
-	
-	DflRoundInfoService dflRoundInfoService;
-	GlobalsService globalsService;
-	
-	private static String jobName = "StartRoundJob";
-	private static String jobGroup = "StartRound";
-	private static String jobClass = "net.dflmngr.scheduler.jobs.StartRoundJob";
-	
+public class StartRoundJobGenerator extends BaseJobGenerator {
+
+	private DflRoundInfoService dflRoundInfoService;
+	private GlobalsService globalsService;
+
+	private static final String JOB_NAME = "StartRoundJob";
+	private static final String JOB_GROUP = "StartRound";
+	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.StartRoundJob";
+
 	public StartRoundJobGenerator() {
-		
-		loggerUtils = new LoggingUtils("StartRoundJobGenerator");
-		
-		try {		
-			dflRoundInfoService = new DflRoundInfoServiceImpl();
-			globalsService = new GlobalsServiceImpl();
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+		super("StartRoundJobGenerator");
+		this.dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		this.globalsService = serviceFactory.createGlobalsService();
+	}
+
+	@Override
+	protected void generateJobs() throws Exception {
+		JobScheduler.deleteGroup(JOB_GROUP);
+
+		List<DflRoundInfo> dflRounds = dflRoundInfoService.findAll();
+
+		for(DflRoundInfo dflRound : dflRounds) {
+			loggerUtils.log("info", "Creating job entry for round={}, lockout={}", dflRound.getRound(), dflRound.getHardLockoutTime());
+			createReportJobEntry(dflRound.getRound(), dflRound.getHardLockoutTime());
+
+			List<DflRoundEarlyGames> earlyGames = dflRound.getEarlyGames();
+
+			if(earlyGames != null && !earlyGames.isEmpty()) {
+				loggerUtils.log("info", "Creating job entry for earlyGames round={}, earlyGames={}", dflRound.getRound(), earlyGames);
+				createEarlyGameJobEntry(dflRound.getRound(), earlyGames);
+			} else {
+				loggerUtils.log("info", "No early games for round={}", dflRound.getRound());
+			}
 		}
 	}
-	
-	public void execute() {
-		try {
-			loggerUtils.log("infp", "Executing StartRoundJobGenerator ....");
 
-			JobScheduler.deleteGroup(jobGroup);
-			
-			List<DflRoundInfo> dflRounds = dflRoundInfoService.findAll();
-			
-			for(DflRoundInfo dflRound : dflRounds) {
-				loggerUtils.log("info", "Creating job entry for round={}, lockout={}", dflRound.getRound(), dflRound.getHardLockoutTime());
-				createReportJobEntry(dflRound.getRound(), dflRound.getHardLockoutTime());
-				
-				List<DflRoundEarlyGames> earlyGames = dflRound.getEarlyGames();
-				
-				if(earlyGames != null && !earlyGames.isEmpty()) {
-					loggerUtils.log("info", "Creating job entry for earlyGames round={}, earlyGames={}", dflRound.getRound(), earlyGames);
-					createEarlyGameJobEntry(dflRound.getRound(), earlyGames);
-				} else {
-					loggerUtils.log("info", "No early games for round={}", dflRound.getRound());
-				}
-			}
-			
+	@Override
+	protected void closeServices() {
+		if (dflRoundInfoService != null) {
 			dflRoundInfoService.close();
+		}
+		if (globalsService != null) {
 			globalsService.close();
-			
-			loggerUtils.log("info", "StartRoundJobGenerator completed");
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
 		}
 	}
 	
 	private void createReportJobEntry(int round, ZonedDateTime lockoutTime) throws Exception {
-		
+
 		ZonedDateTime time = lockoutTime.plusMinutes(10);
-		
+
 		CronExpressionCreator cronExpression = new CronExpressionCreator();
 		cronExpression.setTime(time.format(DateTimeFormatter.ofPattern("hh:mm a")));
 		cronExpression.setStartDate(time.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-        
+
 		Map<String, Object> jobParams = new HashMap<>();
 		jobParams.put("ROUND", round);
-		
-		JobScheduler.schedule(jobName, jobGroup, jobClass, jobParams, cronExpression.getCronExpression(), false);
+
+		JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
 	}
-	
+
 	private void createEarlyGameJobEntry(int round, List<DflRoundEarlyGames> earlyGames) throws Exception {
-		
+
 		Comparator<DflRoundEarlyGames> comparator = Comparator.comparingInt(DflRoundEarlyGames::getRound).thenComparingInt(DflRoundEarlyGames::getAflGame);
 		earlyGames.sort(comparator);
-		
+
 		ZonedDateTime time = earlyGames.get(0).getStartTime().minusMinutes(30);
-		
+
 		CronExpressionCreator cronExpression = new CronExpressionCreator();
 		cronExpression.setTime(time.format(DateTimeFormatter.ofPattern("hh:mm a")));
 		cronExpression.setStartDate(time.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-        
+
 		Map<String, Object> jobParams = new HashMap<>();
 		jobParams.put("ROUND", round);
-	
-		JobScheduler.schedule(jobName, jobGroup, jobClass, jobParams, cronExpression.getCronExpression(), false);
+
+		JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
 	}
 	
 	public static void main(String[] args) {		

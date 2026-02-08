@@ -1,35 +1,28 @@
 package net.dflmngr.scheduler.generators;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.scheduler.JobScheduler;
 
-public class EmailSelectionsJobGenerator {
-	
-	private LoggingUtils loggerUtils;
-	
-	private static String jobName = "EmailSelections";
-	private static String jobGroup = "Selections";
-	private static String jobClass = "net.dflmngr.scheduler.jobs.EmailSelectionsJob";
-	
+public class EmailSelectionsJobGenerator extends BaseJobGenerator {
+
+	private static final String JOB_NAME = "EmailSelections";
+	private static final String JOB_GROUP = "Selections";
+	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.EmailSelectionsJob";
+
 	public EmailSelectionsJobGenerator() {
-		loggerUtils = new LoggingUtils("EmailSelectionsJobGenerator");
-		loggerUtils.log("info", "EmailSelectionsJobGenerator Starting ...");
+		super("EmailSelectionsJobGenerator");
 	}
-	
-	public void execute() {
-		
-		loggerUtils.log("info", "EmailSelectionsJobGenerator Executing ...");
-		
-		try {
-			JobScheduler.deleteGroup(jobGroup);
-			JobScheduler.schedule(jobName, jobGroup, jobClass, null, "0 0/15 * 1/1 * ? *", false);
-		} catch (Exception ex) {
-			loggerUtils.log("error", "Error in ...", ex);
-		}
-		
-		loggerUtils.log("info", "EmailSelectionsJobGenerator Completed");
+
+	@Override
+	protected void generateJobs() throws Exception {
+		JobScheduler.deleteGroup(JOB_GROUP);
+		JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, null, "0 0/15 * 1/1 * ? *", false);
 	}
-	
+
+	@Override
+	protected void closeServices() {
+		// No services to close
+	}
+
 	// For internal testing
 	public static void main(String[] args) {
 		EmailSelectionsJobGenerator testing = new EmailSelectionsJobGenerator();

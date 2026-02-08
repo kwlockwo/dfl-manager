@@ -10,70 +10,60 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.model.entity.DflRoundEarlyGames;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.DflRoundInfoServiceImpl;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
 import net.dflmngr.scheduler.JobScheduler;
 import net.dflmngr.utils.CronExpressionCreator;
 import net.dflmngr.utils.DflmngrUtils;
 
-public class InsAndOutsReportJobGenerator {
-	private LoggingUtils loggerUtils;
-	
-	DflRoundInfoService dflRoundInfoService;
-	GlobalsService globalsService;
-	
-	private static String jobName = "InsOutsReport";
-	private static String jobGroup = "InsOutsReports";
-	private static String jobClass = "net.dflmngr.scheduler.jobs.InsAndOutsReportJob";
-	
+public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
+
+	private static final String JOB_NAME = "InsOutsReport";
+	private static final String JOB_GROUP = "InsOutsReports";
+	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.InsAndOutsReportJob";
+
+	private DflRoundInfoService dflRoundInfoService;
+	private GlobalsService globalsService;
+
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-	
-	
+
 	public InsAndOutsReportJobGenerator() {
-		
-		loggerUtils = new LoggingUtils("InsAndOutsReportJobGenerator");
-		
-		try {
-			dflRoundInfoService = new DflRoundInfoServiceImpl();
-			globalsService = new GlobalsServiceImpl();
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+		super("InsAndOutsReportJobGenerator");
+		this.dflRoundInfoService = serviceFactory.createDflRoundInfoService();
+		this.globalsService = serviceFactory.createGlobalsService();
+	}
+
+	@Override
+	protected void generateJobs() throws Exception {
+		JobScheduler.deleteGroup(JOB_GROUP);
+
+		List<DflRoundInfo> dflRounds = dflRoundInfoService.findAll();
+
+		for(DflRoundInfo dflRound : dflRounds) {
+			loggerUtils.log("info", "Creating full report job entry for round={}, lockout={}", dflRound.getRound(), dflRound.getHardLockoutTime());
+			createReportJobEntryForFull(dflRound.getRound(), dflRound.getHardLockoutTime());
+
+			Set<ZonedDateTime> earlyGameDates = new HashSet<>();
+			for(DflRoundEarlyGames earlyGame : dflRound.getEarlyGames()) {
+				loggerUtils.log("info", "Adding early games round={}, start time={}", dflRound.getRound(), earlyGame.getStartTime());
+				earlyGameDates.add(earlyGame.getStartTime());
+			}
+
+			loggerUtils.log("info", "Creating partial report job entry for round={}", dflRound.getRound());
+			createReportJobEntryForPartial(dflRound.getRound(), earlyGameDates);
 		}
 	}
-		
-	public void execute() {
-		
-		try {
-			
-			loggerUtils.log("infp", "Executing InsAndOutsReportJobGenerator ....");
 
-			JobScheduler.deleteGroup(jobGroup);
-			
-			List<DflRoundInfo> dflRounds = dflRoundInfoService.findAll();
-			
-			for(DflRoundInfo dflRound : dflRounds) {
-				loggerUtils.log("info", "Creating full report job entry for round={}, lockout={}", dflRound.getRound(), dflRound.getHardLockoutTime());
-				createReportJobEntryForFull(dflRound.getRound(), dflRound.getHardLockoutTime());
-				
-				Set<ZonedDateTime> earlyGameDates = new HashSet<>();
-				for(DflRoundEarlyGames earlyGame : dflRound.getEarlyGames()) {
-					loggerUtils.log("info", "Adding early games round={}, start time={}", dflRound.getRound(), earlyGame.getStartTime());
-					earlyGameDates.add(earlyGame.getStartTime());
-				}
-				
-				loggerUtils.log("info", "Creating partial report job entry for round={}", dflRound.getRound());
-				createReportJobEntryForPartial(dflRound.getRound(), earlyGameDates);
-				
-				loggerUtils.log("info", "InsAndOutsReportJobGenerator completed");
-			}
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+	@Override
+	protected void closeServices() {
+		if (dflRoundInfoService != null) {
+			dflRoundInfoService.close();
+		}
+		if (globalsService != null) {
+			globalsService.close();
 		}
 	}
 	
@@ -96,8 +86,8 @@ public class InsAndOutsReportJobGenerator {
 		Map<String, Object> jobParams = new HashMap<>();
 		jobParams.put("ROUND", round);
 		jobParams.put("REPORT_TYPE","Full");
-		
-		JobScheduler.schedule(jobName, jobGroup, jobClass, jobParams, cronExpression.getCronExpression(), false);
+
+		JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
 	}
 	
 	private void createReportJobEntryForPartial(int round, Set<ZonedDateTime> times) throws Exception {
@@ -133,8 +123,8 @@ public class InsAndOutsReportJobGenerator {
 			Map<String, Object> jobParams = new HashMap<>();
 			jobParams.put("ROUND", round);
 			jobParams.put("REPORT_TYPE","Partial");
-			
-			JobScheduler.schedule(jobName, jobGroup, jobClass, jobParams, cronExpression.getCronExpression(), false);
+
+			JobScheduler.schedule(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, cronExpression.getCronExpression(), false);
 		}
 	}
 	

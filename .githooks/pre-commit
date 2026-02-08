@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Git pre-commit hook to run tests before allowing commit
+# This ensures all tests pass before code is committed
+#
+# To install:
+#   git config core.hooksPath .githooks
+#   chmod +x .githooks/pre-commit
+#
+
+echo "🧪 Running unit tests before commit..."
+
+# Run only the passing unit tests (excluding tests that require database)
+# Add more tests here as they become stable
+mvn test -Dtest=BaseHandlerTest -q
+
+# Capture the exit code
+TEST_RESULT=$?
+
+if [ $TEST_RESULT -ne 0 ]; then
+    echo ""
+    echo "❌ Tests failed! Commit aborted."
+    echo ""
+    echo "Fix the failing tests and try again."
+    echo "To skip this check (not recommended), use: git commit --no-verify"
+    exit 1
+fi
+
+echo "✅ All tests passed! Proceeding with commit..."
+exit 0

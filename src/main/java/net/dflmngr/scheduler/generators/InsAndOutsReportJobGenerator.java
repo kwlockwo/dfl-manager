@@ -12,15 +12,12 @@ import net.dflmngr.model.entity.DflRoundEarlyGames;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 import net.dflmngr.utils.DflmngrUtils;
 
 public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
-
-	private static final String JOB_NAME = "InsOutsReport";
-	private static final String JOB_GROUP = "InsOutsReports";
-	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.InsAndOutsReportJob";
 
 	private DflRoundInfoService dflRoundInfoService;
 	private GlobalsService globalsService;
@@ -35,7 +32,7 @@ public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
 
 	@Override
 	protected void generateJobs() throws Exception {
-		JobScheduler.deleteGroup(JOB_GROUP);
+		JobScheduler.deleteGroup(JobParameterConstants.INS_OUTS_REPORT_JOB_GROUP);
 
 		List<DflRoundInfo> dflRounds = dflRoundInfoService.findAll();
 
@@ -68,10 +65,10 @@ public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
 
 		ZonedDateTime scheduledTime = time.plusMinutes(10);
 
-		Map<String, Object> jobParams = JobScheduleHelper.createJobParams("ROUND", round);
-		jobParams.put("REPORT_TYPE","Full");
+		Map<String, Object> jobParams = JobScheduleHelper.createJobParams(JobParameterConstants.PARAM_ROUND, round);
+		jobParams.put(JobParameterConstants.PARAM_REPORT_TYPE,"Full");
 
-		JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, scheduledTime);
+		JobScheduleHelper.scheduleJob(JobParameterConstants.INS_OUTS_REPORT_JOB_NAME, JobParameterConstants.INS_OUTS_REPORT_JOB_GROUP, JobParameterConstants.INS_OUTS_REPORT_JOB_CLASS, jobParams, scheduledTime);
 	}
 	
 	private void createReportJobEntryForPartial(int round, Set<ZonedDateTime> times) throws Exception {
@@ -102,10 +99,10 @@ public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
 
 			ZonedDateTime scheduledTime = ZonedDateTime.ofInstant(timeCal.toInstant(), timeCal.getTimeZone().toZoneId());
 
-			Map<String, Object> jobParams = JobScheduleHelper.createJobParams("ROUND", round);
-			jobParams.put("REPORT_TYPE","Partial");
+			Map<String, Object> jobParams = JobScheduleHelper.createJobParams(JobParameterConstants.PARAM_ROUND, round);
+			jobParams.put(JobParameterConstants.PARAM_REPORT_TYPE,"Partial");
 
-			JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, jobParams, scheduledTime);
+			JobScheduleHelper.scheduleJob(JobParameterConstants.INS_OUTS_REPORT_JOB_NAME, JobParameterConstants.INS_OUTS_REPORT_JOB_GROUP, JobParameterConstants.INS_OUTS_REPORT_JOB_CLASS, jobParams, scheduledTime);
 		}
 	}
 	

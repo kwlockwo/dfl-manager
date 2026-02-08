@@ -8,6 +8,7 @@ import net.dflmngr.model.entity.DflRoundEarlyGames;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 
@@ -15,10 +16,6 @@ public class StartRoundJobGenerator extends BaseJobGenerator {
 
 	private DflRoundInfoService dflRoundInfoService;
 	private GlobalsService globalsService;
-
-	private static final String JOB_NAME = "StartRoundJob";
-	private static final String JOB_GROUP = "StartRound";
-	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.StartRoundJob";
 
 	public StartRoundJobGenerator() {
 		super("StartRoundJobGenerator");
@@ -28,7 +25,7 @@ public class StartRoundJobGenerator extends BaseJobGenerator {
 
 	@Override
 	protected void generateJobs() throws Exception {
-		JobScheduler.deleteGroup(JOB_GROUP);
+		JobScheduler.deleteGroup(JobParameterConstants.START_ROUND_JOB_GROUP);
 
 		List<DflRoundInfo> dflRounds = dflRoundInfoService.findAll();
 
@@ -61,7 +58,14 @@ public class StartRoundJobGenerator extends BaseJobGenerator {
 
 		ZonedDateTime time = lockoutTime.plusMinutes(10);
 
-		JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, "ROUND", round, time);
+		JobScheduleHelper.scheduleJob(
+			JobParameterConstants.START_ROUND_JOB_NAME,
+			JobParameterConstants.START_ROUND_JOB_GROUP,
+			JobParameterConstants.START_ROUND_JOB_CLASS,
+			JobParameterConstants.PARAM_ROUND,
+			round,
+			time
+		);
 	}
 
 	private void createEarlyGameJobEntry(int round, List<DflRoundEarlyGames> earlyGames) throws Exception {
@@ -71,7 +75,14 @@ public class StartRoundJobGenerator extends BaseJobGenerator {
 
 		ZonedDateTime time = earlyGames.get(0).getStartTime().minusMinutes(30);
 
-		JobScheduleHelper.scheduleJob(JOB_NAME, JOB_GROUP, JOB_CLASS, "ROUND", round, time);
+		JobScheduleHelper.scheduleJob(
+			JobParameterConstants.START_ROUND_JOB_NAME,
+			JobParameterConstants.START_ROUND_JOB_GROUP,
+			JobParameterConstants.START_ROUND_JOB_CLASS,
+			JobParameterConstants.PARAM_ROUND,
+			round,
+			time
+		);
 	}
 	
 	public static void main(String[] args) {		

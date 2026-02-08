@@ -15,17 +15,12 @@ import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.keys.AflFixturePK;
 import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.DflRoundInfoService;
+import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 import net.dflmngr.utils.DflmngrUtils;
 
 public class ResultsJobGenerator extends BaseJobGenerator {
-
-	private static final String JOB_NAME_ROUND_PROGRESS = "RoundProgress";
-	private static final String JOB_NAME_RESULTS = "Results";
-	private static final String JOB_NAME_ONGOING_RESULTS = "OngoingResults";
-	private static final String JOB_GROUP = "Results";
-	private static final String JOB_CLASS = "net.dflmngr.scheduler.jobs.ResultsJob";
 
 	private DflRoundInfoService dflRoundInfoService;
 	private AflFixtureService aflFixtureService;
@@ -38,7 +33,7 @@ public class ResultsJobGenerator extends BaseJobGenerator {
 
 	@Override
 	protected void generateJobs() throws Exception {
-		JobScheduler.deleteGroup(JOB_GROUP);
+		JobScheduler.deleteGroup(JobParameterConstants.RESULTS_JOB_GROUP);
 
 		createOngoingSchedule();
 
@@ -159,28 +154,28 @@ public class ResultsJobGenerator extends BaseJobGenerator {
 			loggerUtils.log("info", "Scheduling ongoing ResultsJob");
 
 			Map<String, Object> jobParams = new HashMap<>();
-			jobParams.put("ROUND", round);
-			jobParams.put("IS_FINAL", isFinal);
-			jobParams.put("ONGOING", ongoing);
+			jobParams.put(JobParameterConstants.PARAM_ROUND, round);
+			jobParams.put(JobParameterConstants.PARAM_IS_FINAL, isFinal);
+			jobParams.put(JobParameterConstants.PARAM_ONGOING, ongoing);
 
-			String jobName = JOB_NAME_ONGOING_RESULTS;
-			JobScheduler.schedule(jobName, JOB_GROUP, JOB_CLASS, jobParams, "0 3/5 * 1/1 * ? *", false);
+			String jobName = JobParameterConstants.RESULTS_JOB_NAME_ONGOING_RESULTS;
+			JobScheduler.schedule(jobName, JobParameterConstants.RESULTS_JOB_GROUP, JobParameterConstants.RESULTS_JOB_CLASS, jobParams, "0 3/5 * 1/1 * ? *", false);
 		} else {
 			loggerUtils.log("info", "Scheduling fixed ResultsJob, isFinal={}", isFinal);
 
-			Map<String, Object> jobParams = JobScheduleHelper.createJobParams("ROUND", round);
-			jobParams.put("IS_FINAL", isFinal);
-			jobParams.put("ONGOING", ongoing);
+			Map<String, Object> jobParams = JobScheduleHelper.createJobParams(JobParameterConstants.PARAM_ROUND, round);
+			jobParams.put(JobParameterConstants.PARAM_IS_FINAL, isFinal);
+			jobParams.put(JobParameterConstants.PARAM_ONGOING, ongoing);
 
 			String jobName = "";
 
 			if(isFinal) {
-				jobName = JOB_NAME_RESULTS;
+				jobName = JobParameterConstants.RESULTS_JOB_NAME_RESULTS;
 			} else {
-				jobName = JOB_NAME_ROUND_PROGRESS;
+				jobName = JobParameterConstants.RESULTS_JOB_NAME_ROUND_PROGRESS;
 			}
 
-			JobScheduleHelper.scheduleJob(jobName, JOB_GROUP, JOB_CLASS, jobParams, time);
+			JobScheduleHelper.scheduleJob(jobName, JobParameterConstants.RESULTS_JOB_GROUP, JobParameterConstants.RESULTS_JOB_CLASS, jobParams, time);
 		}
 	}
 	

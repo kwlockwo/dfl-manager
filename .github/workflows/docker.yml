@@ -1,0 +1,28 @@
+name: Docker Build & Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: docker build -t dfl-manager:test .
+
+    - name: Run tests in Docker
+      run: docker run --rm dfl-manager:test mvn test --batch-mode
+
+    - name: Upload Docker test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: docker-test-results
+        path: target/surefire-reports/

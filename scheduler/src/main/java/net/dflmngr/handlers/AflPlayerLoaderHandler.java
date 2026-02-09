@@ -15,31 +15,36 @@ import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflUnmatchedPlayerService;
 import net.dflmngr.model.service.GlobalsService;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AflPlayerLoaderHandler extends BaseHandler {
 
 	private static final String NOT_ALPHA_REGEX = "[^a-zA-Z]";
 
-	private AflTeamService aflTeamService;
-	private AflPlayerService aflPlayerService;
-	private DflPlayerService dflPlayerService;
-	private GlobalsService globalsService;
-	private DflUnmatchedPlayerService dflUnmatchedPlayerService;
 
-	public AflPlayerLoaderHandler() {
-		super("AflPlayerLoader");
 
+	private final AflTeamService aflTeamService;
+	private final AflPlayerService aflPlayerService;
+	private final DflPlayerService dflPlayerService;
+	private final GlobalsService globalsService;
+	private final DflUnmatchedPlayerService dflUnmatchedPlayerService;
+
+	public AflPlayerLoaderHandler(AflTeamService aflTeamService,
+							 AflPlayerService aflPlayerService,
+							 DflPlayerService dflPlayerService,
+							 GlobalsService globalsService,
+							 DflUnmatchedPlayerService dflUnmatchedPlayerService) {
+		super("AflPlayerLoaderHandler");
+		this.aflTeamService = aflTeamService;
+		this.aflPlayerService = aflPlayerService;
+		this.dflPlayerService = dflPlayerService;
+		this.globalsService = globalsService;
+		this.dflUnmatchedPlayerService = dflUnmatchedPlayerService;
 		try {
-			aflTeamService = serviceFactory.createAflTeamService();
-			aflPlayerService = serviceFactory.createAflPlayerService();
-			dflPlayerService = serviceFactory.createDflPlayerService();
-			globalsService = serviceFactory.createGlobalsService();
-			dflUnmatchedPlayerService = serviceFactory.createDflUnmatchedPlayerService();
-
-			ensureLoggingConfigured();
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);
 		}
-	}
 
 	public void execute() {
 

@@ -26,16 +26,21 @@ import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AflGameCompletionCheckerHandler extends BaseHandler {
 
-	private AflFixtureService aflFixtureService;
-	private GlobalsService globalsService;
 
-	public AflGameCompletionCheckerHandler() {
-		super("AflGameCompletionChecker");
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		globalsService = serviceFactory.createGlobalsService();
-	}
+
+	private final AflFixtureService aflFixtureService;
+	private final GlobalsService globalsService;
+
+	public AflGameCompletionCheckerHandler(AflFixtureService aflFixtureService,
+							 GlobalsService globalsService) {
+		super("AflGameCompletionCheckerHandler");
+		this.aflFixtureService = aflFixtureService;
+		this.globalsService = globalsService;
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
@@ -82,8 +87,6 @@ public class AflGameCompletionCheckerHandler extends BaseHandler {
 				loggerUtils.log("info", "All started AFL fixtures are complete");
 			}
 
-			aflFixtureService.close();
-			globalsService.close();
 
 			loggerUtils.log("info", "AflGameCompletionChecker comlpeted");
 

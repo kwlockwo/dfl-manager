@@ -23,18 +23,24 @@ import net.dflmngr.model.service.DflBest22Service;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflPlayerService;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Best22Handler extends BaseHandler {
 
-	DflPlayerScoresService dflPlayerScoresService;
-	DflPlayerService dflPlayerService;
-	DflBest22Service dflBest22Service;
 
-	public Best22Handler() {
+
+	private final DflPlayerScoresService dflPlayerScoresService;
+	private final DflPlayerService dflPlayerService;
+	private final DflBest22Service dflBest22Service;
+
+	public Best22Handler(DflPlayerScoresService dflPlayerScoresService,
+							 DflPlayerService dflPlayerService,
+							 DflBest22Service dflBest22Service) {
 		super("Best22Handler");
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflBest22Service = serviceFactory.createDflBest22Service();
-	}
+		this.dflPlayerScoresService = dflPlayerScoresService;
+		this.dflPlayerService = dflPlayerService;
+		this.dflBest22Service = dflBest22Service;
 
 	public void execute(int round) {
 
@@ -45,7 +51,6 @@ public class Best22Handler extends BaseHandler {
 			
 			calculateBest22(round);
 			
-			dflPlayerScoresService.close();
 			
 			loggerUtils.log("info", "Best22Handler complete");
 			

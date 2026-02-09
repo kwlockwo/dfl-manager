@@ -44,41 +44,56 @@ import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.InsAndOutsService;
 import net.dflmngr.utils.EmailUtils;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class EndRoundHandler extends BaseHandler {
 
 	private static final String EMAIL_MSG_001 = "Good luck,\nDFL Manager Admin";
 	private static final String EMAIL_MSG_002 = " has been eliminated. Better luck next year ";
 
-	DflMatthewAllenService dflMatthewAllenService;
-	GlobalsService globalsService;
-	DflPlayerService dflPlayerService;
-	DflTeamPlayerService dflTeamPlayerService;
-	DflTeamService dflTeamService;
-	DflBest22Service dflBest22Service;
-	DflLadderService dflLadderService;
-	DflFixtureService dflFixtureService;
-	DflTeamScoresService dflTeamScoresService;
-	DflSelectedTeamService dflSelectedTeamService;
-	DflRoundInfoService dflRoundInfoService;
-	InsAndOutsService insAndOutsService;
 
 	String emailOverride;
 
-	public EndRoundHandler() {
-		super("EndRound");
-		dflMatthewAllenService = serviceFactory.createDflMatthewAllenService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflTeamService = serviceFactory.createDflTeamService();
-		dflBest22Service = serviceFactory.createDflBest22Service();
-		dflLadderService = serviceFactory.createDflLadderService();
-		dflFixtureService = serviceFactory.createDflFixtureService();
-		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		insAndOutsService = serviceFactory.createInsAndOutsService();
-	}
+
+	private final DflMatthewAllenService dflMatthewAllenService;
+	private final GlobalsService globalsService;
+	private final DflPlayerService dflPlayerService;
+	private final DflTeamPlayerService dflTeamPlayerService;
+	private final DflTeamService dflTeamService;
+	private final DflBest22Service dflBest22Service;
+	private final DflLadderService dflLadderService;
+	private final DflFixtureService dflFixtureService;
+	private final DflTeamScoresService dflTeamScoresService;
+	private final DflSelectedTeamService dflSelectedTeamService;
+	private final DflRoundInfoService dflRoundInfoService;
+	private final InsAndOutsService insAndOutsService;
+
+	public EndRoundHandler(DflMatthewAllenService dflMatthewAllenService,
+							 GlobalsService globalsService,
+							 DflPlayerService dflPlayerService,
+							 DflTeamPlayerService dflTeamPlayerService,
+							 DflTeamService dflTeamService,
+							 DflBest22Service dflBest22Service,
+							 DflLadderService dflLadderService,
+							 DflFixtureService dflFixtureService,
+							 DflTeamScoresService dflTeamScoresService,
+							 DflSelectedTeamService dflSelectedTeamService,
+							 DflRoundInfoService dflRoundInfoService,
+							 InsAndOutsService insAndOutsService) {
+		super("EndRoundHandler");
+		this.dflMatthewAllenService = dflMatthewAllenService;
+		this.globalsService = globalsService;
+		this.dflPlayerService = dflPlayerService;
+		this.dflTeamPlayerService = dflTeamPlayerService;
+		this.dflTeamService = dflTeamService;
+		this.dflBest22Service = dflBest22Service;
+		this.dflLadderService = dflLadderService;
+		this.dflFixtureService = dflFixtureService;
+		this.dflTeamScoresService = dflTeamScoresService;
+		this.dflSelectedTeamService = dflSelectedTeamService;
+		this.dflRoundInfoService = dflRoundInfoService;
+		this.insAndOutsService = insAndOutsService;
 
 	public void execute(int round, String emailOverride) {
 
@@ -144,18 +159,6 @@ public class EndRoundHandler extends BaseHandler {
 
 			globalsService.setCurrentRound(round + 1);
 
-			dflMatthewAllenService.close();
-			globalsService.close();
-			dflPlayerService.close();
-			dflTeamPlayerService.close();
-			dflTeamService.close();
-			dflBest22Service.close();
-			dflLadderService.close();
-			dflFixtureService.close();
-			dflTeamScoresService.close();
-			dflSelectedTeamService.close();
-			dflRoundInfoService.close();
-			insAndOutsService.close();
 
 			loggerUtils.log("info", "End round completed");
 

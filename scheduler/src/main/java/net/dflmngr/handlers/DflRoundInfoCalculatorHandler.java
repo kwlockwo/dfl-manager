@@ -31,37 +31,40 @@ import net.dflmngr.model.service.AflTeamService;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class DflRoundInfoCalculatorHandler extends BaseHandler {
 
 	SimpleDateFormat lockoutFormat = new SimpleDateFormat("dd/MM/yyyy h:mm a");
 
-	GlobalsService globalsService;
-	AflFixtureService aflFixtureService;
-	DflRoundInfoService dflRoundInfoService;
-	AflTeamService aflTeamService;
 
 	String standardLockout;
 
 	List<String> statsRoundTracking;
 
-	public DflRoundInfoCalculatorHandler() {
+
+	private final GlobalsService globalsService;
+	private final AflFixtureService aflFixtureService;
+	private final DflRoundInfoService dflRoundInfoService;
+	private final AflTeamService aflTeamService;
+
+	public DflRoundInfoCalculatorHandler(GlobalsService globalsService,
+							 AflFixtureService aflFixtureService,
+							 DflRoundInfoService dflRoundInfoService,
+							 AflTeamService aflTeamService) {
 		super("DflRoundInfoCalculatorHandler");
-
+		this.globalsService = globalsService;
+		this.aflFixtureService = aflFixtureService;
+		this.dflRoundInfoService = dflRoundInfoService;
+		this.aflTeamService = aflTeamService;
 		try{
-			globalsService = serviceFactory.createGlobalsService();
-			aflFixtureService = serviceFactory.createAflFixtureService();
-			dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-			aflTeamService = serviceFactory.createAflTeamService();
-
 			String defaultTimezone = globalsService.getGroundTimeZone("default");
 			lockoutFormat.setTimeZone(TimeZone.getTimeZone(defaultTimezone));
-
 			configureStatsRoundTracking();
-
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);
 		}
-	}
 
 	public void execute() {
 

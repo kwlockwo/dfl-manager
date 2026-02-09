@@ -21,17 +21,20 @@ import net.dflmngr.exceptions.UnexpectedHtmlException;
 import net.dflmngr.model.entity.AflPlayer;
 import net.dflmngr.model.service.GlobalsService;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AflPlayerLoaderHtmlHandler extends BaseHandler {
 
 	private static final String TXT_CONT_ATTR = "textContent";
 
-	GlobalsService globalsService;
 
-	public AflPlayerLoaderHtmlHandler() {
-		super("AflPlayerLoader");
-		globalsService = serviceFactory.createGlobalsService();
-		ensureLoggingConfigured();
-	}
+
+	private final GlobalsService globalsService;
+
+	public AflPlayerLoaderHtmlHandler(GlobalsService globalsService) {
+		super("AflPlayerLoaderHtmlHandler");
+		this.globalsService = globalsService;
 
 	public List<AflPlayer> execute(String teamId, String url, boolean useOfficialPlayers) {
 

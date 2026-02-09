@@ -17,24 +17,33 @@ import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamScoresService;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class LadderCalculatorHandler extends BaseHandler {
 
-	DflLadderService dflLadderService;
-	DflFixtureService dflFixtureService;
-	DflTeamScoresService dflTeamScoresService;
-	DflSelectedTeamService dflSelectedTeamService;
-	DflPlayerScoresService dflPlayerScoresService;
-	DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
 
-	public LadderCalculatorHandler() {
-		super("RoundProgress");
-		dflLadderService = serviceFactory.createDflLadderService();
-		dflFixtureService = serviceFactory.createDflFixtureService();
-		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
-	}
+
+	private final DflLadderService dflLadderService;
+	private final DflFixtureService dflFixtureService;
+	private final DflTeamScoresService dflTeamScoresService;
+	private final DflSelectedTeamService dflSelectedTeamService;
+	private final DflPlayerScoresService dflPlayerScoresService;
+	private final DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
+
+	public LadderCalculatorHandler(DflLadderService dflLadderService,
+							 DflFixtureService dflFixtureService,
+							 DflTeamScoresService dflTeamScoresService,
+							 DflSelectedTeamService dflSelectedTeamService,
+							 DflPlayerScoresService dflPlayerScoresService,
+							 DflPlayerPredictedScoresService dflPlayerPredictedScoresService) {
+		super("LadderCalculatorHandler");
+		this.dflLadderService = dflLadderService;
+		this.dflFixtureService = dflFixtureService;
+		this.dflTeamScoresService = dflTeamScoresService;
+		this.dflSelectedTeamService = dflSelectedTeamService;
+		this.dflPlayerScoresService = dflPlayerScoresService;
+		this.dflPlayerPredictedScoresService = dflPlayerPredictedScoresService;
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
@@ -48,12 +57,6 @@ public class LadderCalculatorHandler extends BaseHandler {
 			loggerUtils.log("info", "LadderCalculatorHandler executing round={} ...", round);			
 			handleLadder(round, liveLadderOveride);
 			
-			dflLadderService.close();;
-			dflFixtureService.close();;
-			dflTeamScoresService.close();
-			dflSelectedTeamService.close();
-			dflPlayerScoresService.close();
-			dflPlayerPredictedScoresService.close();
 			
 			loggerUtils.log("info", "LadderCalculatorHandler completed");
 			

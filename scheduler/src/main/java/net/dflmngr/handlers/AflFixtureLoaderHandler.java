@@ -14,26 +14,32 @@ import net.dflmngr.model.service.AflFixtureService;
 import net.dflmngr.model.service.AflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AflFixtureLoaderHandler extends BaseHandler {
 
-	GlobalsService globalsService;
-	AflFixtureService aflFixtureService;
-	AflTeamService aflTeamService;
-	AflFixtureHtmlHandler aflFixtureHtmlHandler;
 
-	public AflFixtureLoaderHandler() {
-		super("AflFixtureLoader");
 
+	private final GlobalsService globalsService;
+	private final AflFixtureService aflFixtureService;
+	private final AflTeamService aflTeamService;
+	private final AflFixtureHtmlHandler aflFixtureHtmlHandler;
+
+	public AflFixtureLoaderHandler(GlobalsService globalsService,
+							 AflFixtureService aflFixtureService,
+							 AflTeamService aflTeamService,
+							 AflFixtureHtmlHandler aflFixtureHtmlHandler) {
+		super("AflFixtureLoaderHandler");
+		this.globalsService = globalsService;
+		this.aflFixtureService = aflFixtureService;
+		this.aflTeamService = aflTeamService;
+		this.aflFixtureHtmlHandler = aflFixtureHtmlHandler;
 		try {
-			globalsService = serviceFactory.createGlobalsService();
-			aflFixtureService = serviceFactory.createAflFixtureService();
-			aflTeamService = serviceFactory.createAflTeamService();
 			aflFixtureHtmlHandler = new AflFixtureHtmlHandler();
-			ensureLoggingConfigured();
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);
 		}
-	}
 	
 	public void execute(List<Integer> aflRounds) {
 

@@ -1,0 +1,15 @@
+server:
+  port: ${PORT:5001}
+spring:
+  datasource:
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
+    hikari:
+      connection-timeout: 5000
+      minimum-idle: 2
+      maximum-pool-size: 5
+logging:
+  level:
+    net:
+      dflmngr: ${DFLMNGR_LOG_LEVEL:info}

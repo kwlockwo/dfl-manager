@@ -1,0 +1,119 @@
+html, body {
+	height: 100%;
+}
+
+#wrap {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	/* Negative indent footer by its height */
+	margin: 0 auto -60px;
+	/* Pad bottom by footer height */
+	padding: 0 0 60px;
+	display: flex;
+    align-items: stretch;
+}
+
+.container {
+	margin: 0 5px;
+	padding: 0 5px;
+}
+
+#wrap>.container {
+	padding: 60px 5px 0;
+}
+
+#page {
+    display: flex;
+    align-items: stretch;
+}
+
+#sidebar {
+    min-width: 150px;
+    max-width: 150px;
+    transition: all 0.3s;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+a[aria-expanded="false"]::before, a[aria-expanded="true"]::before {
+    content: '\2212';
+    display: block;
+    position: absolute;
+    right: 20px;
+    font-family: 'Glyphicons Halflings';
+    font-size: 0.6em;
+}
+
+a[aria-expanded="true"]::before {
+    content: '\2b';
+}
+
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+#sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 5px;
+    font-size: 1.1em;
+    display: block;
+}
+
+#sidebar ul li a:hover {
+    color: #7386D5;
+    background: #fff;
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+}
+
+.navbar .navbar-brand {
+  padding-top: 0px;
+}
+
+.navbar .navbar-brand img {
+  height: 50px;
+}
+
+.center {
+	margin: 0 auto;
+}
+
+.pad-5 {
+	padding: 5px;
+}
+
+.margin-tb-5 {
+	margin: 5px 0;
+}
+
+.bold-font {
+	font-weight: bold;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.results-in-progress {
+	background-color: #fcf8e3;
+}
+
+.results-completed {
+	background-color: #d9edf7
+}
+
+.results-finalized {
+	background-color: #dff0d8;
+}

@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: dfl-manager-scheduler
+
+  # Disable Spring Boot auto-configuration features we don't need yet in Phase 1
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+
+server:
+  # No web server needed for scheduler
+  port: -1
+
+logging:
+  # Use Log4j2 configuration from log4j2.xml
+  config: classpath:log4j2.xml

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{results.page.title}">Ladder</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="refresh" content="300"/>
+	<link rel="apple-touch-icon" sizes="180x180" href="../../../static/favicon/apple-touch-icon.png" th:href="@{/static/favicon/apple-touch-icon.png}"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="../../../static/favicon/favicon-32x32.png" th:href="@{/static/favicon/favicon-32x32.png}"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="../../../static/favicon/favicon-16x16.png" th:href="@{/static/favicon/favicon-16x16.png}"/>
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="../../../static/css/bootstrap-3.3.7.min.css" th:href="@{/static/css/bootstrap-3.3.7.min.css}" type="text/css" media="screen"/>
+	<link rel="stylesheet" href="../../../static/css/datatables-1.10.16.min.css" th:href="@{/static/css/datatables-1.10.16.min.css}" type="text/css" media="screen"/>
+	<link rel="stylesheet" href="../../../static/css/styles.css" th:href="@{/static/css/styles.css}" type="text/css" media="screen"/>
+	<script src="../../../static/js/jquery-3.3.1.min.js" th:src="@{/static/js/jquery-3.3.1.min.js}" type="text/javascript"></script>
+	<script src="../../../static/js/bootstrap-3.3.7.min.js" th:src="@{/static/js/bootstrap-3.3.7.min.js}" type="text/javascript"></script>
+	<script src="../../../static/js/datatables-1.10.16.min.js" th:src="@{/static/js/datatables-1.10.16.min.js}" type="text/javascript"></script>
+	<script src="../../../static/js/functions.js" th:src="@{/static/js/functions.js}" type="text/javascript"></script>
+	<script type="text/javascript">
+		/*<![CDATA[*/ 
+		$(document).ready(function() {
+		    $("[id^=resultsTeamPlayers]").DataTable({
+		    	"columnDefs": [
+					{"visible": false,  "targets": [16]}
+				],
+		    	"order": [
+					[2, 'asc'],
+					[13, 'desc'],
+					[15, 'desc']
+				],
+		    	"searching": false,
+		    	"paging": false,
+		    	"info": false,
+		    	"createdRow": function( row, data, dataIndex) {
+	                if(data[16] ==  'InProgress') {
+	                    $(row).addClass('results-in-progress');
+	                } else if(data[16] ==  'Completed') {
+		    			$(row).addClass('results-completed');
+		    		} else if(data[16] ==  'Finalized') {
+						$(row).addClass('results-finalized');
+					}
+	            }
+		    });
+		    $("[id^=resultsTeamEmergencies]").DataTable({
+		    	"columnDefs": [
+					{"orderable": false, "targets": '_all'},
+					{"visible": false,  "targets": [16,17]}
+				],
+		    	"order": [16, 'asc'],
+		    	"searching": false,
+		    	"paging": false,
+		    	"info": false,
+		    	"createdRow": function( row, data, dataIndex) {
+	                if(data[17] ==  'InProgress') {
+	                    $(row).addClass('results-in-progress');
+	                } else if(data[17] ==  'Completed') {
+		    			$(row).addClass('results-completed');
+		    		} else if(data[17] ==  'Finalized') {
+						$(row).addClass('results-finalized');
+					}
+	            }
+		    });
+		});
+		/*]]>*/
+	</script>
+</head>
+<body>
+<div id="wrap">
+	<div id="header">
+		<div th:replace="fragments/header::header">&nbsp;</div>
+	</div>
+	<!--div id="page"-->
+		<div id="sidebar" class="container">
+			<div class="sidebar-header">
+				<h4>Fixtures</h4>
+			</div>
+			<div th:unless="${#lists.isEmpty(menu)}">
+				<ul class="list-unstyled components">
+					<li th:each="round: ${menu}">
+						<a th:text="${'Round ' + round.round}" th:href="@{${'#roundSubmenu' + round.round}}" data-toggle="collapse" th:attr="aria-expanded=${round.active ? 'true' : 'false'}">Round</a>
+						<div th:unless="${#lists.isEmpty(round.games)}">
+							<ul th:id="${'roundSubmenu' + round.round}" class="collapse list-unstyled" th:classappend="${round.active ? 'in' : null}" th:attr="aria-expanded=${round.active ? 'true' : 'false'}">
+								<li th:each="game: ${round.games}"><a th:href="@{${game.resultsUri}}" th:class="${game.active ? 'bold-font' : null}" th:text="${game.homeTeam + ' v ' + game.awayTeam}">Home v Away</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div id="content" class="container center">
+			<div th:unless="${results == null OR results.getHomeTeam() == null OR results.getAwayTeam() == null}">
+				<div class="panel panel-default margin-tb-5">
+			    	<div th:text="${'Home: ' + results.homeTeam.teamName}" class="panel-heading bold-font">Home Team</div>
+		        	<div class="panel-body pad-5">
+		        		<table id="resultsTeamPlayersHome" class="table table-bordered" cellspacing="0" width="100%">
+		           			<thead>
+		           				<tr>
+		           					<th colspan="17">Team</th>
+		           				</tr>
+						        <tr>
+						            <th>No.</th>
+						            <th>Player</th>
+						            <th>Pos</th>
+						            <th>K</th>
+						            <th>H</th>
+						            <th>D</th>
+						            <th>M</th>
+						            <th>HO</th>
+						            <th>FF</th>
+						            <th>FA</th>
+						            <th>T</th>
+						            <th>G</th>
+						            <th>B</th>
+						            <th>Score</th>
+						            <th>Predicted</th>
+						            <th>Trend</th>
+						            <th>Scraping Status</th>
+						        </tr>
+					        </thead>
+					        <tbody>
+				                <tr th:each="player: ${results.homeTeam.players}">
+				                    <td th:text="${player.teamPlayerId}">No.</td>
+				                    <div th:switch="${player.replacementInd}">
+				                    	<td th:case="'*'" th:text="${player.name + '*'}">Player</td>
+				                    	<td th:case="'**'" th:text="${player.name + '**'}">Player</td>
+				                    	<td th:case="*" th:text="${player.name}">Player</td>
+				                    </div>
+				                    <td th:text="${player.position}">Pos</td>
+				                    <td th:text="${player.stats.kicks}">K</td>
+				                    <td th:text="${player.stats.handballs}">H</td>
+				                    <td th:text="${player.stats.disposals}">D</td>
+				                    <td th:text="${player.stats.marks}">M</td>
+				                    <td th:text="${player.stats.hitouts}">HO</td>
+				                    <td th:text="${player.stats.freesFor}">FF</td>
+				                    <td th:text="${player.stats.freesAgainst}">FA</td>
+				                    <td th:text="${player.stats.tackles}">T</td>
+				                    <td th:text="${player.stats.goals}">G</td>
+				                    <td th:text="${player.stats.behinds}">B</td>
+				                    <td th:text="${player.stats.score}">Score</td>
+				                    <td th:text="${player.stats.predictedScore}">Predicted</td>
+				                    <td th:text="${player.stats.trend}">Trend</td>
+				                    <td th:text="${player.stats.scrapingStatus}">Scraping Status</td>
+				                </tr>
+				            </tbody>
+				            <div th:if="${results.homeTeam.currentPredictedScore == results.homeTeam.score}">
+					            <tfoot>
+					            	<tr>
+					                	<td colspan="12"></td>
+					                	<td><strong>Total</strong></td>
+					                	<td th:text="${results.homeTeam.score}"><strong>Score</strong></td>
+					                	<td th:text="${results.homeTeam.predictedScore}"><strong>Predicted</strong></td>
+					                	<td th:text="${results.homeTeam.trend}"><strong>Trend</strong></td>
+					                </tr>
+					            </tfoot>
+				            </div>
+				            <div th:unless="${results.homeTeam.currentPredictedScore == results.homeTeam.score}">
+					           <tfoot>
+					            	<tr>
+					                	<td colspan="12"></td>
+					                	<td><strong>Total</strong></td>
+					                	<td th:text="${results.homeTeam.score}"><strong>Score</strong></td>
+					                	<td th:text="${results.homeTeam.currentPredictedScore}"><strong>Predicted</strong></td>
+					                	<td th:text="${results.homeTeam.trend}"><strong>Trend</strong></td>
+					                </tr>
+					                <tr>
+					                	<td colspan="12"></td>
+					                	<td colspan="2"><strong>Pre-game</strong></td>
+					                	<td th:text="${results.homeTeam.predictedScore}"><strong>Pre-Game Predicted</strong></td>
+					                	<td/>
+					                </tr>
+					            </tfoot>
+					        </div>
+				        </table>
+				        <table id="resultsTeamEmergenciesHome" class="table table-bordered" cellspacing="0" width="100%">
+		           			<thead>
+		           				<tr>
+		           					<th colspan="18">Emergencies</th>
+		           				</tr>
+						        <tr>
+						            <th>No.</th>
+						            <th>Player</th>
+						            <th>Pos</th>
+						            <th>K</th>
+						            <th>H</th>
+						            <th>D</th>
+						            <th>M</th>
+						            <th>HO</th>
+						            <th>FF</th>
+						            <th>FA</th>
+						            <th>T</th>
+						            <th>G</th>
+						            <th>B</th>
+						            <th>Score</th>
+						            <th>Predicted</th>
+						            <th>Trend</th>
+						            <th>Sort</th>
+						            <th>Scraping Status</th>
+						        </tr>
+					        </thead>
+					        <tbody>
+				                <tr th:each="player: ${results.homeTeam.emergencies}">
+				                    <td th:text="${player.teamPlayerId}">No.</td>
+				                    <div th:switch="${player.replacementInd}">
+				                    	<td th:case="'*'" th:text="${player.name + '*'}">Player</td>
+				                    	<td th:case="'**'" th:text="${player.name + '**'}">Player</td>
+				                    	<td th:case="*" th:text="${player.name}">Player</td>
+				                    </div>
+				                    <td th:text="${player.position}">Pos</td>
+				                    <td th:text="${player.stats.kicks}">K</td>
+				                    <td th:text="${player.stats.handballs}">H</td>
+				                    <td th:text="${player.stats.disposals}">D</td>
+				                    <td th:text="${player.stats.marks}">M</td>
+				                    <td th:text="${player.stats.hitouts}">HO</td>
+				                    <td th:text="${player.stats.freesFor}">FF</td>
+				                    <td th:text="${player.stats.freesAgainst}">FA</td>
+				                    <td th:text="${player.stats.tackles}">T</td>
+				                    <td th:text="${player.stats.goals}">G</td>
+				                    <td th:text="${player.stats.behinds}">B</td>
+				                    <td th:text="${player.stats.score}">Score</td>
+				                    <td th:text="${player.stats.predictedScore}">Predicted</td>
+				                    <td th:text="${player.stats.trend}">Trend</td>
+				                    <td th:text="${player.emgSort}">Sort</td>
+				                    <td th:text="${player.stats.scrapingStatus}">Scraping Status</td>
+				                </tr>
+				            </tbody>
+				        </table>
+				        <div th:unless="${#strings.isEmpty(homeEmgMessage)}"><p class="text-danger" th:text="#{${homeEmgMessage}}">Emg Message</p></div>
+				    </div>
+				</div>
+				<div class="panel panel-default margin-tb-5">
+			    	<div th:text="${'Away: ' + results.awayTeam.teamName}" class="panel-heading bold-font">Away Team</div>
+		        	<div class="panel-body pad-5">
+		        		<table id="resultsTeamPlayersAway" class="table table-bordered" cellspacing="0" width="100%">
+		           			<thead>
+		           				<tr>
+		           					<th colspan="17">Team</th>
+		           				</tr>
+						        <tr>
+						            <th>No.</th>
+						            <th>Player</th>
+						            <th>Pos</th>
+						            <th>K</th>
+						            <th>H</th>
+						            <th>D</th>
+						            <th>M</th>
+						            <th>HO</th>
+						            <th>FF</th>
+						            <th>FA</th>
+						            <th>T</th>
+						            <th>G</th>
+						            <th>B</th>
+						            <th>Score</th>
+						            <th>Predicted</th>
+						            <th>Trend</th>
+						            <th>Scraping Status</th>
+						        </tr>
+					        </thead>
+					        <tbody>
+				                <tr th:each="player: ${results.awayTeam.players}">
+				                    <td th:text="${player.teamPlayerId}">No.</td>
+				                   	<div th:switch="${player.replacementInd}">
+				                    	<td th:case="'*'" th:text="${player.name + '*'}">Player</td>
+				                    	<td th:case="'**'" th:text="${player.name + '**'}">Player</td>
+				                    	<td th:case="*" th:text="${player.name}">Player</td>
+				                    </div>
+				                    <td th:text="${player.position}">Pos</td>
+				                    <td th:text="${player.stats.kicks}">K</td>
+				                    <td th:text="${player.stats.handballs}">H</td>
+				                    <td th:text="${player.stats.disposals}">D</td>
+				                    <td th:text="${player.stats.marks}">M</td>
+				                    <td th:text="${player.stats.hitouts}">HO</td>
+				                    <td th:text="${player.stats.freesFor}">FF</td>
+				                    <td th:text="${player.stats.freesAgainst}">FA</td>
+				                    <td th:text="${player.stats.tackles}">T</td>
+				                    <td th:text="${player.stats.goals}">G</td>
+				                    <td th:text="${player.stats.behinds}">B</td>
+				                    <td th:text="${player.stats.score}">Score</td>
+				                    <td th:text="${player.stats.predictedScore}">Predicted</td>
+				                    <td th:text="${player.stats.trend}">Trend</td>
+				                    <td th:text="${player.stats.scrapingStatus}">Scraping Status</td>
+				                </tr>
+				            </tbody>
+				            <div th:if="${results.awayTeam.currentPredictedScore == results.awayTeam.score}">
+					            <tfoot>
+					            	<tr>
+					                	<td colspan="12"></td>
+					                	<td><strong>Total</strong></td>
+					                	<td th:text="${results.awayTeam.score}"><strong>Score</strong></td>
+					                	<td th:text="${results.awayTeam.predictedScore}"><strong>Predicted</strong></td>
+					                	<td th:text="${results.awayTeam.trend}"><strong>Trend</strong></td>
+					                </tr>
+					            </tfoot>
+				            </div>
+				            <div th:unless="${results.awayTeam.currentPredictedScore == results.awayTeam.score}">
+					            <tfoot>
+					            	<tr>
+					                	<td colspan="12"></td>
+					                	<td><strong>Total</strong></td>
+					                	<td th:text="${results.awayTeam.score}"><strong>Score</strong></td>
+					                	<td th:text="${results.awayTeam.currentPredictedScore}"><strong>Predicted</strong></td>
+					                	<td th:text="${results.awayTeam.trend}"><strong>Trend</strong></td>
+					                </tr>
+					                <tr>
+					                	<td colspan="12"></td>
+					                	<td colspan="2"><strong>Pre-game</strong></td>
+					                	<td th:text="${results.awayTeam.predictedScore}"><strong>Pre-Game Predicted</strong></td>
+					                	<td/>
+					                </tr>
+					            </tfoot>
+					        </div>
+				        </table>
+				        <table id="resultsTeamEmergenciesAway" class="table table-bordered" cellspacing="0" width="100%">
+		           			<thead>
+		           				<tr>
+		           					<th colspan="18">Emergencies</th>
+		           				</tr>
+						        <tr>
+						            <th>No.</th>
+						            <th>Player</th>
+						            <th>Pos</th>
+						            <th>K</th>
+						            <th>H</th>
+						            <th>D</th>
+						            <th>M</th>
+						            <th>HO</th>
+						            <th>FF</th>
+						            <th>FA</th>
+						            <th>T</th>
+						            <th>G</th>
+						            <th>B</th>
+						            <th>Score</th>
+						            <th>Predicted</th>
+						            <th>Trend</th>
+						            <th>Sort</th>
+						            <th>Scraping Status</th>
+						        </tr>
+					        </thead>
+					        <tbody>
+				                <tr th:each="player: ${results.awayTeam.emergencies}">
+				                    <td th:text="${player.teamPlayerId}">No.</td>
+				                    <div th:switch="${player.replacementInd}">
+				                    	<td th:case="'*'" th:text="${player.name + '*'}">Player</td>
+				                    	<td th:case="'**'" th:text="${player.name + '**'}">Player</td>
+				                    	<td th:case="*" th:text="${player.name}">Player</td>
+				                    </div>
+				                    <td th:text="${player.position}">Pos</td>
+				                    <td th:text="${player.stats.kicks}">K</td>
+				                    <td th:text="${player.stats.handballs}">H</td>
+				                    <td th:text="${player.stats.disposals}">D</td>
+				                    <td th:text="${player.stats.marks}">M</td>
+				                    <td th:text="${player.stats.hitouts}">HO</td>
+				                    <td th:text="${player.stats.freesFor}">FF</td>
+				                    <td th:text="${player.stats.freesAgainst}">FA</td>
+				                    <td th:text="${player.stats.tackles}">T</td>
+				                    <td th:text="${player.stats.goals}">G</td>
+				                    <td th:text="${player.stats.behinds}">B</td>
+				                    <td th:text="${player.stats.score}">Score</td>
+				                    <td th:text="${player.stats.predictedScore}">Predicted</td>
+				                    <td th:text="${player.stats.trend}">Trend</td>
+				                    <td th:text="${player.emgSort}">Sort</td>
+				                    <td th:text="${player.stats.scrapingStatus}">Scraping Status</td>
+				                </tr>
+				            </tbody>
+				        </table>
+				        <div th:unless="${#strings.isEmpty(awayEmgMessage)}"><p class="text-danger" th:text="#{${awayEmgMessage}}">Emg Message</p></div>
+				    </div>
+				</div>
+			</div>
+		</div>
+	<!--/div-->
+</div>
+</body>
+</html>

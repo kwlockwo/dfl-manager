@@ -80,7 +80,7 @@ public class DflPlayerAverage implements Comparator<DflPlayerAverage>, Comparabl
 	
 	@Override
 	public int compare(DflPlayerAverage o1, DflPlayerAverage o2) {
-		return o1.average > o2.average ? 1 : (o2.average < o2.average ? -1 : 0);
+		return o1.average > o2.average ? 1 : (o1.average < o2.average ? -1 : 0);
 	}
 
 }

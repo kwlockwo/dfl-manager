@@ -1,0 +1,83 @@
+package net.dflmngr.model.service.impl.spring;
+
+import net.dflmngr.model.entity.StatsRoundPlayerStats;
+import net.dflmngr.model.entity.keys.StatsRoundPlayerStatsPK;
+import net.dflmngr.model.service.StatsRoundPlayerStatsService;
+import net.dflmngr.repositories.StatsRoundPlayerStatsRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@Transactional
+public class StatsRoundPlayerStatsServiceImpl implements StatsRoundPlayerStatsService {
+    
+    private final StatsRoundPlayerStatsRepository repository;
+    
+    public StatsRoundPlayerStatsServiceImpl(StatsRoundPlayerStatsRepository repository) {
+        this.repository = repository;
+    }
+    
+    @Override
+    public StatsRoundPlayerStats get(StatsRoundPlayerStatsPK id) {
+        return repository.findById(id).orElse(null);
+    }
+    
+    @Override
+    public List<StatsRoundPlayerStats> findAll() {
+        return repository.findAll();
+    }
+    
+    @Override
+    public void insert(StatsRoundPlayerStats entity) {
+        repository.save(entity);
+    }
+    
+    @Override
+    public void update(StatsRoundPlayerStats entity) {
+        repository.save(entity);
+    }
+    
+    @Override
+    public void delete(StatsRoundPlayerStats entity) {
+        repository.delete(entity);
+    }
+    
+    @Override
+    public void insertAll(List<StatsRoundPlayerStats> entities) {
+        repository.saveAll(entities);
+    }
+    
+    @Override
+    public void updateAll(List<StatsRoundPlayerStats> entities) {
+        repository.saveAll(entities);
+    }
+    
+    @Override
+    public void replaceAll(List<StatsRoundPlayerStats> entities) {
+        repository.deleteAll();
+        repository.flush();
+        repository.saveAll(entities);
+    }
+    
+    @Override
+    public void refresh(StatsRoundPlayerStats entity) {
+        // No-op: Spring manages persistence context
+    }
+    
+    @Override
+    public void close() {
+        // No-op: Spring manages lifecycle
+    }
+    
+    @Override
+    public List<StatsRoundPlayerStats> findByRound(int round) {
+        return repository.findByRound(round);
+    }
+    
+    @Override
+    public StatsRoundPlayerStats findByRoundAndPlayer(int round, int playerId) {
+        return repository.findByRoundAndPlayerId(round, playerId);
+    }
+}

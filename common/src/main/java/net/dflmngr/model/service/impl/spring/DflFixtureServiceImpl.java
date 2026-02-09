@@ -78,4 +78,8 @@ public class DflFixtureServiceImpl implements DflFixtureService {
         // inTx parameter ignored - Spring manages transactions via @Transactional
         repository.saveAll(entities);
     }
+
+    public List<DflFixture> getFixturesForRound(int round) {
+        return repository.findByRound(round);
+    }
 }

@@ -11,7 +11,12 @@ import net.dflmngr.model.entity.DflRoundInfo;
 
 @Repository
 public interface DflRoundInfoRepository extends JpaRepository<DflRoundInfo, Integer> {
-	
+
 	@Query("SELECT DISTINCT ri FROM DflRoundInfo ri JOIN FETCH ri.roundMapping rm WHERE rm.aflRound IN :aflRounds")
 	List<DflRoundInfo> findRoundsByAflRounds(@Param("aflRounds") List<Integer> aflRounds);
+
+	/**
+	 * Find round info by round number (primary key lookup)
+	 */
+	DflRoundInfo findByRound(int round);
 }

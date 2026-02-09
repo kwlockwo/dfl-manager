@@ -55,4 +55,10 @@ public interface AflFixtureRepository extends JpaRepository<AflFixture, AflFixtu
            "(SELECT f2.round FROM AflFixture f2 WHERE f2.statsDownloaded = false " +
            "GROUP BY f2.round HAVING COUNT(f2.round) = 9)")
     Integer findRefreshFixtureStart();
+
+    /**
+     * Find a specific fixture by round and game number
+     */
+    @Query("SELECT f FROM AflFixture f WHERE f.round = :round AND f.game = :game")
+    AflFixture findByRoundAndGame(@Param("round") int round, @Param("game") int game);
 }

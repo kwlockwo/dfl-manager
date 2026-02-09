@@ -1,6 +1,7 @@
 package net.dflmngr.model.service.impl.spring;
 
 import net.dflmngr.model.entity.DflLadder;
+import net.dflmngr.model.entity.keys.DflLadderPK;
 import net.dflmngr.model.service.DflLadderService;
 import net.dflmngr.repositories.DflLadderRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class DflLadderServiceImpl implements DflLadderService {
         this.repository = repository;
     }
     
-    public DflLadder get(String id) {
+    public DflLadder get(DflLadderPK id) {
         return repository.findById(id).orElse(null);
     }
     

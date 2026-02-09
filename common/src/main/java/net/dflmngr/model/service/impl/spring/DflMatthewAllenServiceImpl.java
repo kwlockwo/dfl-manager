@@ -61,7 +61,8 @@ public class DflMatthewAllenServiceImpl implements DflMatthewAllenService {
     }
     
     public DflMatthewAllen findByPlayerId(int playerId) {
-        return repository.findByPlayerId(playerId);
+        List<DflMatthewAllen> results = repository.findByPlayerId(playerId);
+        return results.isEmpty() ? null : results.get(0);
     }
 
     public List<DflMatthewAllen> getForRound(int round) {

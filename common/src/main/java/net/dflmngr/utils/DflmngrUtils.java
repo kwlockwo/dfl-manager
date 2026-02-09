@@ -20,11 +20,13 @@ public class DflmngrUtils {
 
 	}
 
+	// TODO: Refactor to use injected GlobalsService instead of direct instantiation
 	public static final String defaultTimezone;
 	static
 	{
-			GlobalsService globalsService = new GlobalsServiceImpl();
-			defaultTimezone = globalsService.getGroundTimeZone("default");
+			// GlobalsService globalsService = new GlobalsServiceImpl();
+			// defaultTimezone = globalsService.getGroundTimeZone("default");
+			defaultTimezone = System.getenv("DEFAULT_TIMEZONE") != null ? System.getenv("DEFAULT_TIMEZONE") : "Australia/Melbourne";
 	};
 
 	public static final SimpleDateFormat dateDbFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");

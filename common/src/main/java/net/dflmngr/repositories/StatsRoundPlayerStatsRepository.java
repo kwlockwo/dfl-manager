@@ -19,6 +19,12 @@ public interface StatsRoundPlayerStatsRepository extends JpaRepository<StatsRoun
 	@Modifying
 	@Query("DELETE FROM StatsRoundPlayerStats s WHERE s.round = :round AND s.team = :team")
 	void deleteByRoundAndTeam(@Param("round") int round, @Param("team") String team);
-	
+
 	List<StatsRoundPlayerStats> findByRoundAndTeam(int round, String team);
+
+	/**
+	 * Find stats for a specific round and player ID
+	 */
+	@Query("SELECT s FROM StatsRoundPlayerStats s WHERE s.round = :round AND s.playerId = :playerId")
+	StatsRoundPlayerStats findByRoundAndPlayerId(@Param("round") int round, @Param("playerId") int playerId);
 }

@@ -1,6 +1,7 @@
 package net.dflmngr.model.service.impl.spring;
 
 import net.dflmngr.model.entity.DflPreseasonScores;
+import net.dflmngr.model.entity.keys.DflPreseasonScoresPK;
 import net.dflmngr.model.service.DflPreseasonScoresService;
 import net.dflmngr.repositories.DflPreseasonScoresRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class DflPreseasonScoresServiceImpl implements DflPreseasonScoresService 
         this.repository = repository;
     }
     
-    public DflPreseasonScores get(Integer id) {
+    public DflPreseasonScores get(DflPreseasonScoresPK id) {
         return repository.findById(id).orElse(null);
     }
     

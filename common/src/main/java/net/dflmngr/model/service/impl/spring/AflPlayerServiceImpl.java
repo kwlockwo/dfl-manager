@@ -19,7 +19,7 @@ public class AflPlayerServiceImpl implements AflPlayerService {
         this.repository = repository;
     }
     
-    public AflPlayer get(Integer id) {
+    public AflPlayer get(String id) {
         return repository.findById(id).orElse(null);
     }
     
@@ -62,7 +62,8 @@ public class AflPlayerServiceImpl implements AflPlayerService {
     }
     
     public AflPlayer findByPlayerId(int playerId) {
-        return repository.findByPlayerId(playerId);
+        // Player ID is the primary key (String), convert int to String
+        return repository.findById(String.valueOf(playerId)).orElse(null);
     }
 
     public void insertAll(List<AflPlayer> entities, boolean inTx) {

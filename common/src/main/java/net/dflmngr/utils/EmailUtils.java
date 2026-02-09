@@ -25,16 +25,17 @@ import net.dflmngr.utils.oauth2.OAuth2Authenticator;
 
 public class EmailUtils {
 
-	private static GlobalsService globalsService = new GlobalsServiceImpl();
-	private static String outgoingMailHost = globalsService.getEmailConfig().get("outgoingMailHost");
-	private static int outgoingMailPort = Integer.parseInt(globalsService.getEmailConfig().get("outgoingMailPort"));
-	private static String mailPassword = globalsService.getEmailConfig().get("mailPassword");
+	// TODO: Refactor to use injected GlobalsService instead of direct instantiation
+	// private static GlobalsService globalsService = new GlobalsServiceImpl();
+	private static String outgoingMailHost = System.getenv("OUTGOING_MAIL_HOST"); // globalsService.getEmailConfig().get("outgoingMailHost");
+	private static int outgoingMailPort = Integer.parseInt(System.getenv("OUTGOING_MAIL_PORT") != null ? System.getenv("OUTGOING_MAIL_PORT") : "587"); // Integer.parseInt(globalsService.getEmailConfig().get("outgoingMailPort"));
+	private static String mailPassword = System.getenv("MAIL_PASSWORD"); // globalsService.getEmailConfig().get("mailPassword");
 
 	private static String mailUsername;
 	private static String emailOveride;
 
 	static {
-		mailUsername = globalsService.getEmailConfig().get("mailUsername");
+		mailUsername = System.getenv("DFL_MNGR_EMAIL"); // globalsService.getEmailConfig().get("mailUsername");
 		if (!System.getenv("ENV").equals("production")) {
 			mailUsername = System.getenv("DFL_MNGR_EMAIL");
 			emailOveride = System.getenv("EMAIL_OVERIDE");

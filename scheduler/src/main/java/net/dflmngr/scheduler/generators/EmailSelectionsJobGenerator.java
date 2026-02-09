@@ -9,10 +9,6 @@ public class EmailSelectionsJobGenerator extends BaseJobGenerator {
 		super("EmailSelectionsJobGenerator");
 	}
 
-	public EmailSelectionsJobGenerator() {
-		super("EmailSelectionsJobGenerator");
-	}
-
 	@Override
 	protected void generateJobs() throws Exception {
 		JobScheduler.deleteGroup(JobParameterConstants.EMAIL_SELECTIONS_JOB_GROUP);

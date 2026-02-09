@@ -27,15 +27,11 @@ public class AflFixtureHtmlHandler extends BaseHandler {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MMMM d h:mma yyyy");
 
-    GlobalsService globalsService;
-    AflTeamService aflTeamService;
-
     String currentYear;
     String defaultTimezone;
 
     static final String HTML_CLASS_STRING = "class";
 
-    
 	private final GlobalsService globalsService;
 	private final AflTeamService aflTeamService;
 

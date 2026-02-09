@@ -182,22 +182,23 @@ public class EmailSelectionsHandler extends BaseHandler {
 					loggerUtils.log("info", "Message from {} ... FAILURE!", from);
 				} else {
 					if (validationResult.isValid()) {
-						TeamInsOutsLoaderHandler selectionsLoader = new TeamInsOutsLoaderHandler();
-						selectionsLoader.configureLogging(mdcKey, loggerName, logfile);
+						// TODO: Refactor to use Spring dependency injection
+						// TeamInsOutsLoaderHandler selectionsLoader = new TeamInsOutsLoaderHandler();
+						// selectionsLoader.configureLogging(mdcKey, loggerName, logfile);
 
 						if (validationResult.earlyGames) {
 							loggerUtils.log("info",
 									"Early Games any validation error is a warning .... Saving ins and outs to early tables in DB");
-							selectionsLoader.execute(validationResult.getTeamCode(), validationResult.getRound(),
-									validationResult.getInsAndOuts().get("in"),
-									validationResult.getInsAndOuts().get("out"), validationResult.getEmergencies(),
-									true);
+							// selectionsLoader.execute(validationResult.getTeamCode(), validationResult.getRound(),
+							// 		validationResult.getInsAndOuts().get("in"),
+							// 		validationResult.getInsAndOuts().get("out"), validationResult.getEmergencies(),
+							// 		true);
 						} else {
 							loggerUtils.log("info", "Team selection is VALID.... Saving ins and outs to DB");
-							selectionsLoader.execute(validationResult.getTeamCode(), validationResult.getRound(),
-									validationResult.getInsAndOuts().get("in"),
-									validationResult.getInsAndOuts().get("out"), validationResult.getEmergencies(),
-									false);
+							// selectionsLoader.execute(validationResult.getTeamCode(), validationResult.getRound(),
+							// 		validationResult.getInsAndOuts().get("in"),
+							// 		validationResult.getInsAndOuts().get("out"), validationResult.getEmergencies(),
+							// 		false);
 						}
 					} else {
 						loggerUtils.log("info", "Team selection is invalid ... No changes made.");
@@ -481,9 +482,11 @@ public class EmailSelectionsHandler extends BaseHandler {
 		insAndOuts.put("in", ins);
 		insAndOuts.put("out", outs);
 
-		SelectedTeamValidationHandler validationHandler = new SelectedTeamValidationHandler();
-		validationHandler.configureLogging(mdcKey, loggerName, logfile);
-		return validationHandler.execute(round, teamCode, insAndOuts, emgs, "noid");
+		// TODO: Refactor to use Spring dependency injection
+		// SelectedTeamValidationHandler validationHandler = new SelectedTeamValidationHandler();
+		// validationHandler.configureLogging(mdcKey, loggerName, logfile);
+		// return validationHandler.execute(round, teamCode, insAndOuts, emgs, "noid");
+		return null;
 	}
 
 	private SelectedTeamValidation handleSelectionEmailText(String[] emailLines, String id) {
@@ -629,9 +632,10 @@ public class EmailSelectionsHandler extends BaseHandler {
 			insAndOuts.put("in", ins);
 			insAndOuts.put("out", outs);
 
-			SelectedTeamValidationHandler validationHandler = new SelectedTeamValidationHandler();
-			validationHandler.configureLogging(mdcKey, loggerName, logfile);
-			validationResult = validationHandler.execute(round, teamCode, insAndOuts, emgs, id);
+			// TODO: Refactor to use Spring dependency injection
+			// SelectedTeamValidationHandler validationHandler = new SelectedTeamValidationHandler();
+			// validationHandler.configureLogging(mdcKey, loggerName, logfile);
+			// validationResult = validationHandler.execute(round, teamCode, insAndOuts, emgs, id);
 		}
 
 		return validationResult;

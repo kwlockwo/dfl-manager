@@ -65,7 +65,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 		List<AflPlayer> aflPlayers = new ArrayList<>();
 
-		AflPlayerLoaderHtmlHandler playerHtmlLoader = new AflPlayerLoaderHtmlHandler();
+// TODO: Refactor to use Spring DI - 		AflPlayerLoaderHtmlHandler playerHtmlLoader = new AflPlayerLoaderHtmlHandler();
 		boolean useOfficalPlayers = globalsService.getUseOfficalPlayers();
 
 		loggerUtils.log("info", "Using official AFL player lists: {}", useOfficalPlayers);

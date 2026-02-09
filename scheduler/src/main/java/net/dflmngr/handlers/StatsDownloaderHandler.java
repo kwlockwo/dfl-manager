@@ -58,7 +58,7 @@ public class StatsDownloaderHandler extends BaseHandler {
 			for(int i = 0; i < 5; i++) {
 				loggerUtils.log("info", "Attempt {}", i);
 				try {
-					StatsHtmlHandler htmlHandler = new StatsHtmlHandler();
+// TODO: Refactor to use Spring DI - 					StatsHtmlHandler htmlHandler = new StatsHtmlHandler();
 					htmlHandler.configureLogging(logfile);
 
 					playerStats = htmlHandler.execute(round, homeTeam, awayTeam, statsUrl, includeHomeTeam, includeAwayTeam, scrapingStatus);

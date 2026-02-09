@@ -2,16 +2,38 @@ spring:
   application:
     name: dfl-manager-scheduler
 
-  # Disable Spring Boot auto-configuration features we don't need yet in Phase 1
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/dflmngrdb}
+    username: ${DATABASE_USER:dflmngr}
+    password: ${DATABASE_PASSWORD:dflmngr}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
 
-server:
-  # No web server needed for scheduler
-  port: -1
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+  main:
+    web-application-type: none
+    banner-mode: off
 
 logging:
-  # Use Log4j2 configuration from log4j2.xml
+  level:
+    root: INFO
+    net.dflmngr: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework: WARN
   config: classpath:log4j2.xml

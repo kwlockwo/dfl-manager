@@ -15,16 +15,27 @@ import org.apache.commons.cli.ParseException;
 
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflFixtureService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
+
+@Service
 public class StatsRoundPlayerStatsHandler extends BaseHandler {
 
-	DflRoundInfoService dflRoundInfoService;
-	AflFixtureService aflFixtureService;
-	GlobalsService globalsService;
+	private final DflRoundInfoService dflRoundInfoService;
+	private final AflFixtureService aflFixtureService;
+	private final GlobalsService globalsService;
 
+	public StatsRoundPlayerStatsHandler(DflRoundInfoService dflRoundInfoService,
+								AflFixtureService aflFixtureService,
+								GlobalsService globalsService) {
+		super("RawPlayerStatsHandler");
+		this.dflRoundInfoService = dflRoundInfoService;
+		this.aflFixtureService = aflFixtureService;
+		this.globalsService = globalsService;
+	}
 	public StatsRoundPlayerStatsHandler() {
 		super("RawPlayerStatsHandler");
 		dflRoundInfoService = serviceFactory.createDflRoundInfoService();

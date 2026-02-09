@@ -18,10 +18,18 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import net.dflmngr.exceptions.UnexpectedHtmlException;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.service.GlobalsService;
+import org.springframework.stereotype.Service;
 
+
+@Service
 public class StatsHtmlHandler extends BaseHandler {
 
-    GlobalsService globalsService;
+    private final GlobalsService globalsService;
+
+    public StatsHtmlHandler(GlobalsService globalsService) {
+        super("RoundProgress");
+        this.globalsService = globalsService;
+    }
 
     public StatsHtmlHandler() {
         super("RoundProgress");

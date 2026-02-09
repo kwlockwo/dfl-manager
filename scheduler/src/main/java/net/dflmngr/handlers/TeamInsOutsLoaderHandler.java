@@ -12,17 +12,30 @@ import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.entity.InsAndOuts;
 import net.dflmngr.model.service.DflEarlyInsAndOutsService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.InsAndOutsService;
 
+
+@Service
 public class TeamInsOutsLoaderHandler extends BaseHandler {
 
-	DflSelectedTeamService dflSelectedTeamService;
-	DflTeamPlayerService dflTeamPlayerService;
-	DflEarlyInsAndOutsService dflEarlyInsAndOutsService;
-	InsAndOutsService insAndOutsService;
+	private final DflSelectedTeamService dflSelectedTeamService;
+	private final DflTeamPlayerService dflTeamPlayerService;
+	private final DflEarlyInsAndOutsService dflEarlyInsAndOutsService;
+	private final InsAndOutsService insAndOutsService;
 
+	public TeamInsOutsLoaderHandler(DflSelectedTeamService dflSelectedTeamService,
+								DflTeamPlayerService dflTeamPlayerService,
+								DflEarlyInsAndOutsService dflEarlyInsAndOutsService,
+								InsAndOutsService insAndOutsService) {
+		super("Selections");
+		this.dflSelectedTeamService = dflSelectedTeamService;
+		this.dflTeamPlayerService = dflTeamPlayerService;
+		this.dflEarlyInsAndOutsService = dflEarlyInsAndOutsService;
+		this.insAndOutsService = insAndOutsService;
+	}
 	public TeamInsOutsLoaderHandler() {
 		super("Selections");
 		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();

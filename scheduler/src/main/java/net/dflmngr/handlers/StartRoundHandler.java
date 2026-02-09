@@ -16,6 +16,7 @@ import net.dflmngr.model.entity.DflTeam;
 import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.entity.InsAndOuts;
 import net.dflmngr.model.service.AflFixtureService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflFixtureService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflRoundInfoService;
@@ -26,20 +27,42 @@ import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.InsAndOutsService;
 import net.dflmngr.utils.EmailUtils;
 
+
+@Service
 public class StartRoundHandler extends BaseHandler {
 
-	DflTeamService dflTeamService;
-	GlobalsService globalsService;
-	DflFixtureService dflFixtureService;
-	DflTeamPredictedScoresService dflTeamPredictedScoresService;
-	DflPlayerService dflPlayerService;
-	InsAndOutsService insAndOutsService;
-	DflTeamPlayerService dflTeamPlayerService;
-	DflRoundInfoService dflRoundInfoService;
-	AflFixtureService aflFixtureService;
+	private final DflTeamService dflTeamService;
+	private final GlobalsService globalsService;
+	private final DflFixtureService dflFixtureService;
+	private final DflTeamPredictedScoresService dflTeamPredictedScoresService;
+	private final DflPlayerService dflPlayerService;
+	private final InsAndOutsService insAndOutsService;
+	private final DflTeamPlayerService dflTeamPlayerService;
+	private final DflRoundInfoService dflRoundInfoService;
+	private final AflFixtureService aflFixtureService;
 	
 	String emailOverride;
 
+	public StartRoundHandler(DflTeamService dflTeamService,
+								GlobalsService globalsService,
+								DflFixtureService dflFixtureService,
+								DflTeamPredictedScoresService dflTeamPredictedScoresService,
+								DflPlayerService dflPlayerService,
+								InsAndOutsService insAndOutsService,
+								DflTeamPlayerService dflTeamPlayerService,
+								DflRoundInfoService dflRoundInfoService,
+								AflFixtureService aflFixtureService) {
+		super("StartRound");
+		this.dflTeamService = dflTeamService;
+		this.globalsService = globalsService;
+		this.dflFixtureService = dflFixtureService;
+		this.dflTeamPredictedScoresService = dflTeamPredictedScoresService;
+		this.dflPlayerService = dflPlayerService;
+		this.insAndOutsService = insAndOutsService;
+		this.dflTeamPlayerService = dflTeamPlayerService;
+		this.dflRoundInfoService = dflRoundInfoService;
+		this.aflFixtureService = aflFixtureService;
+	}
 	public StartRoundHandler() {
 		super("StartRound");
 		dflTeamService = serviceFactory.createDflTeamService();

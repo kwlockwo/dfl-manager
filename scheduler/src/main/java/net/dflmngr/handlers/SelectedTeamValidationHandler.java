@@ -12,6 +12,7 @@ import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflSelectionIds;
 import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.service.AflFixtureService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflEarlyInsAndOutsService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflRoundInfoService;
@@ -21,6 +22,8 @@ import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.validation.SelectedTeamValidation;
 
+
+@Service
 public class SelectedTeamValidationHandler extends BaseHandler {
 
 	private DflSelectedTeamService dflSelectedTeamService;
@@ -32,6 +35,24 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 	private AflFixtureService aflFixtureService;
 	private DflSelectionIdsService dflSelectionIdsService;
 
+	public SelectedTeamValidationHandler(DflSelectedTeamService dflSelectedTeamService,
+								DflTeamPlayerService dflTeamPlayerService,
+								DflPlayerService dflPlayerService,
+								GlobalsService globalsService,
+								DflRoundInfoService dflRoundInfoService,
+								DflEarlyInsAndOutsService dflEarlyInsAndOutsService,
+								AflFixtureService aflFixtureService,
+								DflSelectionIdsService dflSelectionIdsService) {
+		super("SelectedTeamValidationHandler");
+		this.dflSelectedTeamService = dflSelectedTeamService;
+		this.dflTeamPlayerService = dflTeamPlayerService;
+		this.dflPlayerService = dflPlayerService;
+		this.globalsService = globalsService;
+		this.dflRoundInfoService = dflRoundInfoService;
+		this.dflEarlyInsAndOutsService = dflEarlyInsAndOutsService;
+		this.aflFixtureService = aflFixtureService;
+		this.dflSelectionIdsService = dflSelectionIdsService;
+	}
 	public SelectedTeamValidationHandler() {
 		super("SelectedTeamValidationHandler");
 		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();

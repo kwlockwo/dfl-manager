@@ -19,19 +19,34 @@ import net.dflmngr.model.entity.DflTeam;
 import net.dflmngr.model.entity.DflTeamPredictedScores;
 import net.dflmngr.model.entity.keys.DflPlayerPredictedScoresPK;
 import net.dflmngr.model.service.DflPlayerPredictedScoresService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamPredictedScoresService;
 import net.dflmngr.model.service.DflTeamService;
 
+
+@Service
 public class PredictionHandler extends BaseHandler {
 
-	DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
-	DflTeamPredictedScoresService dflTeamPredictedScoresService;
-	DflPlayerScoresService dflPlayerScoresService;
-	DflTeamService dflTeamService;
-	DflSelectedTeamService dflSelectedTeamService;
+	private final DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
+	private final DflTeamPredictedScoresService dflTeamPredictedScoresService;
+	private final DflPlayerScoresService dflPlayerScoresService;
+	private final DflTeamService dflTeamService;
+	private final DflSelectedTeamService dflSelectedTeamService;
 
+	public PredictionHandler(DflPlayerPredictedScoresService dflPlayerPredictedScoresService,
+								DflTeamPredictedScoresService dflTeamPredictedScoresService,
+								DflPlayerScoresService dflPlayerScoresService,
+								DflTeamService dflTeamService,
+								DflSelectedTeamService dflSelectedTeamService) {
+		super("Predictions");
+		this.dflPlayerPredictedScoresService = dflPlayerPredictedScoresService;
+		this.dflTeamPredictedScoresService = dflTeamPredictedScoresService;
+		this.dflPlayerScoresService = dflPlayerScoresService;
+		this.dflTeamService = dflTeamService;
+		this.dflSelectedTeamService = dflSelectedTeamService;
+	}
 	public PredictionHandler() {
 		super("Predictions");
 		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();

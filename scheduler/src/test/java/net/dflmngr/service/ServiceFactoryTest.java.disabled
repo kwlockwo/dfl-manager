@@ -2,7 +2,6 @@ package net.dflmngr.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import net.dflmngr.jpa.AbstractDatabaseTest;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -10,7 +9,7 @@ import org.junit.jupiter.api.Test;
  * Verifies that the factory maintains singleton pattern and creates instances.
  * Uses H2 in-memory database for testing.
  */
-class ServiceFactoryTest extends AbstractDatabaseTest {
+class ServiceFactoryTest {
 
 	@Test
 	void getInstance_shouldReturnSameInstance() {

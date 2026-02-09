@@ -16,16 +16,27 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPreseasonScores;
 import net.dflmngr.model.service.DflPlayerService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflPreseasonScoresService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
+
+@Service
 public class PreSeasonStatsHandler extends BaseHandler {
 
-	DflPlayerService dflPlayerService;
-	GlobalsService globalsService;
-	DflPreseasonScoresService dflPreseasonScoresService;
+	private final DflPlayerService dflPlayerService;
+	private final GlobalsService globalsService;
+	private final DflPreseasonScoresService dflPreseasonScoresService;
 
+	public PreSeasonStatsHandler(DflPlayerService dflPlayerService,
+								GlobalsService globalsService,
+								DflPreseasonScoresService dflPreseasonScoresService) {
+		super("PreSeasonStats");
+		this.dflPlayerService = dflPlayerService;
+		this.globalsService = globalsService;
+		this.dflPreseasonScoresService = dflPreseasonScoresService;
+	}
 	public PreSeasonStatsHandler() {
 		super("PreSeasonStats");
 		dflPlayerService = serviceFactory.createDflPlayerService();

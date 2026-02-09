@@ -9,27 +9,44 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.StatsRoundPlayerStats;
 import net.dflmngr.model.service.GlobalsService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.RawPlayerStatsService;
 import net.dflmngr.model.service.StatsRoundPlayerStatsService;
 
+
+@Service
 public class StatsDownloaderHandler extends BaseHandler {
 
-	RawPlayerStatsService rawPlayerStatsService;
-	StatsRoundPlayerStatsService statsRoundPlayerStatsService;
-	GlobalsService globalsService;
+	private final RawPlayerStatsService rawPlayerStatsService;
+	private final StatsRoundPlayerStatsService statsRoundPlayerStatsService;
+	private final GlobalsService globalsService;
 
 	int round;
 	String statsUrl;
+
+	public StatsDownloaderHandler(RawPlayerStatsService rawPlayerStatsService,
+								   StatsRoundPlayerStatsService statsRoundPlayerStatsService,
+								   GlobalsService globalsService,
+								   int round,
+								   String statsUrl) {
+		super("RoundProgress");
+		this.rawPlayerStatsService = rawPlayerStatsService;
+		this.statsRoundPlayerStatsService = statsRoundPlayerStatsService;
+		this.globalsService = globalsService;
+		this.round = round;
+		this.statsUrl = statsUrl;
+	}
 
 	public StatsDownloaderHandler(int round, String statsUrl) {
 		super("RoundProgress");
 		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
 		statsRoundPlayerStatsService = serviceFactory.createStatsRoundPlayerStatsService();
 		globalsService = serviceFactory.createGlobalsService();
-
 		this.round = round;
 		this.statsUrl = statsUrl;
 	}
+
+	
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);

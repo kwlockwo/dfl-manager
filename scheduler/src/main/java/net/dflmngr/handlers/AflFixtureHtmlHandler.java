@@ -19,7 +19,10 @@ import net.dflmngr.exceptions.AflFixtureException;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflTeamService;
 import net.dflmngr.model.service.GlobalsService;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class AflFixtureHtmlHandler extends BaseHandler {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MMMM d h:mma yyyy");
@@ -32,16 +35,18 @@ public class AflFixtureHtmlHandler extends BaseHandler {
 
     static final String HTML_CLASS_STRING = "class";
 
-    public AflFixtureHtmlHandler() {
-        super("AflFixtureLoader");
+    
+	private final GlobalsService globalsService;
+	private final AflTeamService aflTeamService;
 
-        globalsService = serviceFactory.createGlobalsService();
-        aflTeamService = serviceFactory.createAflTeamService();
+	public AflFixtureHtmlHandler(GlobalsService globalsService, AflTeamService aflTeamService) {
+		super("AflFixtureHtmlHandler");
+		this.globalsService = globalsService;
+		this.aflTeamService = aflTeamService;
+		currentYear = globalsService.getCurrentYear();
+		defaultTimezone = globalsService.getGroundTimeZone("default");
+	}
 
-        currentYear = globalsService.getCurrentYear();
-        defaultTimezone = globalsService.getGroundTimeZone("default");
-        ensureLoggingConfigured();
-    }
 
     public void configureLogging(String logfile) {
         configureLogging(defaultMdcKey, defaultLoggerName, logfile);

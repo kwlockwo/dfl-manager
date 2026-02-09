@@ -8,16 +8,21 @@ import net.dflmngr.model.entity.DflFixture;
 import net.dflmngr.model.service.DflFixtureService;
 import net.dflmngr.model.service.GlobalsService;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class DflFixtureGeneratorHandler extends BaseHandler {
 
-	private GlobalsService globalsService;
-	private DflFixtureService dflFixtureService;
 
-	public DflFixtureGeneratorHandler() {
+
+	private final GlobalsService globalsService;
+	private final DflFixtureService dflFixtureService;
+
+	public DflFixtureGeneratorHandler(GlobalsService globalsService,
+							 DflFixtureService dflFixtureService) {
 		super("DflFixtureGeneratorHandler");
-		globalsService = serviceFactory.createGlobalsService();
-		dflFixtureService = serviceFactory.createDflFixtureService();
-	}
+		this.globalsService = globalsService;
+		this.dflFixtureService = dflFixtureService;
 
 	public void execute() {
 

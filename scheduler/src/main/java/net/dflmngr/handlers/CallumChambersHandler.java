@@ -22,26 +22,32 @@ import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.GlobalsService;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class CallumChambersHandler extends BaseHandler {
 
 	String emailOverride;
 
 	List<DflCallumChambers> medalStandings;
 
-	DflPlayerService dflPlayerService;
-	DflPlayerScoresService dflPlayerScoresService;
-	DflTeamPlayerService dflTeamPlayerService;
-	GlobalsService globalsService;
 
-	public CallumChambersHandler() {
+
+	private final DflPlayerService dflPlayerService;
+	private final DflPlayerScoresService dflPlayerScoresService;
+	private final DflTeamPlayerService dflTeamPlayerService;
+	private final GlobalsService globalsService;
+
+	public CallumChambersHandler(DflPlayerService dflPlayerService,
+							 DflPlayerScoresService dflPlayerScoresService,
+							 DflTeamPlayerService dflTeamPlayerService,
+							 GlobalsService globalsService) {
 		super("CallumChambersHandler");
+		this.dflPlayerService = dflPlayerService;
+		this.dflPlayerScoresService = dflPlayerScoresService;
+		this.dflTeamPlayerService = dflTeamPlayerService;
+		this.globalsService = globalsService;
 		medalStandings = new ArrayList<>();
-
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		globalsService = serviceFactory.createGlobalsService();
-	}
 
 	public void execute(int round) {
 
@@ -57,10 +63,6 @@ public class CallumChambersHandler extends BaseHandler {
 			
 			calculateStandings(round, players, playerScores);
 			
-			dflPlayerService.close();
-			dflPlayerScoresService.close();
-			dflTeamPlayerService.close();
-			globalsService.close();
 			
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);

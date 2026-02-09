@@ -45,6 +45,9 @@ import net.dflmngr.validation.SelectedTeamValidation;
 import net.freeutils.tnef.Attachment;
 import net.freeutils.tnef.TNEFInputStream;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class EmailSelectionsHandler extends BaseHandler {
 
 	private String dflmngrEmailAddr;
@@ -57,21 +60,24 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 	private String emailOveride;
 
-	GlobalsService globalsService;
-	DflTeamService dflTeamService;
-	DflTeamPlayerService dflTeamPlayerService;
 
 	boolean selectionsFileAttached;
 
 	List<SelectedTeamValidation> validationResults;
 	Map<String, String> selectionsIdsCurrent;
 
-	public EmailSelectionsHandler() {
-		super("Selections");
-		globalsService = serviceFactory.createGlobalsService();
-		dflTeamService = serviceFactory.createDflTeamService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-	}
+
+	private final GlobalsService globalsService;
+	private final DflTeamService dflTeamService;
+	private final DflTeamPlayerService dflTeamPlayerService;
+
+	public EmailSelectionsHandler(GlobalsService globalsService,
+							 DflTeamService dflTeamService,
+							 DflTeamPlayerService dflTeamPlayerService) {
+		super("EmailSelectionsHandler");
+		this.globalsService = globalsService;
+		this.dflTeamService = dflTeamService;
+		this.dflTeamPlayerService = dflTeamPlayerService;
 
 	public void execute() {
 		try {
@@ -113,9 +119,6 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 			sendResponses();
 
-			globalsService.close();
-			dflTeamService.close();
-			dflTeamPlayerService.close();
 
 			loggerUtils.log("info", "Email Selections Handler Completed");
 		} catch (Exception ex) {

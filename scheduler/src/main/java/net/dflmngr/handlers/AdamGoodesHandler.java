@@ -20,7 +20,9 @@ import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflSelectedTeamService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AdamGoodesHandler extends BaseHandler {
 
 	String emailOverride;
@@ -28,18 +30,21 @@ public class AdamGoodesHandler extends BaseHandler {
 	List<DflAdamGoodes> medalStandings;
 	List<DflAdamGoodes> topFirstYears;
 
-	DflPlayerService dflPlayerService;
-	DflPlayerScoresService dflPlayerScoresService;
-	DflSelectedTeamService dflSelectedTeamService;
 
-	public AdamGoodesHandler() {
+	private final DflPlayerService dflPlayerService;
+	private final DflPlayerScoresService dflPlayerScoresService;
+	private final DflSelectedTeamService dflSelectedTeamService;
+
+	public AdamGoodesHandler(DflPlayerService dflPlayerService,
+							 DflPlayerScoresService dflPlayerScoresService,
+							 DflSelectedTeamService dflSelectedTeamService) {
 		super("AdamGoodesHandler");
+		this.dflPlayerService = dflPlayerService;
+		this.dflPlayerScoresService = dflPlayerScoresService;
+		this.dflSelectedTeamService = dflSelectedTeamService;
 		medalStandings = new ArrayList<>();
 		topFirstYears = new ArrayList<>();
 
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
 	}
 
 	public void execute(int round) {
@@ -57,9 +62,6 @@ public class AdamGoodesHandler extends BaseHandler {
 			
 			calculateStandings(round, adamGoodesEligible, playerScores);
 			
-			dflPlayerService.close();
-			dflPlayerScoresService.close();
-			dflSelectedTeamService.close();
 	
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);

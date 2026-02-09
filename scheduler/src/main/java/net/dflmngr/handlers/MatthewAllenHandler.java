@@ -23,15 +23,29 @@ import net.dflmngr.model.service.DflMatthewAllenService;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflSelectedTeamService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MatthewAllenHandler extends BaseHandler {
 
-	DflFixtureService dflFixtureService;
-	DflPlayerScoresService dflPlayerScoresService;
-	DflSelectedTeamService dflSelectedTeamService;
-	DflMatthewAllenService dflMatthewAllenService;
-	DflPlayerService dflPlayerService;
+	private final DflFixtureService dflFixtureService;
+	private final DflPlayerScoresService dflPlayerScoresService;
+	private final DflSelectedTeamService dflSelectedTeamService;
+	private final DflMatthewAllenService dflMatthewAllenService;
+	private final DflPlayerService dflPlayerService;
 
+	public MatthewAllenHandler(DflFixtureService dflFixtureService,
+								DflPlayerScoresService dflPlayerScoresService,
+								DflSelectedTeamService dflSelectedTeamService,
+								DflMatthewAllenService dflMatthewAllenService,
+								DflPlayerService dflPlayerService) {
+		super("RoundProgress");
+		this.dflFixtureService = dflFixtureService;
+		this.dflPlayerScoresService = dflPlayerScoresService;
+		this.dflSelectedTeamService = dflSelectedTeamService;
+		this.dflMatthewAllenService = dflMatthewAllenService;
+		this.dflPlayerService = dflPlayerService;
+	}
 	public MatthewAllenHandler() {
 		super("RoundProgress");
 		dflFixtureService = serviceFactory.createDflFixtureService();

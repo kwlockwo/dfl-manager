@@ -19,19 +19,34 @@ import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.StatsRoundPlayerStats;
 import net.dflmngr.model.service.AflFixtureService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.RawPlayerStatsService;
 import net.dflmngr.model.service.StatsRoundPlayerStatsService;
 
+
+@Service
 public class RawPlayerStatsHandler extends BaseHandler {
 
-	DflRoundInfoService dflRoundInfoService;
-	AflFixtureService aflFixtureService;
-	GlobalsService globalsService;
-	StatsRoundPlayerStatsService statsRoundPlayerStatsService;
-	RawPlayerStatsService rawPlayerStatsService;
+	private final DflRoundInfoService dflRoundInfoService;
+	private final AflFixtureService aflFixtureService;
+	private final GlobalsService globalsService;
+	private final StatsRoundPlayerStatsService statsRoundPlayerStatsService;
+	private final RawPlayerStatsService rawPlayerStatsService;
 
+	public RawPlayerStatsHandler(DflRoundInfoService dflRoundInfoService,
+								AflFixtureService aflFixtureService,
+								GlobalsService globalsService,
+								StatsRoundPlayerStatsService statsRoundPlayerStatsService,
+								RawPlayerStatsService rawPlayerStatsService) {
+		super("RawPlayerStatsHandler");
+		this.dflRoundInfoService = dflRoundInfoService;
+		this.aflFixtureService = aflFixtureService;
+		this.globalsService = globalsService;
+		this.statsRoundPlayerStatsService = statsRoundPlayerStatsService;
+		this.rawPlayerStatsService = rawPlayerStatsService;
+	}
 	public RawPlayerStatsHandler() {
 		super("RawPlayerStatsHandler");
 		dflRoundInfoService = serviceFactory.createDflRoundInfoService();

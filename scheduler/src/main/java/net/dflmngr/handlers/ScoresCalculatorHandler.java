@@ -29,6 +29,7 @@ import net.dflmngr.model.entity.DflTeamScores;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.keys.DflPlayerScoresPK;
 import net.dflmngr.model.service.AflFixtureService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflPlayerPredictedScoresService;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflPlayerService;
@@ -41,20 +42,46 @@ import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.RawPlayerStatsService;
 import net.dflmngr.utils.DflmngrUtils;
 
+
+@Service
 public class ScoresCalculatorHandler extends BaseHandler {
 
-	RawPlayerStatsService rawPlayerStatsService;
-	DflPlayerService dflPlayerService;
-	DflTeamPlayerService dflTeamPlayerService;
-	DflPlayerScoresService dflPlayerScoresService;
-	DflSelectedTeamService dflSelectedTeamService;
-	DflTeamService dflTeamService;
-	DflTeamScoresService dflTeamScoresService;
-	DflRoundInfoService dflRoundInfoService;
-	AflFixtureService aflFixtureService;
-	GlobalsService globalsService;
-	DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
+	private final RawPlayerStatsService rawPlayerStatsService;
+	private final DflPlayerService dflPlayerService;
+	private final DflTeamPlayerService dflTeamPlayerService;
+	private final DflPlayerScoresService dflPlayerScoresService;
+	private final DflSelectedTeamService dflSelectedTeamService;
+	private final DflTeamService dflTeamService;
+	private final DflTeamScoresService dflTeamScoresService;
+	private final DflRoundInfoService dflRoundInfoService;
+	private final AflFixtureService aflFixtureService;
+	private final GlobalsService globalsService;
+	private final DflPlayerPredictedScoresService dflPlayerPredictedScoresService;
 
+	public ScoresCalculatorHandler(RawPlayerStatsService rawPlayerStatsService,
+								DflPlayerService dflPlayerService,
+								DflTeamPlayerService dflTeamPlayerService,
+								DflPlayerScoresService dflPlayerScoresService,
+								DflSelectedTeamService dflSelectedTeamService,
+								DflTeamService dflTeamService,
+								DflTeamScoresService dflTeamScoresService,
+								DflRoundInfoService dflRoundInfoService,
+								AflFixtureService aflFixtureService,
+								GlobalsService globalsService,
+								DflPlayerPredictedScoresService dflPlayerPredictedScoresService) {
+		super("RoundProgress");
+		this.rawPlayerStatsService = rawPlayerStatsService;
+		this.dflPlayerService = dflPlayerService;
+		this.dflTeamPlayerService = dflTeamPlayerService;
+		this.dflPlayerScoresService = dflPlayerScoresService;
+		this.dflSelectedTeamService = dflSelectedTeamService;
+		this.dflTeamService = dflTeamService;
+		this.dflTeamScoresService = dflTeamScoresService;
+		this.dflRoundInfoService = dflRoundInfoService;
+		this.aflFixtureService = aflFixtureService;
+		this.globalsService = globalsService;
+		this.dflPlayerPredictedScoresService = dflPlayerPredictedScoresService;
+	}
 	public ScoresCalculatorHandler() {
 		super("RoundProgress");
 		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();

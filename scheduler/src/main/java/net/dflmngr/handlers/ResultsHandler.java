@@ -14,18 +14,29 @@ import org.apache.commons.cli.ParseException;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.service.AflFixtureService;
+import org.springframework.stereotype.Service;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.reports.ResultsReport;
 
+
+@Service
 public class ResultsHandler extends BaseHandler {
 
-	AflFixtureService aflFixtureService;
-	DflRoundInfoService dflRoundInfoService;
-	GlobalsService globalsService;
+	private final AflFixtureService aflFixtureService;
+	private final DflRoundInfoService dflRoundInfoService;
+	private final GlobalsService globalsService;
 
 	String emailOverride;
 
+	public ResultsHandler(AflFixtureService aflFixtureService,
+								DflRoundInfoService dflRoundInfoService,
+								GlobalsService globalsService) {
+		super("RoundProgress");
+		this.aflFixtureService = aflFixtureService;
+		this.dflRoundInfoService = dflRoundInfoService;
+		this.globalsService = globalsService;
+	}
 	public ResultsHandler() {
 		super("RoundProgress");
 		aflFixtureService = serviceFactory.createAflFixtureService();

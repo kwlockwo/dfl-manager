@@ -53,17 +53,6 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		this.aflFixtureService = aflFixtureService;
 		this.dflSelectionIdsService = dflSelectionIdsService;
 	}
-	public SelectedTeamValidationHandler() {
-		super("SelectedTeamValidationHandler");
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		dflEarlyInsAndOutsService = serviceFactory.createDflEarlyInsAndOutsService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		dflSelectionIdsService = serviceFactory.createDflSelectionIdsService();
-	}
 
 	public SelectedTeamValidation execute(int round, String teamCode, Map<String, List<Integer>> insAndOuts, List<Double> emergencies, String selectionId) {
 

@@ -47,14 +47,6 @@ public class RawPlayerStatsHandler extends BaseHandler {
 		this.statsRoundPlayerStatsService = statsRoundPlayerStatsService;
 		this.rawPlayerStatsService = rawPlayerStatsService;
 	}
-	public RawPlayerStatsHandler() {
-		super("RawPlayerStatsHandler");
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		globalsService = serviceFactory.createGlobalsService();
-		statsRoundPlayerStatsService = serviceFactory.createStatsRoundPlayerStatsService();
-		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
-	}
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
@@ -332,7 +324,10 @@ public class RawPlayerStatsHandler extends BaseHandler {
 				isFinal = true;
 			}
 
-			RawPlayerStatsHandler testing = new RawPlayerStatsHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			RawPlayerStatsHandler testing = context.getBean(RawPlayerStatsHandler.class);
 			testing.configureLogging("RawPlayerStatsHandlerTesting");
 			testing.execute(round, isFinal);
 			System.exit(0);

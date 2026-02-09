@@ -35,6 +35,7 @@ public class AflPlayerLoaderHtmlHandler extends BaseHandler {
 	public AflPlayerLoaderHtmlHandler(GlobalsService globalsService) {
 		super("AflPlayerLoaderHtmlHandler");
 		this.globalsService = globalsService;
+	}
 
 	public List<AflPlayer> execute(String teamId, String url, boolean useOfficialPlayers) {
 

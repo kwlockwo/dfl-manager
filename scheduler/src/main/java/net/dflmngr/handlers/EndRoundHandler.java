@@ -94,7 +94,7 @@ public class EndRoundHandler extends BaseHandler {
 		this.dflSelectedTeamService = dflSelectedTeamService;
 		this.dflRoundInfoService = dflRoundInfoService;
 		this.insAndOutsService = insAndOutsService;
-
+	}
 	public void execute(int round, String emailOverride) {
 
 		try {
@@ -929,9 +929,13 @@ public class EndRoundHandler extends BaseHandler {
 				email = cli.getOptionValue("e");
 			}
 
-			EndRoundHandler endRound = new EndRoundHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			EndRoundHandler endRound = context.getBean(EndRoundHandler.class);
 			endRound.configureLogging("batch.name", "batch-logger", ("EndRound_R" + round));
 			endRound.execute(round, email);
+			System.exit(0);
 		} catch (ParseException ex) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("MatthewAllenHandler", options);

@@ -18,60 +18,77 @@ public class DflMatthewAllenServiceImpl implements DflMatthewAllenService {
         this.repository = repository;
     }
     
-    @Override
     public DflMatthewAllen get(Integer id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflMatthewAllen> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflMatthewAllen entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflMatthewAllen entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflMatthewAllen entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflMatthewAllen> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflMatthewAllen> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflMatthewAllen> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflMatthewAllen entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public DflMatthewAllen findByPlayerId(int playerId) {
         return repository.findByPlayerId(playerId);
+    }
+
+    public List<DflMatthewAllen> getForRound(int round) {
+        return repository.findByRound(round);
+    }
+
+    public DflMatthewAllen getLastVotes(int playerId) {
+        return repository.findLastVotesByPlayerId(playerId);
+    }
+
+    public void replaceAllForRound(int round, List<DflMatthewAllen> votes) {
+        repository.deleteByRound(round);
+        repository.flush();
+        repository.saveAll(votes);
+    }
+
+    public void deleteForRound(int round) {
+        repository.deleteByRound(round);
+    }
+
+    public void insertAll(List<DflMatthewAllen> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflMatthewAllen> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

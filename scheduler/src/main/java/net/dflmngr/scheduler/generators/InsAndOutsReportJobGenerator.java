@@ -19,16 +19,15 @@ import net.dflmngr.utils.DflmngrUtils;
 
 public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
 
+	public InsAndOutsReportJobGenerator() {
+		super("InsAndOutsReportJobGenerator");
+	}
+
 	private DflRoundInfoService dflRoundInfoService;
 	private GlobalsService globalsService;
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
-	public InsAndOutsReportJobGenerator() {
-		super("InsAndOutsReportJobGenerator");
-		this.dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		this.globalsService = serviceFactory.createGlobalsService();
-	}
 
 	@Override
 	protected void generateJobs() throws Exception {

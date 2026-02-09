@@ -18,55 +18,55 @@ public class DflPreseasonScoresServiceImpl implements DflPreseasonScoresService 
         this.repository = repository;
     }
     
-    @Override
     public DflPreseasonScores get(Integer id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflPreseasonScores> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflPreseasonScores entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflPreseasonScores entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflPreseasonScores entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflPreseasonScores> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflPreseasonScores> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflPreseasonScores> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflPreseasonScores entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
+    }
+
+    public void insertAll(List<DflPreseasonScores> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflPreseasonScores> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

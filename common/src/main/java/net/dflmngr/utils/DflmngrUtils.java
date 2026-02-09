@@ -9,7 +9,7 @@ import java.util.Map;
 //import java.util.TimeZone;
 
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
+import net.dflmngr.model.service.impl.spring.GlobalsServiceImpl;
 
 public class DflmngrUtils {
 

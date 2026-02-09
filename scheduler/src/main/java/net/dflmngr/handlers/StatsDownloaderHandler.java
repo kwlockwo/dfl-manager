@@ -37,16 +37,6 @@ public class StatsDownloaderHandler extends BaseHandler {
 		this.statsUrl = statsUrl;
 	}
 
-	public StatsDownloaderHandler(int round, String statsUrl) {
-		super("RoundProgress");
-		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
-		statsRoundPlayerStatsService = serviceFactory.createStatsRoundPlayerStatsService();
-		globalsService = serviceFactory.createGlobalsService();
-		this.round = round;
-		this.statsUrl = statsUrl;
-	}
-
-	
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);

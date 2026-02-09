@@ -1,7 +1,6 @@
 package net.dflmngr.model.service.impl.spring;
 
 import net.dflmngr.model.entity.DflBest22;
-import net.dflmngr.model.entity.keys.DflBest22PK;
 import net.dflmngr.model.service.DflBest22Service;
 import net.dflmngr.repositories.DflBest22Repository;
 import org.springframework.stereotype.Service;
@@ -19,60 +18,63 @@ public class DflBest22ServiceImpl implements DflBest22Service {
         this.repository = repository;
     }
     
-    @Override
-    public DflBest22 get(DflBest22PK id) {
+    public DflBest22 get(Integer id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflBest22> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflBest22 entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflBest22 entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflBest22 entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflBest22> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflBest22> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflBest22> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflBest22 entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public List<DflBest22> findByRound(int round) {
         return repository.findByRound(round);
+    }
+
+    public List<DflBest22> getForRound(int round) {
+        return repository.findByRound(round);
+    }
+
+    public void insertAll(List<DflBest22> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflBest22> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

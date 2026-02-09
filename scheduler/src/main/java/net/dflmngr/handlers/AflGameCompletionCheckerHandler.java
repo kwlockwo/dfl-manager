@@ -41,7 +41,7 @@ public class AflGameCompletionCheckerHandler extends BaseHandler {
 		super("AflGameCompletionCheckerHandler");
 		this.aflFixtureService = aflFixtureService;
 		this.globalsService = globalsService;
-
+	}
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
 	}

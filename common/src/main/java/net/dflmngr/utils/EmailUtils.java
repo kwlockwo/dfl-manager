@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMultipart;
 
 import net.dflmngr.exceptions.EmailException;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.GlobalsServiceImpl;
+import net.dflmngr.model.service.impl.spring.GlobalsServiceImpl;
 import net.dflmngr.utils.oauth2.OAuth2Authenticator;
 
 public class EmailUtils {

@@ -41,10 +41,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 		this.dflPlayerService = dflPlayerService;
 		this.globalsService = globalsService;
 		this.dflUnmatchedPlayerService = dflUnmatchedPlayerService;
-		try {
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
-		}
+	}
 
 	public void execute() {
 

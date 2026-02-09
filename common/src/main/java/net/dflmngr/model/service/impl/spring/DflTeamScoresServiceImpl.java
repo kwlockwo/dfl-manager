@@ -7,7 +7,9 @@ import net.dflmngr.repositories.DflTeamScoresRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -19,65 +21,82 @@ public class DflTeamScoresServiceImpl implements DflTeamScoresService {
         this.repository = repository;
     }
     
-    @Override
     public DflTeamScores get(DflTeamScoresPK id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflTeamScores> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflTeamScores entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflTeamScores entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflTeamScores entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflTeamScores> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflTeamScores> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflTeamScores> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflTeamScores entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public List<DflTeamScores> findByRound(int round) {
         return repository.findByRound(round);
     }
     
-    @Override
     public DflTeamScores findByRoundAndTeam(int round, String teamCode) {
         return repository.findByRoundAndTeamCode(round, teamCode);
+    }
+
+    public void insertAll(List<DflTeamScores> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflTeamScores> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public List<DflTeamScores> getForRound(int round) {
+        return repository.findByRound(round);
+    }
+
+    public Map<String, DflTeamScores> getForRoundWithKey(int round) {
+        List<DflTeamScores> teamScores = repository.findByRound(round);
+        Map<String, DflTeamScores> teamScoresMap = new HashMap<>();
+        for (DflTeamScores scores : teamScores) {
+            teamScoresMap.put(scores.getTeamCode(), scores);
+        }
+        return teamScoresMap;
+    }
+
+    public void replaceAllForRound(int round, List<DflTeamScores> teamScores) {
+        repository.deleteByRound(round);
+        repository.flush();
+        repository.saveAll(teamScores);
     }
 }

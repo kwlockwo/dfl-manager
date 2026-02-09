@@ -44,7 +44,7 @@ public class LadderCalculatorHandler extends BaseHandler {
 		this.dflSelectedTeamService = dflSelectedTeamService;
 		this.dflPlayerScoresService = dflPlayerScoresService;
 		this.dflPlayerPredictedScoresService = dflPlayerPredictedScoresService;
-
+	}
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
 	}

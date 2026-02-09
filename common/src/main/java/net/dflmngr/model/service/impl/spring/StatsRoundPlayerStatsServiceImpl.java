@@ -19,65 +19,63 @@ public class StatsRoundPlayerStatsServiceImpl implements StatsRoundPlayerStatsSe
         this.repository = repository;
     }
     
-    @Override
     public StatsRoundPlayerStats get(StatsRoundPlayerStatsPK id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<StatsRoundPlayerStats> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(StatsRoundPlayerStats entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(StatsRoundPlayerStats entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(StatsRoundPlayerStats entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<StatsRoundPlayerStats> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<StatsRoundPlayerStats> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<StatsRoundPlayerStats> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(StatsRoundPlayerStats entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public List<StatsRoundPlayerStats> findByRound(int round) {
         return repository.findByRound(round);
     }
     
-    @Override
     public StatsRoundPlayerStats findByRoundAndPlayer(int round, int playerId) {
         return repository.findByRoundAndPlayerId(round, playerId);
+    }
+
+    public void insertAll(List<StatsRoundPlayerStats> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<StatsRoundPlayerStats> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

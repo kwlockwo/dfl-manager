@@ -37,12 +37,6 @@ public class PreSeasonStatsHandler extends BaseHandler {
 		this.globalsService = globalsService;
 		this.dflPreseasonScoresService = dflPreseasonScoresService;
 	}
-	public PreSeasonStatsHandler() {
-		super("PreSeasonStats");
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflPreseasonScoresService = serviceFactory.createDflPreseasonScoresService();
-	}
 
 	public void execute(int round) {
 

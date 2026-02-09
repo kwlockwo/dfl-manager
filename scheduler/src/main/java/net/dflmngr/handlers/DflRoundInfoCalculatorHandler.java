@@ -58,13 +58,7 @@ public class DflRoundInfoCalculatorHandler extends BaseHandler {
 		this.aflFixtureService = aflFixtureService;
 		this.dflRoundInfoService = dflRoundInfoService;
 		this.aflTeamService = aflTeamService;
-		try{
-			String defaultTimezone = globalsService.getGroundTimeZone("default");
-			lockoutFormat.setTimeZone(TimeZone.getTimeZone(defaultTimezone));
-			configureStatsRoundTracking();
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
-		}
+	}
 
 	public void execute() {
 

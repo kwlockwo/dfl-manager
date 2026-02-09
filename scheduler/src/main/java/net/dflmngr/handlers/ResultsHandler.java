@@ -37,12 +37,6 @@ public class ResultsHandler extends BaseHandler {
 		this.dflRoundInfoService = dflRoundInfoService;
 		this.globalsService = globalsService;
 	}
-	public ResultsHandler() {
-		super("RoundProgress");
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		globalsService = serviceFactory.createGlobalsService();
-	}
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
@@ -227,7 +221,10 @@ public class ResultsHandler extends BaseHandler {
 				sendReport = true;
 			}
 			
-			ResultsHandler resultsHandler = new ResultsHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			ResultsHandler resultsHandler = context.getBean(ResultsHandler.class);
 			resultsHandler.configureLogging("ResultsHandler_R" + round);
 			resultsHandler.execute(round, isFinal, email, skipStats, sendReport);
 			

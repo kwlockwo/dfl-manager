@@ -31,12 +31,7 @@ public class StatsHtmlHandler extends BaseHandler {
         this.globalsService = globalsService;
     }
 
-    public StatsHtmlHandler() {
-        super("RoundProgress");
-        globalsService = serviceFactory.createGlobalsService();
-    }
-
-    public void configureLogging(String logfile) {
+public void configureLogging(String logfile) {
         configureLogging(defaultMdcKey, defaultLoggerName, logfile);
     }
 

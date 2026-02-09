@@ -18,55 +18,60 @@ public class DflSelectionIdsServiceImpl implements DflSelectionIdsService {
         this.repository = repository;
     }
     
-    @Override
     public DflSelectionIds get(Integer id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflSelectionIds> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflSelectionIds entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflSelectionIds entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflSelectionIds entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflSelectionIds> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflSelectionIds> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflSelectionIds> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflSelectionIds entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
+    }
+
+    public void insertAll(List<DflSelectionIds> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflSelectionIds> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public boolean selectionIdExists(int round, String teamCode, String id) {
+        List<DflSelectionIds> results = repository.findByRoundAndTeamCodeAndSelectionId(round, teamCode, id);
+        return !results.isEmpty();
     }
 }

@@ -47,14 +47,6 @@ public class PredictionHandler extends BaseHandler {
 		this.dflTeamService = dflTeamService;
 		this.dflSelectedTeamService = dflSelectedTeamService;
 	}
-	public PredictionHandler() {
-		super("Predictions");
-		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
-		dflTeamPredictedScoresService = serviceFactory.createDflTeamPredictedScoresService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflTeamService = serviceFactory.createDflTeamService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-	}
 
 	public void execute(int round, String teamCode, boolean doPlayers) {
 
@@ -210,10 +202,14 @@ public class PredictionHandler extends BaseHandler {
 
 			round = ((Number)cli.getParsedOptionValue("r")).intValue();
 
-			PredictionHandler predictions = new PredictionHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			PredictionHandler predictions = context.getBean(PredictionHandler.class);
 			predictions.configureLogging("batch.name", "batch-logger", "PredictionsHandler_R" + round);
 			predictions.execute(round, null, true);
 
+			System.exit(0);
 		} catch (ParseException ex) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp( "PredictionHandler", options );

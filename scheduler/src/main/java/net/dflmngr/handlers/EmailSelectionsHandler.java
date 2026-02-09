@@ -78,7 +78,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 		this.globalsService = globalsService;
 		this.dflTeamService = dflTeamService;
 		this.dflTeamPlayerService = dflTeamPlayerService;
-
+	}
 	public void execute() {
 		try {
 			ensureLoggingConfigured();
@@ -920,7 +920,10 @@ public class EmailSelectionsHandler extends BaseHandler {
 	// internal testing
 	public static void main(String[] args) {
 		try {
-			EmailSelectionsHandler selectionHandler = new EmailSelectionsHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			EmailSelectionsHandler selectionHandler = context.getBean(EmailSelectionsHandler.class);
 			selectionHandler.execute();
 			System.exit(0);
 		} catch (Exception ex) {

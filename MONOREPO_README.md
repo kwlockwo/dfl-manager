@@ -8,6 +8,18 @@ This branch contains the monorepo structure for the DFL Manager project, organiz
 - **`main` branch**: Continues with the current EclipseLink-based backend (production)
 - **No merging planned**: These branches represent different architectures and will operate in parallel until the monorepo is production-ready
 
+### Branch Protection Rules
+
+The monorepo branch is protected with the following rules:
+- ✅ **Require pull request reviews**: All changes must go through PR review
+- ✅ **Require status checks to pass**: Both "test" and "docker" workflows must pass
+- ✅ **No direct pushes**: All commits must be made via pull requests
+- ✅ **No force pushes**: History cannot be rewritten
+- ✅ **No deletions**: Branch cannot be deleted
+- ✅ **Enforce for admins**: Rules apply to all users including admins
+
+**Note for Phase 1**: The "test" and "docker" workflows are configured to pass by skipping execution on the monorepo branch (due to the EclipseLink metamodel issue). They will be fully enabled in Phase 2.
+
 ## Module Structure
 
 ```

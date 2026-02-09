@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [ main, develop, feature/**, monorepo ]
+    branches: [ main, develop, monorepo ]
   pull_request:
     branches: [ main, develop, monorepo ]
 

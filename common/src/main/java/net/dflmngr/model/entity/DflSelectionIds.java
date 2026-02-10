@@ -20,7 +20,6 @@ public class DflSelectionIds {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(columnDefinition = "serial")
 	private Integer id;
 
 	@Column(name = "round")

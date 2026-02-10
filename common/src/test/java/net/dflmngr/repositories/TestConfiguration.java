@@ -42,12 +42,17 @@ public class TestConfiguration {
 
         // Build Hibernate properties from application-test.yml
         Map<String, Object> properties = new HashMap<>();
+
+        // Pass JDBC URL to Hibernate so it can detect the dialect
+        properties.put("jakarta.persistence.jdbc.url", env.getProperty("spring.datasource.url"));
+        properties.put("jakarta.persistence.jdbc.user", env.getProperty("spring.datasource.username"));
+        properties.put("jakarta.persistence.jdbc.password", env.getProperty("spring.datasource.password"));
+        properties.put("jakarta.persistence.jdbc.driver", env.getProperty("spring.datasource.driver-class-name"));
+
         properties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto", "create-drop"));
         properties.put("hibernate.show_sql", env.getProperty("spring.jpa.show-sql", "true"));
         properties.put("hibernate.format_sql", env.getProperty("spring.jpa.properties.hibernate.format_sql", "true"));
         properties.put("hibernate.use_sql_comments", env.getProperty("spring.jpa.properties.hibernate.use_sql_comments", "true"));
-
-        // Let Hibernate auto-detect dialect from datasource (works for both H2 and PostgreSQL)
 
         LocalContainerEntityManagerFactoryBean emfb = builder
                 .dataSource(dataSource)

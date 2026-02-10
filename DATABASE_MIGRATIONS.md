@@ -143,7 +143,7 @@ The project uses **pre-deploy hooks** for safe migrations:
    - If migrations succeed → new containers start
 
 3. **Application startup**:
-   - Flyway skips (migrations already done)
+   - Flyway is disabled (migrations already done by pre-deploy hook)
    - Hibernate validates schema matches entities
    - Application serves traffic
 
@@ -195,16 +195,27 @@ services:
 - ✅ Migration history logged
 - ✅ No manual steps required
 
-### Alternative: Disable Pre-Deploy Hook
+### Alternative: Enable Migrations on Startup
 
-If you prefer automatic migrations on startup, remove the `preDeployCommand` from render.yaml:
+If you prefer automatic migrations on startup instead of pre-deploy:
 
-```yaml
-# Remove this line:
-preDeployCommand: ./scripts/run-migrations.sh
-```
+1. Remove `preDeployCommand` from render.yaml:
+   ```yaml
+   # Remove this line:
+   preDeployCommand: ./scripts/run-migrations.sh
+   ```
 
-Flyway will run when each container starts instead.
+2. Enable Flyway in application.yml:
+   ```yaml
+   spring:
+     flyway:
+       enabled: true
+       baseline-on-migrate: true
+       baseline-version: 0
+       locations: classpath:db/migration
+   ```
+
+Flyway will then run when each container starts.
 
 ## Common Operations
 

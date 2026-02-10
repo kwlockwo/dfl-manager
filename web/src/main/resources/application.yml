@@ -17,11 +17,7 @@ spring:
     show-sql: false
 
   flyway:
-    enabled: true
-    baseline-on-migrate: true
-    baseline-version: 0
-    locations: classpath:db/migration
-    validate-on-migrate: true
+    enabled: false  # Migrations run via pre-deploy hook only
 
 logging:
   level:

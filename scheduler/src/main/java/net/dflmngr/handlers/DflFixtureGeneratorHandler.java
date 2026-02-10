@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import net.dflmngr.model.service.GlobalsService;
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class DflFixtureGeneratorHandler extends BaseHandler {
 
 

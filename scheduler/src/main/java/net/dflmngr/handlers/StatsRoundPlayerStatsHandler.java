@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -15,12 +16,13 @@ import org.apache.commons.cli.ParseException;
 
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.service.AflFixtureService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
 
+@Component
 @Service
 public class StatsRoundPlayerStatsHandler extends BaseHandler {
 

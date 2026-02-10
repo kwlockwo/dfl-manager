@@ -1,5 +1,6 @@
 package net.dflmngr.scheduler.generators;
 
+import org.springframework.stereotype.Component;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -12,6 +13,7 @@ import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 
+@Component
 public class StartRoundJobGenerator extends BaseJobGenerator {
 
 	public StartRoundJobGenerator() {

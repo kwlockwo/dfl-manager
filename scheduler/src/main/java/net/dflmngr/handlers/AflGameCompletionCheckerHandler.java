@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -29,6 +30,7 @@ import net.dflmngr.utils.DflmngrUtils;
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class AflGameCompletionCheckerHandler extends BaseHandler {
 
 

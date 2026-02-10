@@ -1,5 +1,6 @@
 package net.dflmngr.scheduler.generators;
 
+import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -20,6 +21,7 @@ import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 import net.dflmngr.utils.DflmngrUtils;
 
+@Component
 public class ResultsJobGenerator extends BaseJobGenerator {
 
 	public ResultsJobGenerator() {

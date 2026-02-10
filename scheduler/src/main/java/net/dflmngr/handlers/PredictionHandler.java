@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +20,14 @@ import net.dflmngr.model.entity.DflTeam;
 import net.dflmngr.model.entity.DflTeamPredictedScores;
 import net.dflmngr.model.entity.keys.DflPlayerPredictedScoresPK;
 import net.dflmngr.model.service.DflPlayerPredictedScoresService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import net.dflmngr.model.service.DflPlayerScoresService;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamPredictedScoresService;
 import net.dflmngr.model.service.DflTeamService;
 
 
+@Component
 @Service
 public class PredictionHandler extends BaseHandler {
 

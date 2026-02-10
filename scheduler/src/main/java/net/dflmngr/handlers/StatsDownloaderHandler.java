@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,11 +10,12 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.StatsRoundPlayerStats;
 import net.dflmngr.model.service.GlobalsService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import net.dflmngr.model.service.RawPlayerStatsService;
 import net.dflmngr.model.service.StatsRoundPlayerStatsService;
 
 
+@Component
 @Service
 public class StatsDownloaderHandler extends BaseHandler {
 

@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import net.dflmngr.model.service.DflPlayerService;
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class Best22Handler extends BaseHandler {
 
 

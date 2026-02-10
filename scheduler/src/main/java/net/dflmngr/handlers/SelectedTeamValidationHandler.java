@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflSelectionIds;
 import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.service.AflFixtureService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import net.dflmngr.model.service.DflEarlyInsAndOutsService;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflRoundInfoService;
@@ -23,6 +24,7 @@ import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.validation.SelectedTeamValidation;
 
 
+@Component
 @Service
 public class SelectedTeamValidationHandler extends BaseHandler {
 

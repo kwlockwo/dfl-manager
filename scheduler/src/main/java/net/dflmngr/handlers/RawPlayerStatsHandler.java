@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +20,14 @@ import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.StatsRoundPlayerStats;
 import net.dflmngr.model.service.AflFixtureService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import net.dflmngr.model.service.DflRoundInfoService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.RawPlayerStatsService;
 import net.dflmngr.model.service.StatsRoundPlayerStatsService;
 
 
+@Component
 @Service
 public class RawPlayerStatsHandler extends BaseHandler {
 

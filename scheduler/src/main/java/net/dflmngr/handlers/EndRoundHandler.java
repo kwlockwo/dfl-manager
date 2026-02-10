@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +48,7 @@ import net.dflmngr.utils.EmailUtils;
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class EndRoundHandler extends BaseHandler {
 
 	private static final String EMAIL_MSG_001 = "Good luck,\nDFL Manager Admin";

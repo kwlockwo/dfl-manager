@@ -224,7 +224,9 @@ public class RawPlayerStatsHandler extends BaseHandler {
 
 			loggerUtils.log("info", "Scraping status={}", scrapingStatus);
 
-			StatsDownloaderHandler handler = new StatsDownloaderHandler(round, fullStatsUrl);
+			StatsDownloaderHandler handler = applicationContext.getBean(StatsDownloaderHandler.class);
+			handler.setRound(round);
+			handler.setStatsUrl(fullStatsUrl);
 			handler.configureLogging("RawPlayerDownloader");
 			handler.execute(homeTeam, awayTeam, includeHomeTeam, includeAwayTeam, scrapingStatus, false);
 		}

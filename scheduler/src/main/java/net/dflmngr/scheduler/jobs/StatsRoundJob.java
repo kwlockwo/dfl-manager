@@ -13,7 +13,7 @@ public class StatsRoundJob extends BaseJob {
 
 		String logFile = "StatsRoundRound_R";
 
-		StatsRoundPlayerStatsHandler statsRoundHandler = new StatsRoundPlayerStatsHandler();
+		StatsRoundPlayerStatsHandler statsRoundHandler = applicationContext.getBean(StatsRoundPlayerStatsHandler.class);
 		statsRoundHandler.configureLogging("online.name", "online-logger", logFile);
 
 		loggerUtils.log("info", "Running {}", logFile);

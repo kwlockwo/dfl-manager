@@ -508,8 +508,10 @@ public class DflRoundInfoCalculatorHandler extends BaseHandler {
 	}
 	
 	// For internal testing
-	public static void main(String[] args) {		
-		DflRoundInfoCalculatorHandler testing = new DflRoundInfoCalculatorHandler();
+	public static void main(String[] args) {
+		org.springframework.context.ApplicationContext context =
+			org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+		DflRoundInfoCalculatorHandler testing = context.getBean(DflRoundInfoCalculatorHandler.class);
 		testing.execute();
 	}
 }

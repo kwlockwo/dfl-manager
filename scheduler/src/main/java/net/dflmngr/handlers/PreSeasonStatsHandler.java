@@ -218,9 +218,11 @@ public class PreSeasonStatsHandler extends BaseHandler {
 		return preseasonScores;
 	}
 	
-	
+
 	public static void main(String[] args) {
-		PreSeasonStatsHandler testing = new PreSeasonStatsHandler();
+		org.springframework.context.ApplicationContext context =
+			org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+		PreSeasonStatsHandler testing = context.getBean(PreSeasonStatsHandler.class);
 		testing.configureLogging("batch.name", "batch-logger", "PreSeasonStats");
 		testing.execute(Integer.parseInt(args[0]));
 	}

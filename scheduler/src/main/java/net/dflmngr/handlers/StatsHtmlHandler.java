@@ -182,7 +182,9 @@ public void configureLogging(String logfile) {
         boolean includeAwayTeam = Boolean.parseBoolean(args[5]);
         String scrapingStatus = args[6];
 
-        StatsHtmlHandler handler = new StatsHtmlHandler();
+        org.springframework.context.ApplicationContext context =
+            org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+        StatsHtmlHandler handler = context.getBean(StatsHtmlHandler.class);
         handler.configureLogging("RawPlayerDownloader");
 
         try {

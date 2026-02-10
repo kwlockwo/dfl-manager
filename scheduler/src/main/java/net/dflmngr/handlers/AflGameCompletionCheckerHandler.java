@@ -183,7 +183,9 @@ public class AflGameCompletionCheckerHandler extends BaseHandler {
 	}
 
 	public static void main(String[] args) {
-		AflGameCompletionCheckerHandler testing = new AflGameCompletionCheckerHandler();
+		org.springframework.context.ApplicationContext context =
+			org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+		AflGameCompletionCheckerHandler testing = context.getBean(AflGameCompletionCheckerHandler.class);
 		testing.execute();
 	}
 }

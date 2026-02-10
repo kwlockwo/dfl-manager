@@ -353,7 +353,7 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 
 	private void createPredictions(int round, String teamCode) {
 		loggerUtils.log("info", "Creating predictions");
-		PredictionHandler predictions = new PredictionHandler();
+		PredictionHandler predictions = applicationContext.getBean(PredictionHandler.class);
 		predictions.configureLogging(mdcKey, loggerName, logfile);
 		predictions.execute(round, teamCode, false);
 	}

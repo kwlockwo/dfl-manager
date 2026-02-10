@@ -102,7 +102,7 @@ public class SelectionsHandler extends BaseHandler {
 			dflSelectedTeamService.replaceTeamForRound(round, teamCode, selectedTeam);
 
 			loggerUtils.log("info", "Creating predictions");
-			PredictionHandler predictions = new PredictionHandler();
+			PredictionHandler predictions = applicationContext.getBean(PredictionHandler.class);
 			predictions.configureLogging(mdcKey, loggerName, logfile);
 			predictions.execute(round, teamCode, false);
 		} else {

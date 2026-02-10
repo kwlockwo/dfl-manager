@@ -1,5 +1,8 @@
 package net.dflmngr.handlers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
 import net.dflmngr.logging.LoggingUtils;
 
 /**
@@ -7,6 +10,9 @@ import net.dflmngr.logging.LoggingUtils;
  * Simplifies handler initialization and logging configuration.
  */
 public abstract class BaseHandler {
+
+	@Autowired
+	protected ApplicationContext applicationContext;
 
 	protected LoggingUtils loggerUtils;
 

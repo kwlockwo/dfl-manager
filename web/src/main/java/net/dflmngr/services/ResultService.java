@@ -120,8 +120,8 @@ public class ResultService {
 		Comparator<GameMenu> gamesComparator = Comparator.comparingInt(GameMenu::getGame);
 		
 		for(DflFixture dflFixture : dflFixtures) {
-			boolean homeTeamSelected = dflSelectedPlayerRepository.selectedTeamExists(dflFixture.getHomeTeam(), dflFixture.getRound());
-			boolean awayTeamSelected = dflSelectedPlayerRepository.selectedTeamExists(dflFixture.getAwayTeam(), dflFixture.getRound());
+			boolean homeTeamSelected = dflSelectedPlayerRepository.selectedTeamExists(dflFixture.getRound(), dflFixture.getHomeTeam());
+			boolean awayTeamSelected = dflSelectedPlayerRepository.selectedTeamExists(dflFixture.getRound(), dflFixture.getAwayTeam());
 			
 			if(homeTeamSelected || awayTeamSelected) {
 				GameMenu gameMenu = new GameMenu();

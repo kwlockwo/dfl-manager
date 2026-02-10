@@ -26,17 +26,20 @@ public class StatsDownloaderHandler extends BaseHandler {
 
 	public StatsDownloaderHandler(RawPlayerStatsService rawPlayerStatsService,
 								   StatsRoundPlayerStatsService statsRoundPlayerStatsService,
-								   GlobalsService globalsService,
-								   int round,
-								   String statsUrl) {
+								   GlobalsService globalsService) {
 		super("RoundProgress");
 		this.rawPlayerStatsService = rawPlayerStatsService;
 		this.statsRoundPlayerStatsService = statsRoundPlayerStatsService;
 		this.globalsService = globalsService;
-		this.round = round;
-		this.statsUrl = statsUrl;
 	}
 
+	public void setRound(int round) {
+		this.round = round;
+	}
+
+	public void setStatsUrl(String statsUrl) {
+		this.statsUrl = statsUrl;
+	}
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
@@ -58,7 +61,7 @@ public class StatsDownloaderHandler extends BaseHandler {
 			for(int i = 0; i < 5; i++) {
 				loggerUtils.log("info", "Attempt {}", i);
 				try {
-// TODO: Refactor to use Spring DI - 					StatsHtmlHandler htmlHandler = new StatsHtmlHandler();
+					StatsHtmlHandler htmlHandler = applicationContext.getBean(StatsHtmlHandler.class);
 					htmlHandler.configureLogging(logfile);
 
 					playerStats = htmlHandler.execute(round, homeTeam, awayTeam, statsUrl, includeHomeTeam, includeAwayTeam, scrapingStatus);
@@ -131,9 +134,13 @@ public class StatsDownloaderHandler extends BaseHandler {
 		boolean includeHomeTeam = Boolean.parseBoolean(args[4]);
 		boolean includeAwayTeam = Boolean.parseBoolean(args[5]);
 		String scrapingStatus = args[6];
-		boolean isStatsRound = Boolean.parseBoolean(args[6]);
+		boolean isStatsRound = Boolean.parseBoolean(args[7]);
 
-		StatsDownloaderHandler handler = new StatsDownloaderHandler(round, statsUrl);
+		org.springframework.context.ApplicationContext context =
+			org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+		StatsDownloaderHandler handler = context.getBean(StatsDownloaderHandler.class);
+		handler.setRound(round);
+		handler.setStatsUrl(statsUrl);
 		handler.configureLogging("RawPlayerDownloader");
 		handler.execute(homeTeam, awayTeam, includeHomeTeam, includeAwayTeam, scrapingStatus, isStatsRound);
 

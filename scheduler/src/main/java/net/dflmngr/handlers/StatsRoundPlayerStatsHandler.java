@@ -92,7 +92,9 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 			boolean includeHomeTeam = true;
 			boolean includeAwayTeam = true;
 
-			StatsDownloaderHandler handler = new StatsDownloaderHandler(round, fullStatsUrl);
+			StatsDownloaderHandler handler = applicationContext.getBean(StatsDownloaderHandler.class);
+			handler.setRound(round);
+			handler.setStatsUrl(fullStatsUrl);
 			handler.configureLogging("StatsRoundPlayerDownloader");
 			handler.execute(homeTeam, awayTeam, includeHomeTeam, includeAwayTeam, "Finalized", true);
 		}

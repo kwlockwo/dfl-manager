@@ -79,8 +79,8 @@ public class FixtureService {
 				game.setAwayTeamScore(dflTeamScores.get(awayHashKey).getScore());
 			}
 			
-			boolean homeTeamSelectionsExist = dflSelectedPlayerRepository.selectedTeamExists(dflFixture.getHomeTeam(), dflFixture.getRound());
-			boolean awayTeamSelectionsExist = dflSelectedPlayerRepository.selectedTeamExists(dflFixture.getAwayTeam(), dflFixture.getRound());
+			boolean homeTeamSelectionsExist = dflSelectedPlayerRepository.selectedTeamExists(dflFixture.getRound(), dflFixture.getHomeTeam());
+			boolean awayTeamSelectionsExist = dflSelectedPlayerRepository.selectedTeamExists(dflFixture.getRound(), dflFixture.getAwayTeam());
 			
 			if(homeTeamSelectionsExist && awayTeamSelectionsExist) {
 				String resultsUri = "/results/" + dflFixture.getRound() + "/" + dflFixture.getGame();

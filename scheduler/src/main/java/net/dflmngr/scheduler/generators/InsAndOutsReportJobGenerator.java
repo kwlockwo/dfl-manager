@@ -1,5 +1,6 @@
 package net.dflmngr.scheduler.generators;
 
+import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -17,6 +18,7 @@ import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
 import net.dflmngr.utils.DflmngrUtils;
 
+@Component
 public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
 
 	public InsAndOutsReportJobGenerator() {

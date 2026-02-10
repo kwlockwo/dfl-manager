@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,6 +49,7 @@ import net.freeutils.tnef.TNEFInputStream;
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class EmailSelectionsHandler extends BaseHandler {
 
 	private String dflmngrEmailAddr;

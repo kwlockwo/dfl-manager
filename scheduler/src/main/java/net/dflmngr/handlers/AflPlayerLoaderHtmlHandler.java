@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import net.dflmngr.model.service.GlobalsService;
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class AflPlayerLoaderHtmlHandler extends BaseHandler {
 
 	private static final String TXT_CONT_ATTR = "textContent";

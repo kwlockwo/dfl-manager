@@ -1,8 +1,10 @@
 package net.dflmngr.scheduler.generators;
 
+import org.springframework.stereotype.Component;
 import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduler;
 
+@Component
 public class EmailSelectionsJobGenerator extends BaseJobGenerator {
 
 	public EmailSelectionsJobGenerator() {

@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import net.dflmngr.model.service.GlobalsService;
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class AflPlayerLoaderHandler extends BaseHandler {
 
 	private static final String NOT_ALPHA_REGEX = "[^a-zA-Z]";

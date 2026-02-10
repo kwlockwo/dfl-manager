@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +17,13 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPreseasonScores;
 import net.dflmngr.model.service.DflPlayerService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import net.dflmngr.model.service.DflPreseasonScoresService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
 
+@Component
 @Service
 public class PreSeasonStatsHandler extends BaseHandler {
 

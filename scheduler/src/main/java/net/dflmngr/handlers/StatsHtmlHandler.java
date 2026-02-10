@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,10 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import net.dflmngr.exceptions.UnexpectedHtmlException;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.service.GlobalsService;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 
+@Component
 @Service
 public class StatsHtmlHandler extends BaseHandler {
 

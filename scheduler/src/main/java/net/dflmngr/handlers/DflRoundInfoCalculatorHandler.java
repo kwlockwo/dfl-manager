@@ -1,5 +1,6 @@
 package net.dflmngr.handlers;
 
+import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ import net.dflmngr.model.service.GlobalsService;
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
 public class DflRoundInfoCalculatorHandler extends BaseHandler {
 
 	SimpleDateFormat lockoutFormat = new SimpleDateFormat("dd/MM/yyyy h:mm a");

@@ -17,21 +17,19 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build base image (build stage)
-      run: |
-        docker build --target build -t dfl-manager:build .
-
-    - name: Run tests in build container
-      run: |
-        docker run --rm dfl-manager:build ./mvnw test -B
-
     - name: Build scheduler image
       run: |
-        docker build --target scheduler -t dfl-manager:scheduler .
+        docker build -f Dockerfile.scheduler -t dfl-manager:scheduler .
 
     - name: Build web image
       run: |
-        docker build --target web -t dfl-manager:web .
+        docker build -f Dockerfile.web -t dfl-manager:web .
+
+    - name: Run tests in scheduler build
+      run: |
+        # Extract build stage for testing
+        docker build -f Dockerfile.scheduler --target build -t dfl-manager:scheduler-build .
+        docker run --rm dfl-manager:scheduler-build ./mvnw test -B -pl common,scheduler
 
     - name: Test scheduler image
       run: |

@@ -25,8 +25,7 @@ services:
   scheduler:
     build:
       context: .
-      target: scheduler
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.scheduler
     container_name: dfl-scheduler
     depends_on:
       postgres:
@@ -67,8 +66,7 @@ services:
   web:
     build:
       context: .
-      target: web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.web
     container_name: dfl-web
     depends_on:
       postgres:

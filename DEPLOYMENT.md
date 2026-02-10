@@ -132,14 +132,14 @@ docker compose exec postgres psql -U dflmngr -d dflmngrdb
 
 ```bash
 # Build scheduler image
-docker build --target scheduler -t dfl-manager:scheduler .
+docker build -f Dockerfile.scheduler -t dfl-manager:scheduler .
 
 # Build web image
-docker build --target web -t dfl-manager:web .
+docker build -f Dockerfile.web -t dfl-manager:web .
 
 # Build both with specific tags
-docker build --target scheduler -t dfl-manager:scheduler-v1.0 .
-docker build --target web -t dfl-manager:web-v1.0 .
+docker build -f Dockerfile.scheduler -t dfl-manager:scheduler-v1.0 .
+docker build -f Dockerfile.web -t dfl-manager:web-v1.0 .
 ```
 
 ### Build Options
@@ -148,13 +148,13 @@ docker build --target web -t dfl-manager:web-v1.0 .
 
 ```bash
 # Tests are already skipped in Dockerfile with -DskipTests
-docker build --target scheduler -t dfl-manager:scheduler .
+docker build -f Dockerfile.scheduler -t dfl-manager:scheduler .
 ```
 
 #### Use BuildKit for faster builds:
 
 ```bash
-DOCKER_BUILDKIT=1 docker build --target scheduler -t dfl-manager:scheduler .
+DOCKER_BUILDKIT=1 docker build -f Dockerfile.scheduler -t dfl-manager:scheduler .
 ```
 
 #### Multi-platform builds:

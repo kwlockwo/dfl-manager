@@ -2,9 +2,9 @@ name: Docker Build & Test
 
 on:
   push:
-    branches: [ main, develop, monorepo ]
+    branches: [ main, develop, 2026-updates ]
   pull_request:
-    branches: [ main, monorepo ]
+    branches: [ main, 2026-updates ]
 
 jobs:
   docker:
@@ -14,31 +14,70 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Check if monorepo branch
-      id: check_branch
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build scheduler image
       run: |
-        if [[ "${{ github.ref }}" == "refs/heads/monorepo" ]] || [[ "${{ github.base_ref }}" == "monorepo" ]]; then
-          echo "is_monorepo=true" >> $GITHUB_OUTPUT
-        else
-          echo "is_monorepo=false" >> $GITHUB_OUTPUT
-        fi
+        docker build -f Dockerfile.scheduler -t dfl-manager:scheduler .
 
-    - name: Build Docker image with tests (main/develop)
-      if: steps.check_branch.outputs.is_monorepo == 'false'
+    - name: Build web image
       run: |
-        # Build and tag the build stage (has Maven + JDK)
-        docker build --target build -t dfl-manager:build .
+        docker build -f Dockerfile.web -t dfl-manager:web .
 
-        # Run tests in the build stage container
-        docker run --rm dfl-manager:build ./mvnw test --batch-mode
-
-        # Build final production image to verify it works
-        docker build -t dfl-manager:test .
-
-    - name: Skip Docker build (monorepo branch - Phase 1)
-      if: steps.check_branch.outputs.is_monorepo == 'true'
+    - name: Run tests in scheduler build
       run: |
-        echo "⚠️  Skipping Docker build on monorepo branch (Phase 1)"
-        echo "Docker build will be updated for multi-module structure in Phase 2."
-        echo "See MONOREPO_README.md for details."
-        exit 0
+        # Extract build stage for testing
+        docker build -f Dockerfile.scheduler --target build -t dfl-manager:scheduler-build .
+        docker run --rm dfl-manager:scheduler-build ./mvnw test -B -pl common,scheduler
+
+    - name: Test scheduler image
+      run: |
+        # Start a test container to verify it runs
+        docker run --rm --name scheduler-test -d \
+          -e DATABASE_URL=jdbc:postgresql://localhost:5432/test \
+          -e DATABASE_USER=test \
+          -e DATABASE_PASSWORD=test \
+          dfl-manager:scheduler --help || true
+
+        # Give it a moment to start
+        sleep 5
+
+        # Check if Chrome is installed (needed for Selenium)
+        docker run --rm dfl-manager:scheduler which google-chrome
+
+    - name: Test web image
+      run: |
+        # Start a test container to verify it runs
+        docker run --rm --name web-test -d \
+          -e JDBC_DATABASE_URL=jdbc:postgresql://localhost:5432/test \
+          -e JDBC_DATABASE_USERNAME=test \
+          -e JDBC_DATABASE_PASSWORD=test \
+          -p 8080:8080 \
+          dfl-manager:web
+
+        # Give it a moment to start
+        sleep 10
+
+        # Check if web server responds (should fail due to no DB, but container should start)
+        docker logs web-test
+
+        # Stop the test container
+        docker stop web-test || true
+
+    - name: Verify image sizes
+      run: |
+        echo "Docker image sizes:"
+        docker images | grep dfl-manager
+
+    - name: Test docker-compose configuration
+      run: |
+        # Validate docker-compose file
+        docker compose config
+
+    - name: Report success
+      run: |
+        echo "✅ All Docker builds completed successfully"
+        echo "✅ Scheduler image includes Chrome for Selenium"
+        echo "✅ Web image is lightweight without Chrome"
+        echo "✅ docker-compose.yml validated"

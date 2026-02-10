@@ -1,0 +1,61 @@
+# Maven build outputs
+**/target/
+**/dependency-reduced-pom.xml
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# GitHub
+.github/
+
+# Claude AI
+.claude/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Documentation (build will include only necessary files)
+*.md
+!DEPLOYMENT.md
+docs/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Node modules (if any frontend assets)
+node_modules/
+npm-debug.log
+
+# Test reports
+**/test-results/
+**/coverage/
+**/.jacoco/
+
+# Environment files (secrets should never be in Docker image)
+.env
+.env.*
+*.pem
+*.key
+*.crt
+**/.ssh/
+
+# Misc
+*.class

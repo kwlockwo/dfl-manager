@@ -1,0 +1,49 @@
+# Dockerfile for DFL Manager Web Module
+# Lightweight image for Spring Boot web application
+
+# =============================================================================
+# Build stage - Builds all modules (common is a dependency)
+# =============================================================================
+FROM eclipse-temurin:21-jdk-jammy AS build
+WORKDIR /app
+
+# Copy Maven wrapper and root POM first for better layer caching
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+
+# Copy module POMs
+COPY common/pom.xml common/
+COPY web/pom.xml web/
+
+# Download dependencies (cached unless POM changes)
+RUN ./mvnw dependency:go-offline -B
+
+# Copy source code for required modules
+COPY common/src common/src
+COPY web/src web/src
+
+# Build modules (common is built first due to dependency order)
+# Skip tests in Docker build for faster builds
+RUN ./mvnw clean package -DskipTests -B -pl common,web
+
+# Verify JAR was created
+RUN ls -la web/target/dfl-manager-web.jar
+
+# =============================================================================
+# Runtime stage - Lightweight JRE-only image
+# =============================================================================
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+
+# Copy web JAR from build stage
+COPY --from=build /app/web/target/dfl-manager-web.jar /app/dfl-manager-web.jar
+
+# Environment variables
+ENV JAVA_OPTS=""
+ENV PORT=8080
+
+# Web application port
+EXPOSE 8080
+
+# Entrypoint for web application
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar dfl-manager-web.jar"]

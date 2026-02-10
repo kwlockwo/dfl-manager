@@ -126,11 +126,28 @@ When making schema changes:
 3. Run tests (`mvn test`)
 4. Commit together
 
-### Staging/Production
-1. Deploy new version
-2. Flyway runs migrations automatically on startup
-3. Hibernate validates schema matches entities
-4. Application starts if validation succeeds
+### Staging/Production (Render Deployment)
+
+The project uses **pre-deploy hooks** for safe migrations:
+
+1. **Push code to GitHub**
+   ```bash
+   git push origin monorepo
+   ```
+
+2. **Render starts deployment**:
+   - Builds Docker images
+   - Runs `preDeployCommand: ./scripts/run-migrations.sh`
+   - Migrations execute **before** new code deploys
+   - If migrations fail → deployment aborted (safe!)
+   - If migrations succeed → new containers start
+
+3. **Application startup**:
+   - Flyway skips (migrations already done)
+   - Hibernate validates schema matches entities
+   - Application serves traffic
+
+**Key benefit**: Migrations run once, in isolation, before any code changes. If they fail, old code keeps running.
 
 ## Best Practices
 
@@ -149,6 +166,45 @@ When making schema changes:
 - ❌ Use `ddl-auto: update` in production
 - ❌ Make breaking changes without data migration
 - ❌ Skip version numbers
+
+## Production Migration Strategy
+
+### Render Pre-Deploy Hook (Configured)
+
+The [render.yaml](render.yaml) includes a `preDeployCommand` that runs migrations:
+
+```yaml
+services:
+  - type: worker
+    name: dfl-scheduler
+    preDeployCommand: ./scripts/run-migrations.sh
+```
+
+**How it works**:
+1. Render builds new Docker image
+2. Runs [scripts/run-migrations.sh](scripts/run-migrations.sh) in build environment
+3. Script downloads Flyway CLI
+4. Runs migrations against production database
+5. If migrations fail → deployment stops (old version keeps running)
+6. If migrations succeed → new containers deploy
+
+**Safety features**:
+- ✅ Migrations run in isolation (not during traffic)
+- ✅ Failed migrations abort deployment
+- ✅ Automatic Flyway CLI installation
+- ✅ Migration history logged
+- ✅ No manual steps required
+
+### Alternative: Disable Pre-Deploy Hook
+
+If you prefer automatic migrations on startup, remove the `preDeployCommand` from render.yaml:
+
+```yaml
+# Remove this line:
+preDeployCommand: ./scripts/run-migrations.sh
+```
+
+Flyway will run when each container starts instead.
 
 ## Common Operations
 

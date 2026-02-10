@@ -3,7 +3,7 @@ spring:
     name: dfl-manager-scheduler
 
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/dflmngrdb}
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:dflmngrdb}
     username: ${DATABASE_USER:dflmngr}
     password: ${DATABASE_PASSWORD:dflmngr}
     driver-class-name: org.postgresql.Driver

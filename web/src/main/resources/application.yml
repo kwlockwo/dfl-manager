@@ -2,9 +2,9 @@ server:
   port: ${PORT:5001}
 spring:
   datasource:
-    url: ${JDBC_DATABASE_URL}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:8080}/${DATABASE_NAME:dflmngrdb}
+    username: ${JDBC_DATABASE_USERNAME:dflmngr}
+    password: ${JDBC_DATABASE_PASSWORD:dflmngr}
     hikari:
       connection-timeout: 5000
       minimum-idle: 2

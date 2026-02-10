@@ -85,7 +85,7 @@ public class JobScheduler {
 			if(isImmediate) {
 				jobNameKey = jobName + "_immediate_" + now;
 				jobTriggerKey = jobName + "_trigger_immediate_" + now;
-				createAndSchedule(jobNameKey, jobGroup, jobClassStr, jobTriggerKey, jobParams, cronStr, true);
+				createAndSchedule(jobNameKey, jobGroup, jobClassStr, jobTriggerKey, jobParams, cronStr, false);
 			}
 			
 			if(cronStr != null && !cronStr.equals("")) {

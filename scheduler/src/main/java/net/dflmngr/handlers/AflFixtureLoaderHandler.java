@@ -11,9 +11,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import net.dflmngr.model.entity.AflFixture;
-import net.dflmngr.model.service.AflFixtureService;
-import net.dflmngr.model.service.AflTeamService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.AflFixtureService;
+import net.dflmngr.services.AflTeamService;
+import net.dflmngr.services.GlobalsService;
 
 import org.springframework.stereotype.Component;
 

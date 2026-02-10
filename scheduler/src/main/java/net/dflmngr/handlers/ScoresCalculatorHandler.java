@@ -28,18 +28,18 @@ import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.entity.DflTeamScores;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.keys.DflPlayerScoresPK;
-import net.dflmngr.model.service.AflFixtureService;
+import net.dflmngr.services.AflFixtureService;
 import org.springframework.stereotype.Service;
-import net.dflmngr.model.service.DflPlayerPredictedScoresService;
-import net.dflmngr.model.service.DflPlayerScoresService;
-import net.dflmngr.model.service.DflPlayerService;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.DflSelectedTeamService;
-import net.dflmngr.model.service.DflTeamPlayerService;
-import net.dflmngr.model.service.DflTeamScoresService;
-import net.dflmngr.model.service.DflTeamService;
-import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.RawPlayerStatsService;
+import net.dflmngr.services.DflPlayerPredictedScoresService;
+import net.dflmngr.services.DflPlayerScoresService;
+import net.dflmngr.services.DflPlayerService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.DflSelectedTeamService;
+import net.dflmngr.services.DflTeamPlayerService;
+import net.dflmngr.services.DflTeamScoresService;
+import net.dflmngr.services.DflTeamService;
+import net.dflmngr.services.GlobalsService;
+import net.dflmngr.services.RawPlayerStatsService;
 import net.dflmngr.utils.DflmngrUtils;
 
 
@@ -103,17 +103,6 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			loggerUtils.log("info", "Handling team scores");
 			handleTeamScores(round, dflRoundInfo, predictedScores);
 
-			rawPlayerStatsService.close();
-			dflPlayerService.close();
-			dflTeamPlayerService.close();
-			dflPlayerScoresService.close();
-			dflSelectedTeamService.close();
-			dflTeamService.close();
-			dflTeamScoresService.close();
-			dflRoundInfoService.close();
-			aflFixtureService.close();
-			globalsService.close();
-			dflPlayerPredictedScoresService.close();
 
 			loggerUtils.log("info", "ScoresCalculator completed");
 
@@ -545,12 +534,12 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			}
 		}
 
-		dflSelectedTeamService.updateAll(played22, false);
+		dflSelectedTeamService.updateAll(played22);
 		if(!emergencies.isEmpty()) {
-			dflSelectedTeamService.updateAll(emergencies, false);
+			dflSelectedTeamService.updateAll(emergencies);
 		}
 		if(!replacedDnpPlayers.isEmpty()) {
-			dflSelectedTeamService.updateAll(replacedDnpPlayers, false);
+			dflSelectedTeamService.updateAll(replacedDnpPlayers);
 		}
 
 		return teamScore;

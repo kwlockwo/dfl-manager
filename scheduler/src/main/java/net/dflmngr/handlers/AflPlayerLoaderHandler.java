@@ -10,11 +10,11 @@ import net.dflmngr.model.entity.AflPlayer;
 import net.dflmngr.model.entity.AflTeam;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflUnmatchedPlayer;
-import net.dflmngr.model.service.AflPlayerService;
-import net.dflmngr.model.service.AflTeamService;
-import net.dflmngr.model.service.DflPlayerService;
+import net.dflmngr.services.AflPlayerService;
+import net.dflmngr.services.AflTeamService;
+import net.dflmngr.services.DflPlayerService;
 import net.dflmngr.model.service.DflUnmatchedPlayerService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.GlobalsService;
 
 import org.springframework.stereotype.Component;
 

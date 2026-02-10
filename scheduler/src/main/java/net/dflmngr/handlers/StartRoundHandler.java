@@ -15,16 +15,16 @@ import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflTeam;
 import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.entity.InsAndOuts;
-import net.dflmngr.model.service.AflFixtureService;
+import net.dflmngr.services.AflFixtureService;
 import org.springframework.stereotype.Service;
-import net.dflmngr.model.service.DflFixtureService;
-import net.dflmngr.model.service.DflPlayerService;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.DflTeamPlayerService;
+import net.dflmngr.services.DflFixtureService;
+import net.dflmngr.services.DflPlayerService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.DflTeamPlayerService;
 import net.dflmngr.model.service.DflTeamPredictedScoresService;
-import net.dflmngr.model.service.DflTeamService;
-import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.InsAndOutsService;
+import net.dflmngr.services.DflTeamService;
+import net.dflmngr.services.GlobalsService;
+import net.dflmngr.services.InsAndOutsService;
 import net.dflmngr.utils.EmailUtils;
 
 
@@ -99,15 +99,6 @@ public class StartRoundHandler extends BaseHandler {
 			
 			loggerUtils.log("info", "Start round completed");
 			
-			dflTeamService.close();
-			globalsService.close();
-			dflFixtureService.close();
-			dflTeamPredictedScoresService.close();
-			dflPlayerService.close();
-			insAndOutsService.close();
-			dflTeamPlayerService.close();
-			dflRoundInfoService.close();
-			aflFixtureService.close();
 		
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);

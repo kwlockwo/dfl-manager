@@ -20,7 +20,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import net.dflmngr.exceptions.HtmlPageLoadException;
 import net.dflmngr.exceptions.UnexpectedHtmlException;
 import net.dflmngr.model.entity.AflPlayer;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.GlobalsService;
 
 import org.springframework.stereotype.Component;
 

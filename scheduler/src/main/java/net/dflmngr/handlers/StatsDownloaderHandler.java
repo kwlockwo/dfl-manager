@@ -9,10 +9,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.StatsRoundPlayerStats;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.GlobalsService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.RawPlayerStatsService;
-import net.dflmngr.model.service.StatsRoundPlayerStatsService;
+import net.dflmngr.services.RawPlayerStatsService;
+import net.dflmngr.services.StatsRoundPlayerStatsService;
 
 
 @Component
@@ -102,7 +102,7 @@ public class StatsDownloaderHandler extends BaseHandler {
 					if(includeAwayTeam) {
 						statsRoundPlayerStatsService.removeStatsForRoundAndTeam(round, awayTeam);
 					}
-					statsRoundPlayerStatsService.insertAll(statRoundPlayerStats, false);
+					statsRoundPlayerStatsService.insertAll(statRoundPlayerStats);
 				} else {
 					if(includeHomeTeam) {
 						rawPlayerStatsService.removeStatsForRoundAndTeam(round, homeTeam);
@@ -110,7 +110,7 @@ public class StatsDownloaderHandler extends BaseHandler {
 					if(includeAwayTeam) {
 						rawPlayerStatsService.removeStatsForRoundAndTeam(round, awayTeam);
 					}
-					rawPlayerStatsService.insertAll(playerStats, false);
+					rawPlayerStatsService.insertAll(playerStats);
 				}
 
 				loggerUtils.log("info", "Player stats saved");
@@ -120,9 +120,6 @@ public class StatsDownloaderHandler extends BaseHandler {
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);
 		} finally {
-			rawPlayerStatsService.close();
-			statsRoundPlayerStatsService.close();
-			globalsService.close();
 		}
 	}
 

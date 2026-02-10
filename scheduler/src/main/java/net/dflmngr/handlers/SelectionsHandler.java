@@ -17,11 +17,11 @@ import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflTeam;
 import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.entity.InsAndOuts;
-import net.dflmngr.model.service.DflSelectedTeamService;
+import net.dflmngr.services.DflSelectedTeamService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.DflTeamPlayerService;
-import net.dflmngr.model.service.DflTeamService;
-import net.dflmngr.model.service.InsAndOutsService;
+import net.dflmngr.services.DflTeamPlayerService;
+import net.dflmngr.services.DflTeamService;
+import net.dflmngr.services.InsAndOutsService;
 
 
 @Component
@@ -58,10 +58,6 @@ public class SelectionsHandler extends BaseHandler {
 				createTeamSelections(round, team.getTeamCode(), insAndOuts);
 			}
 
-			dflTeamService.close();
-			insAndOutsService.close();
-			dflSelectedTeamService.close();
-			dflTeamPlayerService.close();
 
 			loggerUtils.log("info", "Team selections created");
 

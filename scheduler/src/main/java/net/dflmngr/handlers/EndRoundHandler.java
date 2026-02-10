@@ -32,17 +32,17 @@ import net.dflmngr.model.entity.InsAndOuts;
 import net.dflmngr.model.entity.keys.DflFixturePK;
 import net.dflmngr.model.entity.keys.DflTeamScoresPK;
 import net.dflmngr.model.service.DflBest22Service;
-import net.dflmngr.model.service.DflFixtureService;
-import net.dflmngr.model.service.DflLadderService;
+import net.dflmngr.services.DflFixtureService;
+import net.dflmngr.services.DflLadderService;
 import net.dflmngr.model.service.DflMatthewAllenService;
-import net.dflmngr.model.service.DflPlayerService;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.DflSelectedTeamService;
-import net.dflmngr.model.service.DflTeamPlayerService;
-import net.dflmngr.model.service.DflTeamScoresService;
-import net.dflmngr.model.service.DflTeamService;
-import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.InsAndOutsService;
+import net.dflmngr.services.DflPlayerService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.DflSelectedTeamService;
+import net.dflmngr.services.DflTeamPlayerService;
+import net.dflmngr.services.DflTeamScoresService;
+import net.dflmngr.services.DflTeamService;
+import net.dflmngr.services.GlobalsService;
+import net.dflmngr.services.InsAndOutsService;
 import net.dflmngr.utils.EmailUtils;
 
 import org.springframework.stereotype.Component;
@@ -117,7 +117,7 @@ public class EndRoundHandler extends BaseHandler {
 			// for (int r : rounds) {
 			// 	PredictionHandler predictions = new PredictionHandler();
 			// 	predictions.configureLogging(mdcKey, loggerName, logfile);
-			// 	predictions.execute(r, null, true);
+			// 	predictions.execute(r, null);
 			// }
 
 			// TODO: Refactor to use Spring dependency injection
@@ -390,7 +390,7 @@ public class EndRoundHandler extends BaseHandler {
 
 		loggerUtils.log("info", "Week 1 finals fixtures={}", finalsFixtures);
 
-		dflFixtureService.updateAll(finalsFixtures, false);
+		dflFixtureService.updateAll(finalsFixtures);
 
 		createFinalsWeek1Email(finalWeek1Game1, finalWeek1Game2, first);
 	}
@@ -466,7 +466,7 @@ public class EndRoundHandler extends BaseHandler {
 
 		loggerUtils.log("info", "Week 2 finals fixtures={}", finalsFixtures);
 
-		dflFixtureService.updateAll(finalsFixtures, false);
+		dflFixtureService.updateAll(finalsFixtures);
 
 		createFinalsWeek2Email(finalWeek2Game1, finalWeek2Game2, game2Loser);
 	}
@@ -527,7 +527,7 @@ public class EndRoundHandler extends BaseHandler {
 
 		loggerUtils.log("info", "Week 3 finals fixtures={}", finalsFixtures);
 
-		dflFixtureService.updateAll(finalsFixtures, false);
+		dflFixtureService.updateAll(finalsFixtures);
 
 		createFinalsWeek3Email(finalWeek3Game1, game2Loser);
 	}
@@ -592,7 +592,7 @@ public class EndRoundHandler extends BaseHandler {
 
 		loggerUtils.log("info", "Week 4 finals fixtures={}", finalsFixtures);
 
-		dflFixtureService.updateAll(finalsFixtures, false);
+		dflFixtureService.updateAll(finalsFixtures);
 
 		createFinalsWeek4Email(finalWeek4Game1, game1Loser);
 	}

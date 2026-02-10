@@ -13,8 +13,8 @@ import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.keys.AflFixturePK;
-import net.dflmngr.model.service.AflFixtureService;
-import net.dflmngr.model.service.DflRoundInfoService;
+import net.dflmngr.services.AflFixtureService;
+import net.dflmngr.services.DflRoundInfoService;
 import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
@@ -62,10 +62,8 @@ public class RawStatsReportJobGenerator extends BaseJobGenerator {
 	@Override
 	protected void closeServices() {
 		if (dflRoundInfoService != null) {
-			dflRoundInfoService.close();
 		}
 		if (aflFixtureService != null) {
-			aflFixtureService.close();
 		}
 	}
 	

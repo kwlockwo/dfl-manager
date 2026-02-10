@@ -16,10 +16,10 @@ import com.gargoylesoftware.htmlunit.WebClient;
 
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPreseasonScores;
-import net.dflmngr.model.service.DflPlayerService;
+import net.dflmngr.services.DflPlayerService;
 import org.springframework.stereotype.Component;
 import net.dflmngr.model.service.DflPreseasonScoresService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
 

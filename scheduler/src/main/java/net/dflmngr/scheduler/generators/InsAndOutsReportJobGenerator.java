@@ -11,8 +11,8 @@ import java.util.Set;
 
 import net.dflmngr.model.entity.DflRoundEarlyGames;
 import net.dflmngr.model.entity.DflRoundInfo;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.GlobalsService;
 import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
@@ -55,10 +55,8 @@ public class InsAndOutsReportJobGenerator extends BaseJobGenerator {
 	@Override
 	protected void closeServices() {
 		if (dflRoundInfoService != null) {
-			dflRoundInfoService.close();
 		}
 		if (globalsService != null) {
-			globalsService.close();
 		}
 	}
 	

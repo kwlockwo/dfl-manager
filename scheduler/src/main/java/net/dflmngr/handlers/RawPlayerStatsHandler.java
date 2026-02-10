@@ -19,12 +19,12 @@ import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.RawPlayerStats;
 import net.dflmngr.model.entity.StatsRoundPlayerStats;
-import net.dflmngr.model.service.AflFixtureService;
+import net.dflmngr.services.AflFixtureService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.RawPlayerStatsService;
-import net.dflmngr.model.service.StatsRoundPlayerStatsService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.GlobalsService;
+import net.dflmngr.services.RawPlayerStatsService;
+import net.dflmngr.services.StatsRoundPlayerStatsService;
 
 
 @Component
@@ -71,11 +71,6 @@ public class RawPlayerStatsHandler extends BaseHandler {
 				handleWithStatRounds(round, scrapeAll);
 			}
 
-			dflRoundInfoService.close();
-			aflFixtureService.close();
-			globalsService.close();
-			statsRoundPlayerStatsService.close();
-			rawPlayerStatsService.close();
 
 			loggerUtils.log("info", "Player stats downaloded");
 
@@ -197,7 +192,7 @@ public class RawPlayerStatsHandler extends BaseHandler {
 				}
 				if(!updateFixtures.isEmpty()) {
 					loggerUtils.log("info", "AFL games final download: {}", updateFixtures);
-					aflFixtureService.updateAll(updateFixtures, false);
+					aflFixtureService.updateAll(updateFixtures);
 				}
 			}
 		}
@@ -300,7 +295,7 @@ public class RawPlayerStatsHandler extends BaseHandler {
 			loggerUtils.log("info", "Copying player stats: statsRound={}, rawStats={}", playerStatRoundStats, rawPlayerStats);
 		}
 
-		rawPlayerStatsService.updateAll(updatedRawPlayerStats, false);
+		rawPlayerStatsService.updateAll(updatedRawPlayerStats);
 	}
 
 	// For internal testing

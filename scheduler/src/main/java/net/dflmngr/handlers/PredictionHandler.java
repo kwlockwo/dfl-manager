@@ -19,12 +19,12 @@ import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflTeam;
 import net.dflmngr.model.entity.DflTeamPredictedScores;
 import net.dflmngr.model.entity.keys.DflPlayerPredictedScoresPK;
-import net.dflmngr.model.service.DflPlayerPredictedScoresService;
+import net.dflmngr.services.DflPlayerPredictedScoresService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.DflPlayerScoresService;
-import net.dflmngr.model.service.DflSelectedTeamService;
+import net.dflmngr.services.DflPlayerScoresService;
+import net.dflmngr.services.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamPredictedScoresService;
-import net.dflmngr.model.service.DflTeamService;
+import net.dflmngr.services.DflTeamService;
 
 
 @Component
@@ -65,11 +65,6 @@ public class PredictionHandler extends BaseHandler {
 
 			loggerUtils.log("info", "PredictionHandler completed");
 
-			dflPlayerPredictedScoresService.close();
-			dflTeamPredictedScoresService.close();
-			dflPlayerScoresService.close();
-			dflTeamService.close();
-			dflSelectedTeamService.close();
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);
@@ -209,7 +204,7 @@ public class PredictionHandler extends BaseHandler {
 				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
 			PredictionHandler predictions = context.getBean(PredictionHandler.class);
 			predictions.configureLogging("batch.name", "batch-logger", "PredictionsHandler_R" + round);
-			predictions.execute(round, null, true);
+			predictions.execute(round, null, false);
 
 			System.exit(0);
 		} catch (ParseException ex) {

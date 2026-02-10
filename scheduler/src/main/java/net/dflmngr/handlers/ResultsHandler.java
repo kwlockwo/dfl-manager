@@ -14,10 +14,10 @@ import org.apache.commons.cli.ParseException;
 
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
-import net.dflmngr.model.service.AflFixtureService;
+import net.dflmngr.services.AflFixtureService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.GlobalsService;
 import net.dflmngr.reports.ResultsReport;
 
 
@@ -71,9 +71,6 @@ public class ResultsHandler extends BaseHandler {
 				loggerUtils.log("info", "Handled round={} ....", round);
 			}
 
-			aflFixtureService.close();
-			dflRoundInfoService.close();
-			globalsService.close();
 			
 			loggerUtils.log("info", "ResultsHandler complete");
 
@@ -169,10 +166,10 @@ public class ResultsHandler extends BaseHandler {
 			// ladderCalculator.configureLogging(logfile);
 			// if(isFinal) {
 			// 	loggerUtils.log("info", "Ladder is not live");
-			// 	ladderCalculator.execute(round, false);
+			// 	ladderCalculator.execute(round);
 			// } else {
 			// 	loggerUtils.log("info", "Ladder is live");
-			// 	ladderCalculator.execute(round, true);
+			// 	ladderCalculator.execute(round);
 			// }
 		}
 	}

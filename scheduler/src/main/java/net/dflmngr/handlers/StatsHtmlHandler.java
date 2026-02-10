@@ -18,7 +18,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import net.dflmngr.exceptions.UnexpectedHtmlException;
 import net.dflmngr.model.entity.RawPlayerStats;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.GlobalsService;
 import org.springframework.stereotype.Component;
 
 

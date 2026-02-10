@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 import net.dflmngr.model.entity.AflFixture;
-import net.dflmngr.model.service.AflFixtureService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.AflFixtureService;
+import net.dflmngr.services.GlobalsService;
 import net.dflmngr.scheduler.JobParameterConstants;
 import net.dflmngr.scheduler.JobScheduleHelper;
 import net.dflmngr.scheduler.JobScheduler;
@@ -39,10 +39,8 @@ public class StatsRoundJobGenerator extends BaseJobGenerator {
 	@Override
 	protected void closeServices() {
 		if (globalsService != null) {
-			globalsService.close();
 		}
 		if (aflFixtureService != null) {
-			aflFixtureService.close();
 		}
 	}
 	

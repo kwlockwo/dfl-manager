@@ -18,9 +18,9 @@ import net.dflmngr.model.entity.DflAdamGoodes;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPlayerScores;
 import net.dflmngr.model.entity.DflSelectedPlayer;
-import net.dflmngr.model.service.DflPlayerScoresService;
-import net.dflmngr.model.service.DflPlayerService;
-import net.dflmngr.model.service.DflSelectedTeamService;
+import net.dflmngr.services.DflPlayerScoresService;
+import net.dflmngr.services.DflPlayerService;
+import net.dflmngr.services.DflSelectedTeamService;
 import org.springframework.stereotype.Component;
 
 @Component

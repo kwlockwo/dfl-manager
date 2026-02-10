@@ -23,8 +23,8 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import net.dflmngr.exceptions.HtmlPageLoadException;
 import net.dflmngr.exceptions.ProxyUrlException;
 import net.dflmngr.model.entity.AflFixture;
-import net.dflmngr.model.service.AflFixtureService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.AflFixtureService;
+import net.dflmngr.services.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
 import org.springframework.stereotype.Component;
@@ -83,7 +83,7 @@ public class AflGameCompletionCheckerHandler extends BaseHandler {
 				}
 
 				if (!completeFixtures.isEmpty()) {
-					aflFixtureService.updateAll(completeFixtures, false);
+					aflFixtureService.updateAll(completeFixtures);
 				}
 			} else {
 				loggerUtils.log("info", "All started AFL fixtures are complete");

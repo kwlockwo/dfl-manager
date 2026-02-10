@@ -1,14 +1,15 @@
 # Spring Boot Test Configuration for DFL Manager Common Module
+# Uses H2 locally, PostgreSQL in CI (via environment variables)
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.h2.Driver}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    # Auto-detect database platform (H2 or PostgreSQL)
     hibernate:
       ddl-auto: create-drop
     show-sql: true

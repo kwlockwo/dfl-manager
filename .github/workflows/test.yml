@@ -14,6 +14,21 @@ jobs:
       checks: write
       pull-requests: write
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -36,8 +51,13 @@ jobs:
 
     - name: Run tests (main/develop branches)
       if: steps.check_branch.outputs.is_monorepo == 'false'
+      env:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+        SPRING_DATASOURCE_USERNAME: testuser
+        SPRING_DATASOURCE_PASSWORD: testpass
+        SPRING_PROFILES_ACTIVE: test
       run: |
-        # Run all tests with code coverage
+        # Run all tests with code coverage using PostgreSQL
         mvn test --batch-mode --fail-at-end
 
     - name: Skip tests (monorepo branch - Phase 1)

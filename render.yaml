@@ -1,0 +1,101 @@
+# Render Blueprint for DFL Manager
+# This file defines all services needed for the DFL Manager application
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Scheduler Service - Background worker with Quartz scheduling
+  - type: worker
+    name: dfl-scheduler
+    runtime: docker
+    plan: standard
+    region: singapore
+    dockerfilePath: ./Dockerfile.scheduler
+    dockerContext: .
+    envVars:
+      # Construct JDBC URL from Render database properties
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: dfl-postgres
+          property: host
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: dfl-postgres
+          property: port
+      - key: DATABASE_NAME
+        fromDatabase:
+          name: dfl-postgres
+          property: database
+      - key: JDBC_DATABASE_USERNAME
+        fromDatabase:
+          name: dfl-postgres
+          property: user
+      - key: JDBC_DATABASE_PASSWORD
+        fromDatabase:
+          name: dfl-postgres
+          property: password
+      # Build JDBC URL in application.yml using: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: JAVA_OPTS
+        value: "-Xms512m -Xmx2g -XX:+UseG1GC"
+      - key: ENV
+        value: production
+      # Email configuration
+      - key: DFL_MNGR_EMAIL
+        sync: false
+      - key: EMAIL_OVERIDE
+        sync: false
+      - key: OUTGOING_MAIL_HOST
+        sync: false
+      - key: OUTGOING_MAIL_PORT
+        value: "587"
+      - key: MAIL_PASSWORD
+        sync: false
+      # Application configuration
+      - key: DEFAULT_TIMEZONE
+        value: "Australia/Melbourne"
+
+  # Web Service - Spring Boot web application
+  - type: web
+    name: dfl-web
+    runtime: docker
+    plan: starter
+    region: singapore
+    dockerfilePath: ./Dockerfile.web
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      # Construct JDBC URL from Render database properties
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: dfl-postgres
+          property: host
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: dfl-postgres
+          property: port
+      - key: DATABASE_NAME
+        fromDatabase:
+          name: dfl-postgres
+          property: database
+      - key: JDBC_DATABASE_USERNAME
+        fromDatabase:
+          name: dfl-postgres
+          property: user
+      - key: JDBC_DATABASE_PASSWORD
+        fromDatabase:
+          name: dfl-postgres
+          property: password
+      # Build JDBC URL in application.yml using: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: JAVA_OPTS
+        value: "-Xms128m -Xmx384m -XX:+UseG1GC"
+      - key: PORT
+        value: "8080"
+
+databases:
+  - name: dfl-postgres
+    databaseName: dflmngrdb
+    user: dflmngr
+    ipAllowList: []  # Empty means allow all - configure in Render dashboard

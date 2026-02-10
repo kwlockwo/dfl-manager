@@ -9,6 +9,16 @@ spring:
       connection-timeout: 5000
       minimum-idle: 2
       maximum-pool-size: 5
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  flyway:
+    enabled: false  # Migrations run via pre-deploy hook only
+
 logging:
   level:
     net:

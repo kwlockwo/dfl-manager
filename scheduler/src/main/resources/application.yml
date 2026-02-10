@@ -25,6 +25,9 @@ spring:
         order_inserts: true
         order_updates: true
 
+  flyway:
+    enabled: false  # Migrations run via pre-deploy hook only
+
   main:
     web-application-type: none
     banner-mode: off

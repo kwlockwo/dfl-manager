@@ -11,6 +11,7 @@ services:
     region: singapore
     dockerfilePath: ./Dockerfile.scheduler
     dockerContext: .
+    preDeployCommand: ./scripts/run-migrations.sh
     envVars:
       # Construct JDBC URL from Render database properties
       - key: DATABASE_HOST

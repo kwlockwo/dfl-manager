@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: dfl-postgres
+    environment:
+      POSTGRES_DB: dflmngrdb
+      POSTGRES_USER: dflmngr
+      POSTGRES_PASSWORD: dflmngr
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dflmngr -d dflmngrdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dfl-network
+
+  # Scheduler - Batch processing and Quartz scheduling with Selenium
+  scheduler:
+    build:
+      context: .
+      target: scheduler
+      dockerfile: Dockerfile
+    container_name: dfl-scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Database connection
+      DATABASE_URL: jdbc:postgresql://postgres:5432/dflmngrdb
+      DATABASE_USER: dflmngr
+      DATABASE_PASSWORD: dflmngr
+
+      # Spring Boot configuration
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+
+      # JVM options for scheduler (can be memory-intensive with Chrome)
+      JAVA_OPTS: >-
+        -Xms512m
+        -Xmx2g
+        -XX:+UseG1GC
+        -XX:MaxGCPauseMillis=200
+
+      # Selenium Chrome options
+      CHROME_DRIVER_PATH: /usr/bin/google-chrome
+
+      # Application home for shell scripts
+      APP_HOME: /app
+    volumes:
+      # Mount bin directory for easy script updates during development
+      - ./scheduler/bin:/app/bin:ro
+      # Optional: mount for logs
+      - scheduler_logs:/app/logs
+    networks:
+      - dfl-network
+    restart: unless-stopped
+    # Uncomment to run a specific handler instead of the scheduler
+    # command: ["--handler=afl-fixture-loader"]
+
+  # Web - Spring Boot web application with Thymeleaf
+  web:
+    build:
+      context: .
+      target: web
+      dockerfile: Dockerfile
+    container_name: dfl-web
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Database connection
+      JDBC_DATABASE_URL: jdbc:postgresql://postgres:5432/dflmngrdb
+      JDBC_DATABASE_USERNAME: dflmngr
+      JDBC_DATABASE_PASSWORD: dflmngr
+
+      # Server configuration
+      PORT: 8080
+
+      # Spring Boot configuration
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+
+      # JVM options for web
+      JAVA_OPTS: >-
+        -Xms256m
+        -Xmx1g
+        -XX:+UseG1GC
+
+      # Logging
+      DFLMNGR_LOG_LEVEL: ${DFLMNGR_LOG_LEVEL:-info}
+    ports:
+      - "8080:8080"
+    volumes:
+      # Optional: mount for logs
+      - web_logs:/app/logs
+    networks:
+      - dfl-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  dfl-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  scheduler_logs:
+    driver: local
+  web_logs:
+    driver: local

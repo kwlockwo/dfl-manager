@@ -27,13 +27,13 @@ public interface InsAndOutsRepository extends JpaRepository<InsAndOuts, Integer>
     /**
      * Find ins (in_out = 'I') for a specific round and team code
      */
-    @Query("SELECT io FROM InsAndOuts io WHERE io.round = :round AND io.teamCode = :teamCode AND io.inOut = 'I'")
+    @Query("SELECT io FROM InsAndOuts io WHERE io.round = :round AND io.teamCode = :teamCode AND io.inOrOut = 'I'")
     List<InsAndOuts> findInsByRoundAndTeamCode(@Param("round") int round, @Param("teamCode") String teamCode);
     
     /**
      * Find outs (in_out = 'O') for a specific round and team code
      */
-    @Query("SELECT io FROM InsAndOuts io WHERE io.round = :round AND io.teamCode = :teamCode AND io.inOut = 'O'")
+    @Query("SELECT io FROM InsAndOuts io WHERE io.round = :round AND io.teamCode = :teamCode AND io.inOrOut = 'O'")
     List<InsAndOuts> findOutsByRoundAndTeamCode(@Param("round") int round, @Param("teamCode") String teamCode);
     
     /**
@@ -58,7 +58,7 @@ public interface InsAndOutsRepository extends JpaRepository<InsAndOuts, Integer>
     long countByRound(int round);
 
     /**
-     * Find a specific ins and outs entry by round, team code, and player ID
+     * Find a specific ins and outs entry by round, team code, and team player ID
      */
-    InsAndOuts findByRoundAndTeamCodeAndPlayerId(int round, String teamCode, int playerId);
+    InsAndOuts findByRoundAndTeamCodeAndTeamPlayerId(int round, String teamCode, int teamPlayerId);
 }

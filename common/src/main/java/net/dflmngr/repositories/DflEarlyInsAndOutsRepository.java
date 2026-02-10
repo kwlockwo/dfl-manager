@@ -18,7 +18,7 @@ public interface DflEarlyInsAndOutsRepository extends JpaRepository<DflEarlyInsA
 	List<DflEarlyInsAndOuts> findByRound(int round);
 
 	/**
-	 * Find a specific early ins and outs entry by round, team code, and player ID
+	 * Find a specific early ins and outs entry by round, team code, and team player ID
 	 */
-	DflEarlyInsAndOuts findByRoundAndTeamCodeAndPlayerId(int round, String teamCode, int playerId);
+	DflEarlyInsAndOuts findByRoundAndTeamCodeAndTeamPlayerId(int round, String teamCode, int teamPlayerId);
 }

@@ -33,7 +33,6 @@
 		<!-- Dependency versions -->
 		<eclipselink.version>5.0.0-B13</eclipselink.version>
 		<log4j.version>2.25.3</log4j.version>
-		<jackson.version>2.21.0</jackson.version>
 		<selenium.version>4.40.0</selenium.version>
 		<poi.version>5.5.1</poi.version>
 		<quartz.version>2.5.2</quartz.version>
@@ -146,16 +145,7 @@
 			</dependency>
 
 			<!-- JSON / YAML -->
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-yaml</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
+			<!-- Jackson versions managed by Spring Boot parent - removed from here, child modules will inherit -->
 			<dependency>
 				<groupId>com.github.cliftonlabs</groupId>
 				<artifactId>json-simple</artifactId>

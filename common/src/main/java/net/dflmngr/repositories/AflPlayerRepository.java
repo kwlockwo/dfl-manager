@@ -16,10 +16,10 @@ public interface AflPlayerRepository extends JpaRepository<AflPlayer, String> {
     AflPlayer findByDflPlayerId(Integer playerId);
     
     /**
-     * Find AFL players by team
+     * Find AFL players by team ID
      */
-    @Query("SELECT p FROM AflPlayer p WHERE p.team = :team")
-    List<AflPlayer> findByTeam(@Param("team") String team);
+    @Query("SELECT p FROM AflPlayer p WHERE p.teamId = :teamId")
+    List<AflPlayer> findByTeamId(@Param("teamId") String teamId);
     
     /**
      * Find AFL players with mapped DFL player ID

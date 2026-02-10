@@ -58,8 +58,8 @@ public interface RawPlayerStatsRepository extends JpaRepository<RawPlayerStats, 
     List<RawPlayerStats> findByRoundAndScrapingStatus(@Param("round") int round, @Param("status") String status);
 
     /**
-     * Find raw player stats by round and player ID
+     * Find raw player stats by round and player name
+     * Note: RawPlayerStats doesn't have a playerId field - it uses name, team, and jumperNo as identifiers
      */
-    @Query("SELECT rps FROM RawPlayerStats rps WHERE rps.round = :round AND rps.playerId = :playerId")
-    RawPlayerStats findByRoundAndPlayerId(@Param("round") int round, @Param("playerId") int playerId);
+    List<RawPlayerStats> findByRoundAndName(int round, String name);
 }

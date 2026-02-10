@@ -1,7 +1,9 @@
 package net.dflmngr.handlers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
 import net.dflmngr.logging.LoggingUtils;
-import net.dflmngr.service.ServiceFactory;
 
 /**
  * Base class for all handlers providing common functionality.
@@ -9,8 +11,10 @@ import net.dflmngr.service.ServiceFactory;
  */
 public abstract class BaseHandler {
 
+	@Autowired
+	protected ApplicationContext applicationContext;
+
 	protected LoggingUtils loggerUtils;
-	protected ServiceFactory serviceFactory;
 
 	protected boolean isExecutable;
 
@@ -24,7 +28,6 @@ public abstract class BaseHandler {
 
 	protected BaseHandler(String defaultLogfile) {
 		this.defaultLogfile = defaultLogfile;
-		this.serviceFactory = ServiceFactory.getInstance();
 	}
 
 	/**

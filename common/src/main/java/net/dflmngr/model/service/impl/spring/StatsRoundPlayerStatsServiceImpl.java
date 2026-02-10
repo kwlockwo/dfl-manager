@@ -19,65 +19,97 @@ public class StatsRoundPlayerStatsServiceImpl implements StatsRoundPlayerStatsSe
         this.repository = repository;
     }
     
-    @Override
     public StatsRoundPlayerStats get(StatsRoundPlayerStatsPK id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<StatsRoundPlayerStats> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(StatsRoundPlayerStats entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(StatsRoundPlayerStats entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(StatsRoundPlayerStats entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<StatsRoundPlayerStats> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<StatsRoundPlayerStats> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<StatsRoundPlayerStats> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(StatsRoundPlayerStats entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public List<StatsRoundPlayerStats> findByRound(int round) {
         return repository.findByRound(round);
     }
     
-    @Override
     public StatsRoundPlayerStats findByRoundAndPlayer(int round, int playerId) {
         return repository.findByRoundAndPlayerId(round, playerId);
+    }
+
+    public void insertAll(List<StatsRoundPlayerStats> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<StatsRoundPlayerStats> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    @Override
+    public List<StatsRoundPlayerStats> getForRound(int round) {
+        return repository.findByRound(round);
+    }
+
+    @Override
+    public void replaceAllForRound(int round, List<StatsRoundPlayerStats> playerStats) {
+        // Delete all stats for the round, then save the new ones
+        repository.findByRound(round).forEach(repository::delete);
+        repository.flush();
+        repository.saveAll(playerStats);
+    }
+
+    @Override
+    public java.util.Map<String, StatsRoundPlayerStats> getForRoundWithKey(int round) {
+        List<StatsRoundPlayerStats> stats = repository.findByRound(round);
+        java.util.Map<String, StatsRoundPlayerStats> statsMap = new java.util.HashMap<>();
+        for (StatsRoundPlayerStats stat : stats) {
+            // Using name as key since this entity doesn't have a playerId field
+            statsMap.put(stat.getName(), stat);
+        }
+        return statsMap;
+    }
+
+    @Override
+    public void removeStatsForRoundAndTeam(int round, String team) {
+        repository.deleteByRoundAndTeam(round, team);
+    }
+
+    @Override
+    public List<StatsRoundPlayerStats> getForRoundAndTeam(int round, String team) {
+        return repository.findByRoundAndTeam(round, team);
     }
 }

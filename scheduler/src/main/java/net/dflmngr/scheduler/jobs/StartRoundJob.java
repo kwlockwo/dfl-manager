@@ -11,7 +11,7 @@ public class StartRoundJob extends BaseJob {
 	protected void executeJob(JobDataMap data) throws Exception {
 		int round = getIntParam(data, JobParameterConstants.PARAM_ROUND);
 
-		StartRoundHandler startRound = new StartRoundHandler();
+		StartRoundHandler startRound = applicationContext.getBean(StartRoundHandler.class);
 		startRound.configureLogging("online.name", "online-logger", ("StartRound_R"+round));
 
 		loggerUtils.log("info", "Running StartRound: round={};", round);

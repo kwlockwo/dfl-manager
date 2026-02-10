@@ -18,70 +18,79 @@ public class InsAndOutsServiceImpl implements InsAndOutsService {
         this.repository = repository;
     }
     
-    @Override
     public InsAndOuts get(Integer id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<InsAndOuts> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(InsAndOuts entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(InsAndOuts entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(InsAndOuts entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<InsAndOuts> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<InsAndOuts> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<InsAndOuts> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(InsAndOuts entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public List<InsAndOuts> findByRound(int round) {
         return repository.findByRound(round);
     }
     
-    @Override
     public List<InsAndOuts> findByRoundAndTeam(int round, String teamCode) {
         return repository.findByRoundAndTeamCode(round, teamCode);
     }
     
-    @Override
     public InsAndOuts findByRoundAndTeamAndPlayer(int round, String teamCode, int playerId) {
         return repository.findByRoundAndTeamCodeAndPlayerId(round, teamCode, playerId);
+    }
+
+    public void saveTeamInsAndOuts(List<InsAndOuts> insAndOuts) {
+        repository.saveAll(insAndOuts);
+    }
+
+    public List<InsAndOuts> getByTeamAndRound(int round, String teamCode) {
+        return repository.findByRoundAndTeamCode(round, teamCode);
+    }
+
+    public void removeForRound(int round) {
+        repository.deleteByRound(round);
+    }
+
+    public void insertAll(List<InsAndOuts> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<InsAndOuts> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

@@ -37,12 +37,6 @@ public class ResultsHandler extends BaseHandler {
 		this.dflRoundInfoService = dflRoundInfoService;
 		this.globalsService = globalsService;
 	}
-	public ResultsHandler() {
-		super("RoundProgress");
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		globalsService = serviceFactory.createGlobalsService();
-	}
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
@@ -136,53 +130,58 @@ public class ResultsHandler extends BaseHandler {
 	private void comppleteAflGames(boolean isFinal) {
 		if(!isFinal) {
 			loggerUtils.log("info", "Completing AFL games");
-			AflGameCompletionCheckerHandler gameCompletor = new AflGameCompletionCheckerHandler();
-			gameCompletor.configureLogging(logfile);
-			gameCompletor.execute();
+			// TODO: Refactor to use Spring dependency injection
+			// AflGameCompletionCheckerHandler gameCompletor = new AflGameCompletionCheckerHandler();
+			// gameCompletor.configureLogging(logfile);
+			// gameCompletor.execute();
 		}
 	}
 
 	private void getStats(int inputRound, int round, boolean skipStats) {
 		if(!skipStats) {
 			loggerUtils.log("info", "Getting stats");
-			RawPlayerStatsHandler statsHandler = new RawPlayerStatsHandler();
-			statsHandler.configureLogging(logfile);
-			boolean scrapeAll = false;
-			if(inputRound != 0) {
-				scrapeAll = true;
-			}
-			statsHandler.execute(round, scrapeAll);
+			// TODO: Refactor to use Spring dependency injection
+			// RawPlayerStatsHandler statsHandler = new RawPlayerStatsHandler();
+			// statsHandler.configureLogging(logfile);
+			// boolean scrapeAll = false;
+			// if(inputRound != 0) {
+			// 	scrapeAll = true;
+			// }
+			// statsHandler.execute(round, scrapeAll);
 		}
 	}
 
 	private void calcuateScores(int round) {
 		loggerUtils.log("info", "Calculating scores");
-		ScoresCalculatorHandler scoresCalculator = new ScoresCalculatorHandler();
-		scoresCalculator.configureLogging(logfile);
-		scoresCalculator.execute(round);
+		// TODO: Refactor to use Spring dependency injection
+		// ScoresCalculatorHandler scoresCalculator = new ScoresCalculatorHandler();
+		// scoresCalculator.configureLogging(logfile);
+		// scoresCalculator.execute(round);
 	}
 
 	private void calculateLadder(int round, boolean isFinal) {
 		if(round <= 18) {
 			loggerUtils.log("info", "Calculating Ladder");
-			LadderCalculatorHandler ladderCalculator = new LadderCalculatorHandler();
-			ladderCalculator.configureLogging(logfile);
-			if(isFinal) {
-				loggerUtils.log("info", "Ladder is not live");
-				ladderCalculator.execute(round, false);
-			} else {
-				loggerUtils.log("info", "Ladder is live");
-				ladderCalculator.execute(round, true);
-			}
+			// TODO: Refactor to use Spring dependency injection
+			// LadderCalculatorHandler ladderCalculator = new LadderCalculatorHandler();
+			// ladderCalculator.configureLogging(logfile);
+			// if(isFinal) {
+			// 	loggerUtils.log("info", "Ladder is not live");
+			// 	ladderCalculator.execute(round, false);
+			// } else {
+			// 	loggerUtils.log("info", "Ladder is live");
+			// 	ladderCalculator.execute(round, true);
+			// }
 		}
 	}
 
 	private void sendReport(int round, boolean isFinal, boolean sendReport) {
 		if(sendReport) {
 			loggerUtils.log("info", "Writing report");
-			ResultsReport resultsReport = new ResultsReport();
-			resultsReport.configureLogging(logfile);
-			resultsReport.execute(round, isFinal, emailOverride);
+			// TODO: Refactor to use Spring dependency injection
+			// ResultsReport resultsReport = new ResultsReport();
+			// resultsReport.configureLogging(logfile);
+			// resultsReport.execute(round, isFinal, emailOverride);
 		}
 	}
 	
@@ -227,7 +226,10 @@ public class ResultsHandler extends BaseHandler {
 				sendReport = true;
 			}
 			
-			ResultsHandler resultsHandler = new ResultsHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			ResultsHandler resultsHandler = context.getBean(ResultsHandler.class);
 			resultsHandler.configureLogging("ResultsHandler_R" + round);
 			resultsHandler.execute(round, isFinal, email, skipStats, sendReport);
 			

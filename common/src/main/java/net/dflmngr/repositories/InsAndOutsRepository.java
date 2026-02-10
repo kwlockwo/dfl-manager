@@ -56,4 +56,9 @@ public interface InsAndOutsRepository extends JpaRepository<InsAndOuts, Integer>
      * Count ins and outs for a specific round
      */
     long countByRound(int round);
+
+    /**
+     * Find a specific ins and outs entry by round, team code, and player ID
+     */
+    InsAndOuts findByRoundAndTeamCodeAndPlayerId(int round, String teamCode, int playerId);
 }

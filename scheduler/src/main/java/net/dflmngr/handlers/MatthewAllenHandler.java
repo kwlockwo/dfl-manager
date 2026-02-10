@@ -46,14 +46,6 @@ public class MatthewAllenHandler extends BaseHandler {
 		this.dflMatthewAllenService = dflMatthewAllenService;
 		this.dflPlayerService = dflPlayerService;
 	}
-	public MatthewAllenHandler() {
-		super("RoundProgress");
-		dflFixtureService = serviceFactory.createDflFixtureService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflMatthewAllenService = serviceFactory.createDflMatthewAllenService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-	}
 
 	public void execute(int round) {
 
@@ -164,9 +156,13 @@ public class MatthewAllenHandler extends BaseHandler {
 			
 			round = ((Number)cli.getParsedOptionValue("r")).intValue();
 						
-			MatthewAllenHandler matthewAllenHandler = new MatthewAllenHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			MatthewAllenHandler matthewAllenHandler = context.getBean(MatthewAllenHandler.class);
 			matthewAllenHandler.configureLogging("batch.name", "batch-logger", ("MathenAllenMedal_R" + round));
 			matthewAllenHandler.execute(round);
+			System.exit(0);
 		} catch (ParseException ex) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp( "MatthewAllenHandler", options );

@@ -63,18 +63,6 @@ public class StartRoundHandler extends BaseHandler {
 		this.dflRoundInfoService = dflRoundInfoService;
 		this.aflFixtureService = aflFixtureService;
 	}
-	public StartRoundHandler() {
-		super("StartRound");
-		dflTeamService = serviceFactory.createDflTeamService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflFixtureService = serviceFactory.createDflFixtureService();
-		dflTeamPredictedScoresService = serviceFactory.createDflTeamPredictedScoresService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		insAndOutsService = serviceFactory.createInsAndOutsService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
-	}
 
 	public void execute(int round, String emailOveride, boolean fromScoresCalculator) {
 		try {
@@ -302,7 +290,10 @@ public class StartRoundHandler extends BaseHandler {
 					email = args[1];
 				}
 				
-				StartRoundHandler startRound = new StartRoundHandler();
+	// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			StartRoundHandler startRound = context.getBean(StartRoundHandler.class);
 				startRound.configureLogging("batch.name", "batch-logger", "StartRound");
 				startRound.execute(round, email, false);
 			}

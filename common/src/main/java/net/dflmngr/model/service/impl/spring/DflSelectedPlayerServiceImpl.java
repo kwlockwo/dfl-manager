@@ -21,69 +21,56 @@ public class DflSelectedPlayerServiceImpl implements DflSelectedTeamService {
         this.repository = repository;
     }
     
-    @Override
     public DflSelectedPlayer get(DflSelectedPlayerPK id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflSelectedPlayer> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflSelectedPlayer entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflSelectedPlayer entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflSelectedPlayer entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflSelectedPlayer> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflSelectedPlayer> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflSelectedPlayer> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflSelectedPlayer entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public List<DflSelectedPlayer> getAllForRound(int round) {
         return repository.findByRound(round);
     }
     
-    @Override
     public List<DflSelectedPlayer> getSelectedTeamForRound(int round, String teamCode) {
         return repository.findByRoundAndTeamCode(round, teamCode);
     }
     
-    @Override
     public void replaceAllForRound(int round, List<DflSelectedPlayer> selectedTeam) {
         List<DflSelectedPlayer> existing = repository.findByRound(round);
         repository.deleteAll(existing);
@@ -91,7 +78,6 @@ public class DflSelectedPlayerServiceImpl implements DflSelectedTeamService {
         repository.saveAll(selectedTeam);
     }
     
-    @Override
     public void replaceTeamForRound(int round, String teamCode, List<DflSelectedPlayer> selectedTeam) {
         List<DflSelectedPlayer> existing = repository.findByRoundAndTeamCode(round, teamCode);
         repository.deleteAll(existing);
@@ -99,7 +85,6 @@ public class DflSelectedPlayerServiceImpl implements DflSelectedTeamService {
         repository.saveAll(selectedTeam);
     }
     
-    @Override
     public Map<Integer, DflSelectedPlayer> getForRoundWithKey(int round) {
         List<DflSelectedPlayer> players = repository.findByRound(round);
         Map<Integer, DflSelectedPlayer> playerMap = new HashMap<>();
@@ -107,5 +92,15 @@ public class DflSelectedPlayerServiceImpl implements DflSelectedTeamService {
             playerMap.put(player.getPlayerId(), player);
         }
         return playerMap;
+    }
+
+    public void insertAll(List<DflSelectedPlayer> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflSelectedPlayer> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

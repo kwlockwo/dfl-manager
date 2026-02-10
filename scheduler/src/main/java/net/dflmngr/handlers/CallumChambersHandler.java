@@ -48,6 +48,7 @@ public class CallumChambersHandler extends BaseHandler {
 		this.dflTeamPlayerService = dflTeamPlayerService;
 		this.globalsService = globalsService;
 		medalStandings = new ArrayList<>();
+	}
 
 	public void execute(int round) {
 
@@ -134,12 +135,16 @@ public class CallumChambersHandler extends BaseHandler {
 			
 			round = ((Number)cli.getParsedOptionValue("r")).intValue();
 
-			CallumChambersHandler callumChambersHandler = new CallumChambersHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			CallumChambersHandler callumChambersHandler = context.getBean(CallumChambersHandler.class);
 			callumChambersHandler.configureLogging("batch.name", "batch-logger", ("CallumChambersHandler_R" + round));
 			callumChambersHandler.execute(round);
 						
 			callumChambersHandler.report();
 			
+			System.exit(0);
 		} catch (ParseException ex) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp( "adamGoodesHandler", options);

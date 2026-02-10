@@ -35,12 +35,8 @@ public class AflFixtureLoaderHandler extends BaseHandler {
 		this.aflFixtureService = aflFixtureService;
 		this.aflTeamService = aflTeamService;
 		this.aflFixtureHtmlHandler = aflFixtureHtmlHandler;
-		try {
-			aflFixtureHtmlHandler = new AflFixtureHtmlHandler();
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
-		}
-	
+	}
+
 	public void execute(List<Integer> aflRounds) {
 
 		loggerUtils.log("info", "Executing AflFixtureLoader for rounds: {}", aflRounds);
@@ -89,7 +85,10 @@ public class AflFixtureLoaderHandler extends BaseHandler {
 			CommandLineParser parser = new DefaultParser();
 			CommandLine cli = parser.parse(options, args);
 			
-			AflFixtureLoaderHandler testing = new AflFixtureLoaderHandler();				
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			AflFixtureLoaderHandler testing = context.getBean(AflFixtureLoaderHandler.class);				
 			List<Integer> testRounds = new ArrayList<>();
 			
 			if(cli.hasOption("all")) {

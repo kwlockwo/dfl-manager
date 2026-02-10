@@ -18,55 +18,55 @@ public class DflUnmatchedPlayerServiceImpl implements DflUnmatchedPlayerService 
         this.repository = repository;
     }
     
-    @Override
     public DflUnmatchedPlayer get(Integer id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflUnmatchedPlayer> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflUnmatchedPlayer entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflUnmatchedPlayer entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflUnmatchedPlayer entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflUnmatchedPlayer> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflUnmatchedPlayer> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflUnmatchedPlayer> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflUnmatchedPlayer entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
+    }
+
+    public void insertAll(List<DflUnmatchedPlayer> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflUnmatchedPlayer> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

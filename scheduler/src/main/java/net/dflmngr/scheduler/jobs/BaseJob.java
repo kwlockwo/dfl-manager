@@ -4,6 +4,8 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import net.dflmngr.logging.LoggingUtils;
 
@@ -12,6 +14,9 @@ import net.dflmngr.logging.LoggingUtils;
  * Provides common functionality for logging, exception handling, and parameter extraction.
  */
 public abstract class BaseJob implements Job {
+
+	@Autowired
+	protected ApplicationContext applicationContext;
 
 	protected LoggingUtils loggerUtils;
 

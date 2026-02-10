@@ -164,12 +164,17 @@ public class AdamGoodesHandler extends BaseHandler {
 			CommandLine cli = parser.parse(options, args);
 			
 			round = ((Number)cli.getParsedOptionValue("r")).intValue();
-				
-			AdamGoodesHandler adamGoodesHandler = new AdamGoodesHandler();
+
+			// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			AdamGoodesHandler adamGoodesHandler = context.getBean(AdamGoodesHandler.class);
 			adamGoodesHandler.configureLogging("batch.name", "batch-logger", ("AdamGoodesHandler_R" + round));
 			adamGoodesHandler.execute(round);
-						
+
 			adamGoodesHandler.report();
+
+			System.exit(0);
 			
 		} catch (ParseException ex) {
 			HelpFormatter formatter = new HelpFormatter();

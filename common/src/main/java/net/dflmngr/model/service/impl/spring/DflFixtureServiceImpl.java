@@ -19,65 +19,67 @@ public class DflFixtureServiceImpl implements DflFixtureService {
         this.repository = repository;
     }
     
-    @Override
     public DflFixture get(DflFixturePK id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflFixture> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflFixture entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflFixture entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflFixture entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflFixture> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflFixture> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflFixture> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflFixture entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public List<DflFixture> findByRound(int round) {
         return repository.findByRound(round);
     }
     
-    @Override
     public DflFixture findByRoundAndGame(int round, int game) {
         return repository.findByRoundAndGame(round, game);
+    }
+
+    public void insertAll(List<DflFixture> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflFixture> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public List<DflFixture> getFixturesForRound(int round) {
+        return repository.findByRound(round);
     }
 }

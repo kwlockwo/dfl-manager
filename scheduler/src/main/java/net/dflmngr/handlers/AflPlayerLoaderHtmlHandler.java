@@ -35,6 +35,7 @@ public class AflPlayerLoaderHtmlHandler extends BaseHandler {
 	public AflPlayerLoaderHtmlHandler(GlobalsService globalsService) {
 		super("AflPlayerLoaderHtmlHandler");
 		this.globalsService = globalsService;
+	}
 
 	public List<AflPlayer> execute(String teamId, String url, boolean useOfficialPlayers) {
 
@@ -232,7 +233,9 @@ public class AflPlayerLoaderHtmlHandler extends BaseHandler {
 		String url = args[1];
 		boolean useOfficial = Boolean.parseBoolean(args[2]);
 
-		AflPlayerLoaderHtmlHandler handler = new AflPlayerLoaderHtmlHandler();
+		org.springframework.context.ApplicationContext context =
+			org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+		AflPlayerLoaderHtmlHandler handler = context.getBean(AflPlayerLoaderHtmlHandler.class);
 
 		try {
 			List<AflPlayer> players = handler.execute(teamId, url, useOfficial);

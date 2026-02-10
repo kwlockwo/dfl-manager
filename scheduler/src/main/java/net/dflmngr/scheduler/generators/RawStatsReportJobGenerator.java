@@ -20,14 +20,13 @@ import net.dflmngr.scheduler.JobScheduler;
 
 public class RawStatsReportJobGenerator extends BaseJobGenerator {
 
+	public RawStatsReportJobGenerator() {
+		super("RawStatsReportJobGenerator");
+	}
+
 	private DflRoundInfoService dflRoundInfoService;
 	private AflFixtureService aflFixtureService;
 
-	public RawStatsReportJobGenerator() {
-		super("RawStatsReportJobGenerator");
-		this.dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		this.aflFixtureService = serviceFactory.createAflFixtureService();
-	}
 
 	@Override
 	protected void generateJobs() throws Exception {

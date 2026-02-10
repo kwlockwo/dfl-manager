@@ -37,12 +37,6 @@ public class PreSeasonStatsHandler extends BaseHandler {
 		this.globalsService = globalsService;
 		this.dflPreseasonScoresService = dflPreseasonScoresService;
 	}
-	public PreSeasonStatsHandler() {
-		super("PreSeasonStats");
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflPreseasonScoresService = serviceFactory.createDflPreseasonScoresService();
-	}
 
 	public void execute(int round) {
 
@@ -224,9 +218,11 @@ public class PreSeasonStatsHandler extends BaseHandler {
 		return preseasonScores;
 	}
 	
-	
+
 	public static void main(String[] args) {
-		PreSeasonStatsHandler testing = new PreSeasonStatsHandler();
+		org.springframework.context.ApplicationContext context =
+			org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+		PreSeasonStatsHandler testing = context.getBean(PreSeasonStatsHandler.class);
 		testing.configureLogging("batch.name", "batch-logger", "PreSeasonStats");
 		testing.execute(Integer.parseInt(args[0]));
 	}

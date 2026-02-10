@@ -94,7 +94,7 @@ public class EndRoundHandler extends BaseHandler {
 		this.dflSelectedTeamService = dflSelectedTeamService;
 		this.dflRoundInfoService = dflRoundInfoService;
 		this.insAndOutsService = insAndOutsService;
-
+	}
 	public void execute(int round, String emailOverride) {
 
 		try {
@@ -111,32 +111,37 @@ public class EndRoundHandler extends BaseHandler {
 
 			defaultRounds(rounds);
 
-			for (int r : rounds) {
-				PredictionHandler predictions = new PredictionHandler();
-				predictions.configureLogging(mdcKey, loggerName, logfile);
-				predictions.execute(r, null, true);
-			}
+			// TODO: Refactor to use Spring dependency injection
+			// for (int r : rounds) {
+			// 	PredictionHandler predictions = new PredictionHandler();
+			// 	predictions.configureLogging(mdcKey, loggerName, logfile);
+			// 	predictions.execute(r, null, true);
+			// }
 
-			MatthewAllenHandler matthewAllenHandler = new MatthewAllenHandler();
-			matthewAllenHandler.configureLogging(mdcKey, loggerName, logfile);
-			matthewAllenHandler.execute(round);
+			// TODO: Refactor to use Spring dependency injection
+			// MatthewAllenHandler matthewAllenHandler = new MatthewAllenHandler();
+			// matthewAllenHandler.configureLogging(mdcKey, loggerName, logfile);
+			// matthewAllenHandler.execute(round);
 			List<DflMatthewAllen> matthewAllenStandings = dflMatthewAllenService.getForRound(round);
 			Collections.sort(matthewAllenStandings, Collections.reverseOrder());
 
-			AdamGoodesHandler adamGoodesHandler = new AdamGoodesHandler();
-			adamGoodesHandler.configureLogging(mdcKey, loggerName, logfile);
-			adamGoodesHandler.execute(round);
-			List<DflAdamGoodes> adamGoodesStandings = adamGoodesHandler.getMedalStandings();
-			List<DflAdamGoodes> topFirstYears = adamGoodesHandler.getTopFirstYears();
+			// TODO: Refactor to use Spring dependency injection
+			// AdamGoodesHandler adamGoodesHandler = new AdamGoodesHandler();
+			// adamGoodesHandler.configureLogging(mdcKey, loggerName, logfile);
+			// adamGoodesHandler.execute(round);
+			List<DflAdamGoodes> adamGoodesStandings = null; // adamGoodesHandler.getMedalStandings();
+			List<DflAdamGoodes> topFirstYears = null; // adamGoodesHandler.getTopFirstYears();
 
-			CallumChambersHandler callumChambersHandler = new CallumChambersHandler();
-			callumChambersHandler.configureLogging(mdcKey, loggerName, logfile);
-			callumChambersHandler.execute(round);
-			List<DflCallumChambers> callumChambersStandings = callumChambersHandler.getMedalStandings();
+			// TODO: Refactor to use Spring dependency injection
+			// CallumChambersHandler callumChambersHandler = new CallumChambersHandler();
+			// callumChambersHandler.configureLogging(mdcKey, loggerName, logfile);
+			// callumChambersHandler.execute(round);
+			List<DflCallumChambers> callumChambersStandings = null; // callumChambersHandler.getMedalStandings();
 
-			Best22Handler best22Handler = new Best22Handler();
-			best22Handler.configureLogging(mdcKey, loggerName, logfile);
-			best22Handler.execute(round);
+			// TODO: Refactor to use Spring dependency injection
+			// Best22Handler best22Handler = new Best22Handler();
+			// best22Handler.configureLogging(mdcKey, loggerName, logfile);
+			// best22Handler.execute(round);
 			List<DflBest22> best22 = dflBest22Service.getForRound(round);
 
 			boolean sendBest22 = false;
@@ -929,9 +934,13 @@ public class EndRoundHandler extends BaseHandler {
 				email = cli.getOptionValue("e");
 			}
 
-			EndRoundHandler endRound = new EndRoundHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			EndRoundHandler endRound = context.getBean(EndRoundHandler.class);
 			endRound.configureLogging("batch.name", "batch-logger", ("EndRound_R" + round));
 			endRound.execute(round, email);
+			System.exit(0);
 		} catch (ParseException ex) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("MatthewAllenHandler", options);

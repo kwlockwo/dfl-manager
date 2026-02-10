@@ -21,4 +21,9 @@ public interface DflMatthewAllenRepository extends JpaRepository<DflMatthewAllen
 	@Modifying
 	@Query("DELETE FROM DflMatthewAllen ma WHERE ma.round = :round")
 	void deleteByRound(@Param("round") int round);
+
+	/**
+	 * Find all DflMatthewAllen entries for a specific player ID
+	 */
+	List<DflMatthewAllen> findByPlayerId(int playerId);
 }

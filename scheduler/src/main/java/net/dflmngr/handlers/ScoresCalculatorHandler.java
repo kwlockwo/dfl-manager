@@ -82,20 +82,6 @@ public class ScoresCalculatorHandler extends BaseHandler {
 		this.globalsService = globalsService;
 		this.dflPlayerPredictedScoresService = dflPlayerPredictedScoresService;
 	}
-	public ScoresCalculatorHandler() {
-		super("RoundProgress");
-		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflTeamService = serviceFactory.createDflTeamService();
-		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
-	}
 
 	public void configureLogging(String logfile) {
 		configureLogging(defaultMdcKey, defaultLoggerName, logfile);
@@ -584,9 +570,13 @@ public class ScoresCalculatorHandler extends BaseHandler {
 
 			round = ((Number)cli.getParsedOptionValue("r")).intValue();
 
-			ScoresCalculatorHandler scoresCalculatorHandler = new ScoresCalculatorHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			ScoresCalculatorHandler scoresCalculatorHandler = context.getBean(ScoresCalculatorHandler.class);
 			scoresCalculatorHandler.configureLogging("ScoresCalculatorHandler_R" + round);
 			scoresCalculatorHandler.execute(round);
+			System.exit(0);
 		} catch (ParseException ex) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp( "ScoresCalculatorHandler", options);

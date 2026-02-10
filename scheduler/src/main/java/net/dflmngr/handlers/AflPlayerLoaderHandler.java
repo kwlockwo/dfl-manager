@@ -41,10 +41,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 		this.dflPlayerService = dflPlayerService;
 		this.globalsService = globalsService;
 		this.dflUnmatchedPlayerService = dflUnmatchedPlayerService;
-		try {
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
-		}
+	}
 
 	public void execute() {
 
@@ -68,7 +65,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 		List<AflPlayer> aflPlayers = new ArrayList<>();
 
-		AflPlayerLoaderHtmlHandler playerHtmlLoader = new AflPlayerLoaderHtmlHandler();
+		AflPlayerLoaderHtmlHandler playerHtmlLoader = applicationContext.getBean(AflPlayerLoaderHtmlHandler.class);
 		boolean useOfficalPlayers = globalsService.getUseOfficalPlayers();
 
 		loggerUtils.log("info", "Using official AFL player lists: {}", useOfficalPlayers);
@@ -261,7 +258,9 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 	public static void main(String[] args) {
 
-		AflPlayerLoaderHandler aflPlayerLoader = new AflPlayerLoaderHandler();
+		org.springframework.context.ApplicationContext context =
+			org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+		AflPlayerLoaderHandler aflPlayerLoader = context.getBean(AflPlayerLoaderHandler.class);
 
 		java.security.Security.setProperty("networkaddress.cache.ttl", "30");
 		java.security.Security.setProperty("networkaddress.cache.negative.ttl", "0");

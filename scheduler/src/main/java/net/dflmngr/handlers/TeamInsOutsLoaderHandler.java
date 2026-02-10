@@ -36,13 +36,6 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		this.dflEarlyInsAndOutsService = dflEarlyInsAndOutsService;
 		this.insAndOutsService = insAndOutsService;
 	}
-	public TeamInsOutsLoaderHandler() {
-		super("Selections");
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflEarlyInsAndOutsService = serviceFactory.createDflEarlyInsAndOutsService();
-		insAndOutsService = serviceFactory.createInsAndOutsService();
-	}
 
 	public void execute(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Double> emgs, boolean earlyGames) {
 
@@ -360,7 +353,7 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 
 	private void createPredictions(int round, String teamCode) {
 		loggerUtils.log("info", "Creating predictions");
-		PredictionHandler predictions = new PredictionHandler();
+		PredictionHandler predictions = applicationContext.getBean(PredictionHandler.class);
 		predictions.configureLogging(mdcKey, loggerName, logfile);
 		predictions.execute(round, teamCode, false);
 	}

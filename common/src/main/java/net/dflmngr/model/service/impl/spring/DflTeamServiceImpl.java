@@ -18,60 +18,59 @@ public class DflTeamServiceImpl implements DflTeamService {
         this.repository = repository;
     }
     
-    @Override
     public DflTeam get(String id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflTeam> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflTeam entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflTeam entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflTeam entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflTeam> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflTeam> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflTeam> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflTeam entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public DflTeam findByTeamCode(String teamCode) {
         return repository.findByTeamCode(teamCode);
+    }
+
+    public void insertAll(List<DflTeam> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflTeam> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

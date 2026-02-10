@@ -22,14 +22,13 @@ import net.dflmngr.utils.DflmngrUtils;
 
 public class ResultsJobGenerator extends BaseJobGenerator {
 
+	public ResultsJobGenerator() {
+		super("ResultsJobGenerator");
+	}
+
 	private DflRoundInfoService dflRoundInfoService;
 	private AflFixtureService aflFixtureService;
 
-	public ResultsJobGenerator() {
-		super("ResultsJobGenerator");
-		this.dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		this.aflFixtureService = serviceFactory.createAflFixtureService();
-	}
 
 	@Override
 	protected void generateJobs() throws Exception {

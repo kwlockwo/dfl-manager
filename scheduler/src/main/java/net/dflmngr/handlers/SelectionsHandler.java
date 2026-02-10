@@ -41,13 +41,6 @@ public class SelectionsHandler extends BaseHandler {
 		this.dflSelectedTeamService = dflSelectedTeamService;
 		this.dflTeamPlayerService = dflTeamPlayerService;
 	}
-	public SelectionsHandler() {
-		super("SelectionsHandler");
-		dflTeamService = serviceFactory.createDflTeamService();
-		insAndOutsService = serviceFactory.createInsAndOutsService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-	}
 
 	public void execute(int round) {
 
@@ -109,7 +102,7 @@ public class SelectionsHandler extends BaseHandler {
 			dflSelectedTeamService.replaceTeamForRound(round, teamCode, selectedTeam);
 
 			loggerUtils.log("info", "Creating predictions");
-			PredictionHandler predictions = new PredictionHandler();
+			PredictionHandler predictions = applicationContext.getBean(PredictionHandler.class);
 			predictions.configureLogging(mdcKey, loggerName, logfile);
 			predictions.execute(round, teamCode, false);
 		} else {
@@ -258,7 +251,10 @@ public class SelectionsHandler extends BaseHandler {
 
 			round = ((Number)cli.getParsedOptionValue("r")).intValue();
 
-			SelectionsHandler selectionsHandler = new SelectionsHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			SelectionsHandler selectionsHandler = context.getBean(SelectionsHandler.class);
 			selectionsHandler.configureLogging("batch.name", "batch-logger", ("SelectionsHander" + round));
 			selectionsHandler.execute(round);
 

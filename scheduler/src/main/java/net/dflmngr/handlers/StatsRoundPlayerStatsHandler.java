@@ -36,12 +36,6 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 		this.aflFixtureService = aflFixtureService;
 		this.globalsService = globalsService;
 	}
-	public StatsRoundPlayerStatsHandler() {
-		super("RawPlayerStatsHandler");
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		globalsService = serviceFactory.createGlobalsService();
-	}
 
 	public void execute(int round) {
 
@@ -98,7 +92,9 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 			boolean includeHomeTeam = true;
 			boolean includeAwayTeam = true;
 
-			StatsDownloaderHandler handler = new StatsDownloaderHandler(round, fullStatsUrl);
+			StatsDownloaderHandler handler = applicationContext.getBean(StatsDownloaderHandler.class);
+			handler.setRound(round);
+			handler.setStatsUrl(fullStatsUrl);
 			handler.configureLogging("StatsRoundPlayerDownloader");
 			handler.execute(homeTeam, awayTeam, includeHomeTeam, includeAwayTeam, "Finalized", true);
 		}
@@ -118,7 +114,10 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 
 			round = ((Number)cli.getParsedOptionValue("r")).intValue();
 
-			StatsRoundPlayerStatsHandler testing = new StatsRoundPlayerStatsHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			StatsRoundPlayerStatsHandler testing = context.getBean(StatsRoundPlayerStatsHandler.class);
 			testing.configureLogging("batch.name", "batch-logger", "StatsRoundPlayerStatsHandlerTesting");
 			testing.execute(round);
 			System.exit(0);

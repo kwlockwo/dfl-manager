@@ -3,8 +3,10 @@ package net.dflmngr.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import net.dflmngr.model.entity.DflPlayerScores;
 import net.dflmngr.model.entity.keys.DflPlayerScoresPK;
@@ -33,4 +35,12 @@ public interface DflPlayerScoresRepository extends JpaRepository<DflPlayerScores
      */
     @Query("SELECT SUM(ps.score) FROM DflPlayerScores ps WHERE ps.round = :round AND ps.teamCode = :teamCode")
     Integer sumScoreByRoundAndTeamCode(@Param("round") int round, @Param("teamCode") String teamCode);
+
+    /**
+     * Delete all player scores for a specific round
+     */
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM DflPlayerScores ps WHERE ps.round = :round")
+    void deleteByRound(@Param("round") int round);
 }

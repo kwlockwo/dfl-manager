@@ -1,20 +1,17 @@
 package net.dflmngr.scheduler.generators;
 
 import net.dflmngr.logging.LoggingUtils;
-import net.dflmngr.service.ServiceFactory;
 
 /**
  * Base class for all job generators.
- * Provides common functionality for logging, service management, and execution pattern.
+ * Provides common functionality for logging and execution pattern.
  */
 public abstract class BaseJobGenerator {
 
 	protected LoggingUtils loggerUtils;
-	protected ServiceFactory serviceFactory;
 
 	protected BaseJobGenerator(String generatorName) {
 		this.loggerUtils = new LoggingUtils(generatorName);
-		this.serviceFactory = ServiceFactory.getInstance();
 	}
 
 	/**

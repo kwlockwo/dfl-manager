@@ -6,7 +6,9 @@ import net.dflmngr.repositories.DflPlayerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -18,60 +20,92 @@ public class DflPlayerServiceImpl implements DflPlayerService {
         this.repository = repository;
     }
     
-    @Override
     public DflPlayer get(Integer id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<DflPlayer> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(DflPlayer entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(DflPlayer entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(DflPlayer entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<DflPlayer> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<DflPlayer> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<DflPlayer> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(DflPlayer entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public DflPlayer findByPlayerId(int playerId) {
-        return repository.findByPlayerId(playerId);
+        return repository.findById(playerId).orElse(null);
+    }
+
+    public List<DflPlayer> getByTeam(String team) {
+        // Find by AFL club/team
+        return repository.findByAflClub(team);
+    }
+
+    public void insertAll(List<DflPlayer> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<DflPlayer> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public DflPlayer getByAflPlayerId(String aflPlayerId) {
+        return repository.findByAflPlayerId(aflPlayerId);
+    }
+
+    public List<DflPlayer> getAdamGoodesEligible() {
+        return repository.findAdamGoodesEligible();
+    }
+
+    public Map<String, DflPlayer> getCrossRefPlayers() {
+        Map<String, DflPlayer> crossRefPlayers = new HashMap<>();
+        List<DflPlayer> players = repository.findWithAflPlayerId();
+        
+        for (DflPlayer player : players) {
+            crossRefPlayers.put(player.getAflPlayerId(), player);
+        }
+        
+        return crossRefPlayers;
+    }
+
+    public void bulkUpdateAflPlayerId(Map<String, DflPlayer> players) {
+        for (Map.Entry<String, DflPlayer> entry : players.entrySet()) {
+            String aflPlayerId = entry.getKey();
+            DflPlayer player = entry.getValue();
+            player.setAflPlayerId(aflPlayerId);
+        }
+        repository.saveAll(players.values());
     }
 }

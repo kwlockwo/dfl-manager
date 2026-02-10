@@ -27,15 +27,11 @@ public class AflFixtureHtmlHandler extends BaseHandler {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MMMM d h:mma yyyy");
 
-    GlobalsService globalsService;
-    AflTeamService aflTeamService;
-
     String currentYear;
     String defaultTimezone;
 
     static final String HTML_CLASS_STRING = "class";
 
-    
 	private final GlobalsService globalsService;
 	private final AflTeamService aflTeamService;
 
@@ -213,7 +209,9 @@ public class AflFixtureHtmlHandler extends BaseHandler {
         int round = Integer.parseInt(args[0]);
         String fixtureUrl = args[1];
 
-        AflFixtureHtmlHandler handler = new AflFixtureHtmlHandler();
+        org.springframework.context.ApplicationContext context =
+            org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+        AflFixtureHtmlHandler handler = context.getBean(AflFixtureHtmlHandler.class);
         handler.configureLogging("AflFixtureDownloader");
 
         List<AflFixture> fixtures =  handler.execute(round, fixtureUrl);

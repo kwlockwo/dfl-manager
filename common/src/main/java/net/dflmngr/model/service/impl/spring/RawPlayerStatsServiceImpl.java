@@ -7,7 +7,9 @@ import net.dflmngr.repositories.RawPlayerStatsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -19,65 +21,91 @@ public class RawPlayerStatsServiceImpl implements RawPlayerStatsService {
         this.repository = repository;
     }
     
-    @Override
     public RawPlayerStats get(RawPlayerStatsPK id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<RawPlayerStats> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(RawPlayerStats entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(RawPlayerStats entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(RawPlayerStats entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<RawPlayerStats> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<RawPlayerStats> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<RawPlayerStats> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(RawPlayerStats entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public List<RawPlayerStats> findByRound(int round) {
         return repository.findByRound(round);
     }
     
-    @Override
     public RawPlayerStats findByRoundAndPlayer(int round, int playerId) {
         return repository.findByRoundAndPlayerId(round, playerId);
+    }
+
+    public void insertAll(List<RawPlayerStats> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<RawPlayerStats> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public List<RawPlayerStats> getForRound(int round) {
+        return repository.findByRound(round);
+    }
+
+    public void replaceAllForRound(int round, List<RawPlayerStats> playerStats) {
+        repository.deleteByRound(round);
+        repository.flush();
+        repository.saveAll(playerStats);
+    }
+
+    public Map<String, RawPlayerStats> getForRoundWithKey(int round) {
+        List<RawPlayerStats> stats = repository.findByRound(round);
+        Map<String, RawPlayerStats> statsMap = new HashMap<>();
+        for (RawPlayerStats stat : stats) {
+            String key = stat.getTeam() + "_" + stat.getJumperNo();
+            statsMap.put(key, stat);
+        }
+        return statsMap;
+    }
+
+    public void removeStatsForRoundAndTeam(int round, String team) {
+        repository.deleteByRoundAndTeam(round, team);
+    }
+
+    public List<RawPlayerStats> getForRoundAndTeam(int round, String team) {
+        return repository.findByRoundAndTeam(round, team);
     }
 }

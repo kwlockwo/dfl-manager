@@ -1,0 +1,77 @@
+package net.dflmngr.model.service.impl.spring;
+
+import net.dflmngr.model.entity.DflTeam;
+import net.dflmngr.model.service.DflTeamService;
+import net.dflmngr.repositories.DflTeamRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@Transactional
+public class DflTeamServiceImpl implements DflTeamService {
+    
+    private final DflTeamRepository repository;
+    
+    public DflTeamServiceImpl(DflTeamRepository repository) {
+        this.repository = repository;
+    }
+    
+    @Override
+    public DflTeam get(String id) {
+        return repository.findById(id).orElse(null);
+    }
+    
+    @Override
+    public List<DflTeam> findAll() {
+        return repository.findAll();
+    }
+    
+    @Override
+    public void insert(DflTeam entity) {
+        repository.save(entity);
+    }
+    
+    @Override
+    public void update(DflTeam entity) {
+        repository.save(entity);
+    }
+    
+    @Override
+    public void delete(DflTeam entity) {
+        repository.delete(entity);
+    }
+    
+    @Override
+    public void insertAll(List<DflTeam> entities) {
+        repository.saveAll(entities);
+    }
+    
+    @Override
+    public void updateAll(List<DflTeam> entities) {
+        repository.saveAll(entities);
+    }
+    
+    @Override
+    public void replaceAll(List<DflTeam> entities) {
+        repository.deleteAll();
+        repository.flush();
+        repository.saveAll(entities);
+    }
+    
+    @Override
+    public void refresh(DflTeam entity) {
+        // No-op: Spring manages persistence context
+    }
+    
+    @Override
+    public void close() {
+        // No-op: Spring manages lifecycle
+    }
+    
+    @Override
+    public DflTeam findByTeamCode(String teamCode) {
+        return repository.findByTeamCode(teamCode);
+    }
+}

@@ -18,60 +18,63 @@ public class AflTeamServiceImpl implements AflTeamService {
         this.repository = repository;
     }
     
-    @Override
     public AflTeam get(String id) {
         return repository.findById(id).orElse(null);
     }
     
-    @Override
     public List<AflTeam> findAll() {
         return repository.findAll();
     }
     
-    @Override
     public void insert(AflTeam entity) {
         repository.save(entity);
     }
     
-    @Override
     public void update(AflTeam entity) {
         repository.save(entity);
     }
     
-    @Override
     public void delete(AflTeam entity) {
         repository.delete(entity);
     }
     
-    @Override
     public void insertAll(List<AflTeam> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void updateAll(List<AflTeam> entities) {
         repository.saveAll(entities);
     }
     
-    @Override
     public void replaceAll(List<AflTeam> entities) {
         repository.deleteAll();
         repository.flush();
         repository.saveAll(entities);
     }
     
-    @Override
     public void refresh(AflTeam entity) {
         // No-op: Spring manages persistence context
     }
     
-    @Override
     public void close() {
         // No-op: Spring manages lifecycle
     }
     
-    @Override
     public AflTeam findByTeamId(String teamId) {
-        return repository.findByTeamId(teamId);
+        return repository.findByName(teamId).orElse(null);
+    }
+
+    public AflTeam getAflTeamByName(String name) {
+        return repository.findByName(name).orElse(null);
+    }
+
+    public void insertAll(List<AflTeam> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
+    }
+
+    public void updateAll(List<AflTeam> entities, boolean inTx) {
+        // inTx parameter ignored - Spring manages transactions via @Transactional
+        repository.saveAll(entities);
     }
 }

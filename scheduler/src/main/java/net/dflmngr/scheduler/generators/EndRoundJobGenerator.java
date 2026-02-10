@@ -14,14 +14,13 @@ import net.dflmngr.scheduler.JobScheduler;
 
 public class EndRoundJobGenerator extends BaseJobGenerator {
 
+	public EndRoundJobGenerator() {
+		super("EndRoundJobGenerator");
+	}
+
 	private DflRoundInfoService dflRoundInfoService;
 	private GlobalsService globalsService;
 
-	public EndRoundJobGenerator() {
-		super("EndRoundJobGenerator");
-		this.dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		this.globalsService = serviceFactory.createGlobalsService();
-	}
 
 	@Override
 	protected void generateJobs() throws Exception {

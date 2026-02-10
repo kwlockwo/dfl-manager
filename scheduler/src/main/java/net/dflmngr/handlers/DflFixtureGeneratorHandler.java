@@ -23,7 +23,7 @@ public class DflFixtureGeneratorHandler extends BaseHandler {
 		super("DflFixtureGeneratorHandler");
 		this.globalsService = globalsService;
 		this.dflFixtureService = dflFixtureService;
-
+	}
 	public void execute() {
 
 		try{
@@ -84,7 +84,10 @@ public class DflFixtureGeneratorHandler extends BaseHandler {
 	public static void main(String[] args) {		
 		try {
 			
-			DflFixtureGeneratorHandler fixuteGenerator = new DflFixtureGeneratorHandler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			DflFixtureGeneratorHandler fixuteGenerator = context.getBean(DflFixtureGeneratorHandler.class);
 			fixuteGenerator.configureLogging("batch.name", "batch-logger", "DflFixtureGenerator");
 			fixuteGenerator.execute();
 

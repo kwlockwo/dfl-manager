@@ -13,14 +13,13 @@ import net.dflmngr.scheduler.JobScheduler;
 
 public class StatsRoundJobGenerator extends BaseJobGenerator {
 
+	public StatsRoundJobGenerator() {
+		super("StatsRoundJobGenerator");
+	}
+
 	private GlobalsService globalsService;
 	private AflFixtureService aflFixtureService;
 
-	public StatsRoundJobGenerator() {
-		super("StatsRoundJobGenerator");
-		this.globalsService = serviceFactory.createGlobalsService();
-		this.aflFixtureService = serviceFactory.createAflFixtureService();
-	}
 
 	@Override
 	protected void generateJobs() throws Exception {

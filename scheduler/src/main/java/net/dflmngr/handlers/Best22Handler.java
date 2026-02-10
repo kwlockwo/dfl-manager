@@ -41,6 +41,7 @@ public class Best22Handler extends BaseHandler {
 		this.dflPlayerScoresService = dflPlayerScoresService;
 		this.dflPlayerService = dflPlayerService;
 		this.dflBest22Service = dflBest22Service;
+	}
 
 	public void execute(int round) {
 
@@ -218,9 +219,13 @@ public class Best22Handler extends BaseHandler {
 			
 			round = ((Number)cli.getParsedOptionValue("r")).intValue();
 			
-			Best22Handler best22Handler = new Best22Handler();
+// Use Spring Boot ApplicationContext to get the handler bean
+			org.springframework.context.ApplicationContext context =
+				org.springframework.boot.SpringApplication.run(net.dflmngr.SchedulerApplication.class, args);
+			Best22Handler best22Handler = context.getBean(Best22Handler.class);
 			best22Handler.configureLogging("batch.name", "batch-logger", ("Best22_R" + round));
 			best22Handler.execute(round);
+			System.exit(0);
 		} catch (ParseException ex) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp( "Best22Handler", options );

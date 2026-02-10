@@ -12,7 +12,7 @@ public class EmailSelectionsJob extends BaseJob {
 
 	@Override
 	protected void executeJob(JobDataMap data) throws Exception {
-		EmailSelectionsHandler emailSelectionsHandler = new EmailSelectionsHandler();
+		EmailSelectionsHandler emailSelectionsHandler = applicationContext.getBean(EmailSelectionsHandler.class);
 		emailSelectionsHandler.configureLogging(defaultMdcKey, defaultLoggerName, defaultLogfile);
 		emailSelectionsHandler.execute();
 	}

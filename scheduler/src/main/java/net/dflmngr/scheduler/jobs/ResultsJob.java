@@ -28,7 +28,7 @@ public class ResultsJob extends BaseJob {
 			}
 		}
 
-		ResultsHandler resultsHandler = new ResultsHandler();
+		ResultsHandler resultsHandler = applicationContext.getBean(ResultsHandler.class);
 		resultsHandler.configureLogging(logFile);
 
 		loggerUtils.log("info", "Running {}", logFile);

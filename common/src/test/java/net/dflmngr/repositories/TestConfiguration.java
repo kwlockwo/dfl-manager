@@ -1,11 +1,16 @@
 package net.dflmngr.repositories;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -26,16 +31,29 @@ public class TestConfiguration {
     /**
      * Custom EntityManagerFactory bean to avoid Hibernate 6.6.8 SessionFactory proxy conflict.
      * Explicitly sets entityManagerFactoryInterface to jakarta.persistence.EntityManagerFactory.
+     * Passes Hibernate properties from application-test.yml to ensure dialect auto-detection.
      */
     @Bean
     @Primary
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            EntityManagerFactoryBuilder builder, DataSource dataSource) {
+            EntityManagerFactoryBuilder builder,
+            DataSource dataSource,
+            @Autowired Environment env) {
+
+        // Build Hibernate properties from application-test.yml
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto", "create-drop"));
+        properties.put("hibernate.show_sql", env.getProperty("spring.jpa.show-sql", "true"));
+        properties.put("hibernate.format_sql", env.getProperty("spring.jpa.properties.hibernate.format_sql", "true"));
+        properties.put("hibernate.use_sql_comments", env.getProperty("spring.jpa.properties.hibernate.use_sql_comments", "true"));
+
+        // Let Hibernate auto-detect dialect from datasource (works for both H2 and PostgreSQL)
 
         LocalContainerEntityManagerFactoryBean emfb = builder
                 .dataSource(dataSource)
                 .packages("net.dflmngr.model.entity")
                 .persistenceUnit("test")
+                .properties(properties)
                 .build();
 
         // Explicitly set to use jakarta.persistence.EntityManagerFactory to avoid proxy conflict

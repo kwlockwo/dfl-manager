@@ -53,6 +53,7 @@ jobs:
       if: steps.check_branch.outputs.is_monorepo == 'false'
       env:
         SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+        SPRING_DATASOURCE_DRIVER: org.postgresql.Driver
         SPRING_DATASOURCE_USERNAME: testuser
         SPRING_DATASOURCE_PASSWORD: testpass
         SPRING_PROFILES_ACTIVE: test

@@ -1,0 +1,10 @@
+# Flyway migrations directory
+#
+# To create the initial migration:
+# 1. Start a temporary PostgreSQL database
+# 2. Set hibernate.ddl-auto=create in application.yml
+# 3. Start the application to let Hibernate create the schema
+# 4. Export the schema: pg_dump --schema-only > V1__Initial_schema.sql
+# 5. Restore hibernate.ddl-auto=validate
+#
+# Or follow instructions in DATABASE_MIGRATIONS.md

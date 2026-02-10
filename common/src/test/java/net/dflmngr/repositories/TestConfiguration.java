@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
 
@@ -31,35 +32,31 @@ public class TestConfiguration {
     /**
      * Custom EntityManagerFactory bean to avoid Hibernate 6.6.8 SessionFactory proxy conflict.
      * Explicitly sets entityManagerFactoryInterface to jakarta.persistence.EntityManagerFactory.
-     * Passes Hibernate properties from application-test.yml to ensure dialect auto-detection.
+     * Uses HibernateJpaVendorAdapter to enable database platform auto-detection.
      */
     @Bean
     @Primary
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            EntityManagerFactoryBuilder builder,
             DataSource dataSource,
             @Autowired Environment env) {
 
+        LocalContainerEntityManagerFactoryBean emfb = new LocalContainerEntityManagerFactoryBean();
+        emfb.setDataSource(dataSource);
+        emfb.setPackagesToScan("net.dflmngr.model.entity");
+        emfb.setPersistenceUnitName("test");
+
+        // Use HibernateJpaVendorAdapter with auto-detection enabled
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
+        vendorAdapter.setShowSql(Boolean.parseBoolean(env.getProperty("spring.jpa.show-sql", "true")));
+        emfb.setJpaVendorAdapter(vendorAdapter);
+
         // Build Hibernate properties from application-test.yml
         Map<String, Object> properties = new HashMap<>();
-
-        // Pass JDBC URL to Hibernate so it can detect the dialect
-        properties.put("jakarta.persistence.jdbc.url", env.getProperty("spring.datasource.url"));
-        properties.put("jakarta.persistence.jdbc.user", env.getProperty("spring.datasource.username"));
-        properties.put("jakarta.persistence.jdbc.password", env.getProperty("spring.datasource.password"));
-        properties.put("jakarta.persistence.jdbc.driver", env.getProperty("spring.datasource.driver-class-name"));
-
         properties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto", "create-drop"));
-        properties.put("hibernate.show_sql", env.getProperty("spring.jpa.show-sql", "true"));
         properties.put("hibernate.format_sql", env.getProperty("spring.jpa.properties.hibernate.format_sql", "true"));
         properties.put("hibernate.use_sql_comments", env.getProperty("spring.jpa.properties.hibernate.use_sql_comments", "true"));
-
-        LocalContainerEntityManagerFactoryBean emfb = builder
-                .dataSource(dataSource)
-                .packages("net.dflmngr.model.entity")
-                .persistenceUnit("test")
-                .properties(properties)
-                .build();
+        emfb.setJpaPropertyMap(properties);
 
         // Explicitly set to use jakarta.persistence.EntityManagerFactory to avoid proxy conflict
         emfb.setEntityManagerFactoryInterface(EntityManagerFactory.class);

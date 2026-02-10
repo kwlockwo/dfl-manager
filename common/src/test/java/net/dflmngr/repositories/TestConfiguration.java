@@ -45,10 +45,19 @@ public class TestConfiguration {
         emfb.setPackagesToScan("net.dflmngr.model.entity");
         emfb.setPersistenceUnitName("test");
 
-        // Use HibernateJpaVendorAdapter with auto-detection enabled
+        // Use HibernateJpaVendorAdapter with database platform detection
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
         vendorAdapter.setShowSql(Boolean.parseBoolean(env.getProperty("spring.jpa.show-sql", "true")));
+
+        // Detect database platform from driver class
+        String driverClass = env.getProperty("spring.datasource.driver-class-name", "org.h2.Driver");
+        if (driverClass.contains("postgresql")) {
+            vendorAdapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
+        } else if (driverClass.contains("h2")) {
+            vendorAdapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
+        }
+
         emfb.setJpaVendorAdapter(vendorAdapter);
 
         // Build Hibernate properties from application-test.yml

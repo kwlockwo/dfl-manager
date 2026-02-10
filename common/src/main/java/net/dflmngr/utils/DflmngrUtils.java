@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 //import java.util.TimeZone;
 
-import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.model.service.impl.spring.GlobalsServiceImpl;
-
 public class DflmngrUtils {
 
 	//public static String nowStr = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());

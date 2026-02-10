@@ -18,8 +18,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import net.dflmngr.exceptions.AflFixtureException;
 import net.dflmngr.model.entity.AflFixture;
-import net.dflmngr.model.service.AflTeamService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.AflTeamService;
+import net.dflmngr.services.GlobalsService;
 import org.springframework.stereotype.Component;
 
 

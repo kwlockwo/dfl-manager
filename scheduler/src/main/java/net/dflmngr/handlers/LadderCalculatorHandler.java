@@ -11,12 +11,12 @@ import net.dflmngr.model.entity.DflPlayerPredictedScores;
 import net.dflmngr.model.entity.DflPlayerScores;
 import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflTeamScores;
-import net.dflmngr.model.service.DflFixtureService;
-import net.dflmngr.model.service.DflLadderService;
-import net.dflmngr.model.service.DflPlayerPredictedScoresService;
-import net.dflmngr.model.service.DflPlayerScoresService;
-import net.dflmngr.model.service.DflSelectedTeamService;
-import net.dflmngr.model.service.DflTeamScoresService;
+import net.dflmngr.services.DflFixtureService;
+import net.dflmngr.services.DflLadderService;
+import net.dflmngr.services.DflPlayerPredictedScoresService;
+import net.dflmngr.services.DflPlayerScoresService;
+import net.dflmngr.services.DflSelectedTeamService;
+import net.dflmngr.services.DflTeamScoresService;
 
 import org.springframework.stereotype.Component;
 

@@ -15,10 +15,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import net.dflmngr.model.entity.AflFixture;
-import net.dflmngr.model.service.AflFixtureService;
+import net.dflmngr.services.AflFixtureService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
 
@@ -60,13 +60,10 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 				}
 				if(!updateFixtures.isEmpty()) {
 					loggerUtils.log("info", "AFL games final download: {}", updateFixtures);
-					aflFixtureService.updateAll(updateFixtures, false);
+					aflFixtureService.updateAll(updateFixtures);
 				}
 			}
 			
-			dflRoundInfoService.close();
-			aflFixtureService.close();
-			globalsService.close();
 
 			loggerUtils.log("info", "Stats round player stats downaloded");
 
@@ -98,7 +95,7 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 			handler.setRound(round);
 			handler.setStatsUrl(fullStatsUrl);
 			handler.configureLogging("StatsRoundPlayerDownloader");
-			handler.execute(homeTeam, awayTeam, includeHomeTeam, includeAwayTeam, "Finalized", true);
+			handler.execute(homeTeam, awayTeam, includeHomeTeam, includeAwayTeam, "Finalized", false);
 		}
 	}
 

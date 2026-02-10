@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.dflmngr.model.entity.DflFixture;
-import net.dflmngr.model.service.DflFixtureService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.DflFixtureService;
+import net.dflmngr.services.GlobalsService;
 
 import org.springframework.stereotype.Component;
 

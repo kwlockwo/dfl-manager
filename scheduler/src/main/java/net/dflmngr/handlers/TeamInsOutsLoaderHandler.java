@@ -12,11 +12,11 @@ import net.dflmngr.model.entity.DflEarlyInsAndOuts;
 import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflTeamPlayer;
 import net.dflmngr.model.entity.InsAndOuts;
-import net.dflmngr.model.service.DflEarlyInsAndOutsService;
+import net.dflmngr.services.DflEarlyInsAndOutsService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.DflSelectedTeamService;
-import net.dflmngr.model.service.DflTeamPlayerService;
-import net.dflmngr.model.service.InsAndOutsService;
+import net.dflmngr.services.DflSelectedTeamService;
+import net.dflmngr.services.DflTeamPlayerService;
+import net.dflmngr.services.InsAndOutsService;
 
 
 @Component
@@ -48,14 +48,10 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 			
 			if(earlyGames) {
 				handleEarlyGames(teamCode, round, ins, outs, emgs);
-				dflEarlyInsAndOutsService.close();
 			} else {
 				handleWithoutEarlyGames(teamCode, round, ins, outs, emgs);
-				insAndOutsService.close();
 			}
 
-			dflSelectedTeamService.close();
-			dflTeamPlayerService.close();
 						
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);

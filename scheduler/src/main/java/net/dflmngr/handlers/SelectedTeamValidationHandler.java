@@ -12,15 +12,15 @@ import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflSelectionIds;
 import net.dflmngr.model.entity.DflTeamPlayer;
-import net.dflmngr.model.service.AflFixtureService;
+import net.dflmngr.services.AflFixtureService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.DflEarlyInsAndOutsService;
-import net.dflmngr.model.service.DflPlayerService;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.DflSelectedTeamService;
-import net.dflmngr.model.service.DflSelectionIdsService;
-import net.dflmngr.model.service.DflTeamPlayerService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.DflEarlyInsAndOutsService;
+import net.dflmngr.services.DflPlayerService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.DflSelectedTeamService;
+import net.dflmngr.services.DflSelectionIdsService;
+import net.dflmngr.services.DflTeamPlayerService;
+import net.dflmngr.services.GlobalsService;
 import net.dflmngr.validation.SelectedTeamValidation;
 
 
@@ -80,13 +80,6 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 
 			loggerUtils.log("info", "Validation result={}", validationResult);
 
-			dflSelectedTeamService.close();
-			dflTeamPlayerService.close();
-			dflPlayerService.close();
-			globalsService.close();
-			dflRoundInfoService.close();
-			dflEarlyInsAndOutsService.close();
-			aflFixtureService.close();
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ... ", ex);

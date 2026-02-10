@@ -27,10 +27,10 @@ import net.dflmngr.model.entity.AflTeam;
 import net.dflmngr.model.entity.DflRoundEarlyGames;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
-import net.dflmngr.model.service.AflFixtureService;
-import net.dflmngr.model.service.AflTeamService;
-import net.dflmngr.model.service.DflRoundInfoService;
-import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.services.AflFixtureService;
+import net.dflmngr.services.AflTeamService;
+import net.dflmngr.services.DflRoundInfoService;
+import net.dflmngr.services.GlobalsService;
 
 import org.springframework.stereotype.Component;
 

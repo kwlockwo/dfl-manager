@@ -18,7 +18,7 @@ import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPreseasonScores;
 import net.dflmngr.services.DflPlayerService;
 import org.springframework.stereotype.Component;
-import net.dflmngr.model.service.DflPreseasonScoresService;
+import net.dflmngr.services.DflPreseasonScoresService;
 import net.dflmngr.services.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 
@@ -59,7 +59,7 @@ public class PreSeasonStatsHandler extends BaseHandler {
 			players.addAll(dflPlayerService.getByTeam(DflmngrUtils.aflDflTeamMap.get(awayTeam.toUpperCase())));
 			
 			List<DflPreseasonScores> preseasonScores = calculatePreseasonScore(round, players, stats);
-			dflPreseasonScoresService.insertAll(preseasonScores, false);
+			dflPreseasonScoresService.insertAll(preseasonScores);
 		}
 		
 		loggerUtils.log("info", "Player Pre-season stats saved");

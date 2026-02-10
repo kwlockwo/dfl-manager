@@ -21,7 +21,7 @@ import net.dflmngr.services.DflFixtureService;
 import net.dflmngr.services.DflPlayerService;
 import net.dflmngr.services.DflRoundInfoService;
 import net.dflmngr.services.DflTeamPlayerService;
-import net.dflmngr.model.service.DflTeamPredictedScoresService;
+import net.dflmngr.services.DflTeamPredictedScoresService;
 import net.dflmngr.services.DflTeamService;
 import net.dflmngr.services.GlobalsService;
 import net.dflmngr.services.InsAndOutsService;

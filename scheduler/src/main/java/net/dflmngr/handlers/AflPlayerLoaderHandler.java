@@ -13,7 +13,7 @@ import net.dflmngr.model.entity.DflUnmatchedPlayer;
 import net.dflmngr.services.AflPlayerService;
 import net.dflmngr.services.AflTeamService;
 import net.dflmngr.services.DflPlayerService;
-import net.dflmngr.model.service.DflUnmatchedPlayerService;
+import net.dflmngr.services.DflUnmatchedPlayerService;
 import net.dflmngr.services.GlobalsService;
 
 import org.springframework.stereotype.Component;

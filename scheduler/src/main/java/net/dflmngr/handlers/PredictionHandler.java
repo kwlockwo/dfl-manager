@@ -23,7 +23,7 @@ import net.dflmngr.services.DflPlayerPredictedScoresService;
 import org.springframework.stereotype.Component;
 import net.dflmngr.services.DflPlayerScoresService;
 import net.dflmngr.services.DflSelectedTeamService;
-import net.dflmngr.model.service.DflTeamPredictedScoresService;
+import net.dflmngr.services.DflTeamPredictedScoresService;
 import net.dflmngr.services.DflTeamService;
 
 

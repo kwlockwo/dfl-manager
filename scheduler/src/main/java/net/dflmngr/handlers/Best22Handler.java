@@ -20,7 +20,7 @@ import net.dflmngr.exceptions.UnknownPositionException;
 import net.dflmngr.model.entity.DflBest22;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPlayerScores;
-import net.dflmngr.model.service.DflBest22Service;
+import net.dflmngr.services.DflBest22Service;
 import net.dflmngr.services.DflPlayerScoresService;
 import net.dflmngr.services.DflPlayerService;
 

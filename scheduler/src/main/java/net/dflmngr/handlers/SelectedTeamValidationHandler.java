@@ -18,7 +18,7 @@ import net.dflmngr.services.DflEarlyInsAndOutsService;
 import net.dflmngr.services.DflPlayerService;
 import net.dflmngr.services.DflRoundInfoService;
 import net.dflmngr.services.DflSelectedTeamService;
-import net.dflmngr.model.service.DflSelectionIdsService;
+import net.dflmngr.services.DflSelectionIdsService;
 import net.dflmngr.services.DflTeamPlayerService;
 import net.dflmngr.services.GlobalsService;
 import net.dflmngr.validation.SelectedTeamValidation;

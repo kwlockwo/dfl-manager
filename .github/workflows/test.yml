@@ -56,13 +56,17 @@ jobs:
       if: always()
       with:
         name: test-results
-        path: target/surefire-reports/
+        path: |
+          target/surefire-reports/
+          */target/surefire-reports/
 
     - name: Publish test report
       uses: dorny/test-reporter@v1
       if: always()
       with:
         name: Test Results
-        path: target/surefire-reports/*.xml
+        path: |
+          target/surefire-reports/*.xml
+          */target/surefire-reports/*.xml
         reporter: java-junit
         fail-on-error: true

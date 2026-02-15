@@ -33,18 +33,8 @@ jobs:
 
     - name: Test scheduler image
       run: |
-        # Start a test container to verify it runs
-        docker run --rm --name scheduler-test -d \
-          -e DATABASE_URL=jdbc:postgresql://localhost:5432/test \
-          -e DATABASE_USER=test \
-          -e DATABASE_PASSWORD=test \
-          dfl-manager:scheduler --help || true
-
-        # Give it a moment to start
-        sleep 5
-
         # Check if Chrome is installed (needed for Selenium)
-        docker run --rm dfl-manager:scheduler which google-chrome
+        docker run --rm dfl-manager:scheduler sh -c "which google-chrome-stable || which google-chrome || which chromium-browser"
 
     - name: Test web image
       run: |

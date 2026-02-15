@@ -2,9 +2,9 @@ name: Docker Build & Test
 
 on:
   push:
-    branches: [ main, develop, 2026-updates ]
+    branches: [ main, develop, monorepo ]
   pull_request:
-    branches: [ main, 2026-updates ]
+    branches: [ main, develop, monorepo ]
 
 jobs:
   docker:
@@ -29,7 +29,7 @@ jobs:
       run: |
         # Extract build stage for testing
         docker build -f Dockerfile.scheduler --target build -t dfl-manager:scheduler-build .
-        docker run --rm dfl-manager:scheduler-build ./mvnw test -B -pl common,scheduler
+        docker run --rm dfl-manager:scheduler-build mvn test -B -pl common,scheduler
 
     - name: Test scheduler image
       run: |

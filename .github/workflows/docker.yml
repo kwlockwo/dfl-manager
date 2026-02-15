@@ -34,7 +34,7 @@ jobs:
     - name: Test scheduler image
       run: |
         # Check if Chrome is installed (needed for Selenium)
-        docker run --rm dfl-manager:scheduler sh -c "which google-chrome-stable || which google-chrome || which chromium-browser"
+        docker run --rm --entrypoint sh dfl-manager:scheduler -c "which google-chrome-stable || which google-chrome || which chromium-browser"
 
     - name: Test web image
       run: |

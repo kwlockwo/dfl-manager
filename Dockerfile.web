@@ -11,8 +11,9 @@ WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
-# Copy module POMs
+# Copy module POMs (all three required for parent POM validation)
 COPY common/pom.xml common/
+COPY scheduler/pom.xml scheduler/
 COPY web/pom.xml web/
 
 # Download dependencies (cached unless POM changes)

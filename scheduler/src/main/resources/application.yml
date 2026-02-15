@@ -39,4 +39,4 @@ logging:
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
     org.springframework: WARN
-  config: classpath:log4j2.xml
+  config: classpath:logback.xml

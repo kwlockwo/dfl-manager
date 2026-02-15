@@ -39,4 +39,14 @@ logging:
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
     org.springframework: WARN
-  config: classpath:log4j2.xml
+  config: classpath:log4j2-local.yaml
+
+---
+# Production profile - uses syslog logging
+spring:
+  config:
+    activate:
+      on-profile: production
+
+logging:
+  config: classpath:log4j2.yaml

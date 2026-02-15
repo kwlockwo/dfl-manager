@@ -7,7 +7,10 @@ dflmngr.iml
 .project
 .classpath
 .factorypath
-reports
+/reports
+*.importfix
+*.servicefixbak
+*.servicefixbak2
 /.apt_generated/
 /.apt_generated_tests/
 .vscode/launch.json

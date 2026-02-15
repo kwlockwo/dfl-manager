@@ -20,7 +20,6 @@ public class InsAndOuts {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(columnDefinition = "serial")
 	private Integer id;
 
 	@Column(name = "team_code")

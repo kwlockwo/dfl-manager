@@ -23,8 +23,8 @@ public interface StatsRoundPlayerStatsRepository extends JpaRepository<StatsRoun
 	List<StatsRoundPlayerStats> findByRoundAndTeam(int round, String team);
 
 	/**
-	 * Find stats for a specific round and player ID
+	 * Find stats for a specific round and player name
+	 * Note: StatsRoundPlayerStats doesn't have a playerId field - it uses name, team, and jumperNo as identifiers
 	 */
-	@Query("SELECT s FROM StatsRoundPlayerStats s WHERE s.round = :round AND s.playerId = :playerId")
-	StatsRoundPlayerStats findByRoundAndPlayerId(@Param("round") int round, @Param("playerId") int playerId);
+	List<StatsRoundPlayerStats> findByRoundAndName(int round, String name);
 }

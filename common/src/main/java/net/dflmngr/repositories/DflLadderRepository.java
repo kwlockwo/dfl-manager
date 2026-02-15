@@ -22,14 +22,16 @@ public interface DflLadderRepository extends JpaRepository<DflLadder, DflLadderP
     
     /**
      * Find current DFL ladder (max round where live = false)
+     * Ordered by pts DESC, percentage DESC, pointsFor DESC (ladder position)
      */
-    @Query("SELECT l FROM DflLadder l WHERE l.round = (SELECT MAX(l2.round) FROM DflLadder l2 WHERE l2.live = false) ORDER BY l.ladderPos")
+    @Query("SELECT l FROM DflLadder l WHERE l.round = (SELECT MAX(l2.round) FROM DflLadder l2 WHERE l2.live = false) ORDER BY l.pts DESC, l.percentage DESC, l.pointsFor DESC")
     List<DflLadder> findCurrentDflLadder();
-    
+
     /**
      * Find live DFL ladder (max round where live = true)
+     * Ordered by pts DESC, percentage DESC, pointsFor DESC (ladder position)
      */
-    @Query("SELECT l FROM DflLadder l WHERE l.round = (SELECT MAX(l2.round) FROM DflLadder l2 WHERE l2.live = true) ORDER BY l.ladderPos")
+    @Query("SELECT l FROM DflLadder l WHERE l.round = (SELECT MAX(l2.round) FROM DflLadder l2 WHERE l2.live = true) ORDER BY l.pts DESC, l.percentage DESC, l.pointsFor DESC")
     List<DflLadder> findLiveDflLadder();
     
     /**

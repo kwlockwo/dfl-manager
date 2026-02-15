@@ -14,6 +14,21 @@ jobs:
       checks: write
       pull-requests: write
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -25,42 +40,31 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Check if monorepo branch
-      id: check_branch
+    - name: Run tests
+      env:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+        SPRING_DATASOURCE_DRIVER: org.postgresql.Driver
+        SPRING_DATASOURCE_USERNAME: testuser
+        SPRING_DATASOURCE_PASSWORD: testpass
+        SPRING_PROFILES_ACTIVE: test
       run: |
-        if [[ "${{ github.ref }}" == "refs/heads/monorepo" ]] || [[ "${{ github.base_ref }}" == "monorepo" ]]; then
-          echo "is_monorepo=true" >> $GITHUB_OUTPUT
-        else
-          echo "is_monorepo=false" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Run tests (main/develop branches)
-      if: steps.check_branch.outputs.is_monorepo == 'false'
-      run: |
-        # Run all tests with code coverage
-        mvn test --batch-mode --fail-at-end
-
-    - name: Skip tests (monorepo branch - Phase 1)
-      if: steps.check_branch.outputs.is_monorepo == 'true'
-      run: |
-        echo "⚠️  Skipping tests on monorepo branch (Phase 1)"
-        echo "The monorepo branch currently has an EclipseLink metamodel generation issue."
-        echo "Tests will be enabled in Phase 2 after migration to Spring Data JPA."
-        echo "See MONOREPO_README.md for details."
-        exit 0
+        # Run all tests with code coverage using PostgreSQL
+        ./mvnw test --batch-mode --fail-at-end
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
-      if: always() && steps.check_branch.outputs.is_monorepo == 'false'
+      if: always()
       with:
         name: test-results
-        path: target/surefire-reports/
+        path: |
+          target/surefire-reports/
+          */target/surefire-reports/
 
     - name: Publish test report
       uses: dorny/test-reporter@v1
-      if: always() && steps.check_branch.outputs.is_monorepo == 'false'
+      if: always()
       with:
         name: Test Results
-        path: target/surefire-reports/*.xml
+        path: '**/target/surefire-reports/*.xml'
         reporter: java-junit
         fail-on-error: true

@@ -218,34 +218,57 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.12.1</version>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.eclipse.persistence</groupId>
-							<artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-							<version>5.0.0-B13</version>
-						</path>
-					</annotationProcessorPaths>
-					<compilerArgs>
-						<arg>-Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml</arg>
-					</compilerArgs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.5.0</version>
 				<executions>
+					<!-- Pass 1: Run annotation processor only to generate metamodel _classes -->
 					<execution>
-						<id>add-source</id>
+						<id>generate-jpa-metamodel</id>
 						<phase>generate-sources</phase>
 						<goals>
-							<goal>add-source</goal>
+							<goal>compile</goal>
 						</goals>
-						<configuration>
-							<sources>
-								<source>target/generated-sources/annotations</source>
-							</sources>
+						<configuration combine.self="override">
+							<proc>only</proc>
+							<outputDirectory>${project.build.directory}/apt-classes</outputDirectory>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>org.eclipse.persistence</groupId>
+									<artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+									<version>5.0.0-B13</version>
+								</path>
+							</annotationProcessorPaths>
+							<compilerArgs>
+								<arg>-Aeclipselink.persistencexml=src/main/resources/META-INF/persistence.xml</arg>
+							</compilerArgs>
+						</configuration>
+					</execution>
+					<!-- Pass 2: Compile everything with no annotation processing -->
+					<execution>
+						<id>default-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration combine.self="override">
+							<proc>none</proc>
+							<fork>true</fork>
+							<useIncrementalCompilation>false</useIncrementalCompilation>
+							<generatedSourcesDirectory>${project.build.directory}/apt-classes-unused</generatedSourcesDirectory>
+							<compileSourceRoots>
+								<compileSourceRoot>${project.build.sourceDirectory}</compileSourceRoot>
+								<compileSourceRoot>${project.build.directory}/generated-sources/annotations</compileSourceRoot>
+							</compileSourceRoots>
+						</configuration>
+					</execution>
+					<!-- Pass 3: Compile tests with no annotation processing -->
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration combine.self="override">
+							<proc>none</proc>
+							<useIncrementalCompilation>false</useIncrementalCompilation>
 						</configuration>
 					</execution>
 				</executions>

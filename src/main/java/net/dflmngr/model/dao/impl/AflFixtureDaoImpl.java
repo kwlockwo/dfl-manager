@@ -119,7 +119,8 @@ public class AflFixtureDaoImpl extends GenericDaoImpl<AflFixture, AflFixturePK> 
 		roundIn.value(criteriaSubquery);
 
 		criteriaQuery.select(min).where(roundIn);
-		return entityManager.createQuery(criteriaQuery).getSingleResult();
+		List<Integer> results = entityManager.createQuery(criteriaQuery).getResultList();
+		return results.isEmpty() ? 0 : results.get(0);
 	}
-	
+
 }

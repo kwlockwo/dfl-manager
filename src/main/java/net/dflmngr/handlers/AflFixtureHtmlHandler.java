@@ -17,6 +17,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import net.dflmngr.exceptions.AflFixtureException;
 import net.dflmngr.model.entity.AflFixture;
+import net.dflmngr.model.entity.AflTeam;
 import net.dflmngr.model.service.AflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 
@@ -148,8 +149,12 @@ public class AflFixtureHtmlHandler extends BaseHandler {
         
         String homeTeam = teams.get(0).getAttribute("textContent");
         String awayTeam = teams.get(1).getAttribute("textContent");
-        fixture.setHomeTeam(aflTeamService.getAflTeamByName(homeTeam).getTeamId());
-        fixture.setAwayTeam(aflTeamService.getAflTeamByName(awayTeam).getTeamId());
+        AflTeam homeTeamEntity = aflTeamService.getAflTeamByName(homeTeam);
+        if (homeTeamEntity == null) throw new AflFixtureException(aflFixtureUrl, "Unknown home team: " + homeTeam);
+        AflTeam awayTeamEntity = aflTeamService.getAflTeamByName(awayTeam);
+        if (awayTeamEntity == null) throw new AflFixtureException(aflFixtureUrl, "Unknown away team: " + awayTeam);
+        fixture.setHomeTeam(homeTeamEntity.getTeamId());
+        fixture.setAwayTeam(awayTeamEntity.getTeamId());
         
         String ground = fixtureRow.findElement(By.className("fixtures__match-venue")).getText()
                             .split(",")[0].replaceAll("[^a-zA-Z0-9]", "");

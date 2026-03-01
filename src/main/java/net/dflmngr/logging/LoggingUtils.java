@@ -1,6 +1,5 @@
 package net.dflmngr.logging;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,13 +40,11 @@ public class LoggingUtils {
 		}
 	}
 
-	public void logException(String msg, Throwable ex) {		
+	public void logException(String msg, Throwable ex) {
 		try {
 			logger.error(msg, ex);
-			String stacktrace = ExceptionUtils.getStackTrace(ex);
-			logger.error(stacktrace);
 		} catch (Exception intEx) {
 			logger.error("Error in ... ", intEx);
-		} 
+		}
 	}
 }

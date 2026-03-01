@@ -130,7 +130,7 @@ public class AflFixtureHtmlHandler extends BaseHandler {
                 games.add(fixture);
 
                 gameNo++;
-            } else if(rowData.contains("fixtures__bye-fixtures")) {
+            } else if(rowData.contains("fixtures__bye-fixtures") || rowData.contains("byes")) {
                 //ignore
             } else {
                 throw new AflFixtureException(aflFixtureUrl, fixtureRow.getAttribute(HTML_CLASS_STRING));

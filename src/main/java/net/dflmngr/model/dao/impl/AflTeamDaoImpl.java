@@ -1,5 +1,7 @@
 package net.dflmngr.model.dao.impl;
 
+import java.util.List;
+
 import jakarta.persistence.criteria.Predicate;
 import net.dflmngr.model.dao.AflTeamDao;
 import net.dflmngr.model.entity.AflTeam;
@@ -18,6 +20,7 @@ public class AflTeamDaoImpl extends GenericDaoImpl<AflTeam, String> implements A
 		Predicate equals = criteriaBuilder.equal(entity.get(AflTeam_.name), name);
 		
 		criteriaQuery.where(criteriaBuilder.and(equals));
-		return entityManager.createQuery(criteriaQuery).getSingleResult();
+		List<AflTeam> results = entityManager.createQuery(criteriaQuery).getResultList();
+		return results.isEmpty() ? null : results.get(0);
 	}
 }

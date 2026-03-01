@@ -130,10 +130,20 @@ public class AflFixtureHtmlHandler extends BaseHandler {
                 games.add(fixture);
 
                 gameNo++;
+            } else if(rowData.contains("fixtures__tbc-date-wrapper")) {
+                for(WebElement child : fixtureRow.findElements(By.xpath("./*"))) {
+                    String childData = child.getAttribute(HTML_CLASS_STRING);
+                    if(childData != null && childData.contains("fixtures__item")) {
+                        AflFixture fixture = setAflFixture(aflRound, gameNo, child, date, aflFixtureUrl);
+                        loggerUtils.log("info", "Scraped fixture data (TBC date): {}", fixture);
+                        games.add(fixture);
+                        gameNo++;
+                    }
+                }
             } else if(rowData.contains("fixtures__bye-fixtures") || rowData.contains("byes")) {
-                //ignore
+                loggerUtils.log("info", "Skipping bye round row");
             } else {
-                throw new AflFixtureException(aflFixtureUrl, fixtureRow.getAttribute(HTML_CLASS_STRING));
+                loggerUtils.log("info", "Skipping unknown fixture row class: {}", rowData);
             }
         }
 

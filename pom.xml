@@ -19,7 +19,7 @@
 		<eclipselink.version>5.0.0-B13</eclipselink.version>
 		<log4j.version>2.25.3</log4j.version>
 		<jackson.version>2.21.0</jackson.version>
-		<selenium.version>4.40.0</selenium.version>
+		<selenium.version>4.39.0</selenium.version>
 		<poi.version>5.5.1</poi.version>
 		<quartz.version>2.5.2</quartz.version>
 		<jacoco.version>0.8.12</jacoco.version>
@@ -101,8 +101,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-devtools-v126</artifactId>
-			<version>4.24.0</version>
+			<artifactId>selenium-devtools-v143</artifactId>
+			<version>${selenium.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>

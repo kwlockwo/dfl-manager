@@ -75,7 +75,7 @@ public class AflFixtureHtmlHandler extends BaseHandler {
 
 		driver.get(aflFixtureUrl);
 
-        List<AflFixture> games = null;
+        List<AflFixture> games = new ArrayList<>();
 
 		int retry = 1;
 		while(retry <= 5) {
@@ -94,7 +94,7 @@ public class AflFixtureHtmlHandler extends BaseHandler {
                 } catch (Exception ex) {
                     loggerUtils.logException("Error loading AFL fxiture", ex);
                 }
-				if(games != null && !games.isEmpty()) {
+				if(!games.isEmpty()) {
                     break;
                 }
 			}

@@ -17,13 +17,12 @@ RUN ./mvnw -T 2 clean package -DskipTests
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Install Chrome in a single layer with cleanup
+# Install Chrome 143 to match selenium-devtools-v143
 RUN apt-get update && \
     apt-get install -y wget gnupg && \
-    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
-    apt-get update && \
-    apt-get install -y google-chrome-stable && \
+    wget -q "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_143.0.7499.192-1_amd64.deb" -O /tmp/chrome.deb && \
+    apt-get install -y /tmp/chrome.deb && \
+    rm /tmp/chrome.deb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

@@ -140,6 +140,8 @@ public class AflFixtureHtmlHandler extends BaseHandler {
                         gameNo++;
                     }
                 }
+            } else if(rowData.contains("fixtures__bye-fixtures") || rowData.contains("byes")) {
+                loggerUtils.log("info", "Skipping bye round row");
             } else {
                 loggerUtils.log("info", "Skipping unknown fixture row class: {}", rowData);
             }

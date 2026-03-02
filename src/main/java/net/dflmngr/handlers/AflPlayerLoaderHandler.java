@@ -136,7 +136,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 		Map<Integer, AflPlayer> aflPlayerUpdates = new HashMap<>();
 
 		for(AflPlayer aflPlayer : aflPlayers) {
-			String aflPlayerCrossRef = (aflPlayer.getName().replaceAll(NOT_ALPHA_REGEX, "") + "-" + globalsService.getAflTeamMap(aflPlayer.getTeamId().toLowerCase())).toLowerCase();
+			String aflPlayerCrossRef = (aflPlayer.getName().replaceAll(NOT_ALPHA_REGEX, "") + "-" + aflPlayer.getTeamId()).toLowerCase();
 			loggerUtils.log("info", "Searching for player: {}", aflPlayerCrossRef);
 			DflPlayer dflPlayer = dflPlayerCrossRefs.get(aflPlayerCrossRef);
 
@@ -171,7 +171,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 		    for(AflPlayer aflPlayer : aflUnmatchedPlayers) {
 
-		    	String aflTeamName = globalsService.getAflTeamMap(aflPlayer.getTeamId().toLowerCase());
+		    	String aflTeamName = aflPlayer.getTeamId().toLowerCase();
 
 		    	String aflCheckOne = (aflPlayer.getName().replaceAll(NOT_ALPHA_REGEX, "") + "-" + aflTeamName).toLowerCase();
 

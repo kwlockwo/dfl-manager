@@ -39,7 +39,6 @@ import net.dflmngr.model.service.DflTeamScoresService;
 import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.model.service.RawPlayerStatsService;
-import net.dflmngr.utils.DflmngrUtils;
 
 public class ScoresCalculatorHandler extends BaseHandler {
 
@@ -268,7 +267,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			if(playerScore == null) {
 				loggerUtils.log("info", "Selected player: team={} teamPlayerId={} playerId={} has no score recorded",
 								selectedPlayer.getTeamCode(), selectedPlayer.getTeamPlayerId(), selectedPlayer.getPlayerId());
-				if(playedTeams.contains(DflmngrUtils.dflAflTeamMap.get(player.getAflClub()))) {
+				if(playedTeams.contains(player.getAflClub())) {
 					loggerUtils.log("info", "AFL team has played, marking as DNP");
 					selectedPlayer.setDnp(true);
 					selectedPlayer.setScoreUsed(false);
@@ -310,7 +309,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 
 				scores.put(selectedPlayer.getPlayerId(), playerScore.getScore());
 
-				selectedPlayer.setHasPlayed(playedTeams.contains(DflmngrUtils.dflAflTeamMap.get(player.getAflClub())));
+				selectedPlayer.setHasPlayed(playedTeams.contains(player.getAflClub()));
 				selectedPlayer.setDnp(false);
 
 				if(selectedPlayer.isEmergency() == 0) {

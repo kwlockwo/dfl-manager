@@ -18,7 +18,6 @@ import net.dflmngr.model.entity.DflPreseasonScores;
 import net.dflmngr.model.service.DflPlayerService;
 import net.dflmngr.model.service.DflPreseasonScoresService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.utils.DflmngrUtils;
 
 public class PreSeasonStatsHandler extends BaseHandler {
 
@@ -48,8 +47,8 @@ public class PreSeasonStatsHandler extends BaseHandler {
 			String homeTeam = teams.split("-")[0];
 			String awayTeam = teams.split("-")[2];
 			
-			List<DflPlayer> players = dflPlayerService.getByTeam(DflmngrUtils.aflDflTeamMap.get(homeTeam.toUpperCase()));
-			players.addAll(dflPlayerService.getByTeam(DflmngrUtils.aflDflTeamMap.get(awayTeam.toUpperCase())));
+			List<DflPlayer> players = dflPlayerService.getByTeam(homeTeam.toUpperCase());
+			players.addAll(dflPlayerService.getByTeam(awayTeam.toUpperCase()));
 			
 			List<DflPreseasonScores> preseasonScores = calculatePreseasonScore(round, players, stats);
 			dflPreseasonScoresService.insertAll(preseasonScores, false);

@@ -104,7 +104,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			loggerUtils.log("info", "ScoresCalculator completed");
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in ScoresCalculatorHandler.execute(), round=" + round, ex);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			DflPlayer dflPlayer = dflPlayerService.getByAflPlayerId(aflPlayerId);
 
 			if(dflPlayer == null) {
-				loggerUtils.log("info", "Missing afl dfl player mapping: aflPlayerId={};", aflPlayerId);
+				loggerUtils.log("warn", "Missing afl-dfl player mapping, score will not be recorded: aflPlayerId={}", aflPlayerId);
 			} else {
 				DflTeamPlayer dflTeamPlayer = dflTeamPlayerService.get(dflPlayer.getPlayerId());
 
@@ -139,11 +139,12 @@ public class ScoresCalculatorHandler extends BaseHandler {
 
 				playerScores.setScore(score);
 
-				loggerUtils.log("info", "Player score={}", playerScores);
+				loggerUtils.log("debug", "Player score={}", playerScores);
 				scores.add(playerScores);
 			}
 		}
 
+		loggerUtils.log("info", "Calculated scores for {} players (from {} raw stats records), round={}", scores.size(), stats.size(), round);
 		dflPlayerScoresService.replaceAllForRound(round, scores);
 	}
 
@@ -180,10 +181,11 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			teamScore.setRound(round);
 			teamScore.setScore(score);
 
-			loggerUtils.log("info", "Team score={}", teamScore);
+			loggerUtils.log("debug", "Team score={}", teamScore);
 			scores.add(teamScore);
 		}
 
+		loggerUtils.log("info", "Calculated scores for {} DFL teams, round={}", scores.size(), round);
 		dflTeamScoresService.replaceAllForRound(round, scores);
 	}
 
@@ -217,7 +219,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 					aflRound = currentAflRound;
 				}
 			}
-			loggerUtils.log("info", "Played teams for AFL round={} teams={}", aflRound, playedTeams);
+			loggerUtils.log("debug", "Played teams for AFL round={} teams={}", aflRound, playedTeams);
 		}
 
 		int ffCount = 0;
@@ -265,20 +267,20 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			selectedPlayer.setReplacementInd(null);
 
 			if(playerScore == null) {
-				loggerUtils.log("info", "Selected player: team={} teamPlayerId={} playerId={} has no score recorded",
+				loggerUtils.log("debug", "Selected player: team={} teamPlayerId={} playerId={} has no score recorded",
 								selectedPlayer.getTeamCode(), selectedPlayer.getTeamPlayerId(), selectedPlayer.getPlayerId());
 				if(playedTeams.contains(player.getAflClub())) {
-					loggerUtils.log("info", "AFL team has played, marking as DNP");
+					loggerUtils.log("debug", "AFL team has played, marking as DNP");
 					selectedPlayer.setDnp(true);
 					selectedPlayer.setScoreUsed(false);
 					selectedPlayer.setHasPlayed(true);
 					dnpPlayers.add(selectedPlayer);
 				} else {
-					loggerUtils.log("info", "Checking if average will be used");
+					loggerUtils.log("debug", "Checking if average will be used");
 					try {
 						int round = globalsService.getUseAverage(player.getAflClub());
 
-						loggerUtils.log("info", "Is global set for teamCode={} round={} selectedRound={}",
+						loggerUtils.log("debug", "Is global set for teamCode={} round={} selectedRound={}",
 						   				player.getAflClub(), round, selectedPlayer.getRound());
 
 						if(round == selectedPlayer.getRound()) {
@@ -287,7 +289,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 	
 							selectedPlayer.setHasPlayed(true);
 	
-							loggerUtils.log("info", "Using average score={}", score);
+							loggerUtils.log("debug", "Using average score={}", score);
 	
 							if(selectedPlayer.isEmergency() == 0) {
 								selectedPlayer.setScoreUsed(true);
@@ -298,14 +300,14 @@ public class ScoresCalculatorHandler extends BaseHandler {
 							}
 						}
 					} catch (MissingGlobalConfig e) {
-						loggerUtils.log("info", "Average not used ");
+						loggerUtils.log("debug", "Average not used");
 					}
 				}
 			} else {
-				loggerUtils.log("info", "Selected player: team={} teamPlayerId={} playerId={} has score recorded",
+				loggerUtils.log("debug", "Selected player: team={} teamPlayerId={} playerId={} has score recorded",
 								selectedPlayer.getTeamCode(), selectedPlayer.getTeamPlayerId(), selectedPlayer.getPlayerId());
 
-				loggerUtils.log("info", "Using score={}", playerScore.getScore());
+				loggerUtils.log("debug", "Using score={}", playerScore.getScore());
 
 				scores.put(selectedPlayer.getPlayerId(), playerScore.getScore());
 
@@ -525,7 +527,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 		for(DflSelectedPlayer player : played22) {
 			if(!player.isDnp() && scores.containsKey(player.getPlayerId())) {
 				teamScore = teamScore + scores.get(player.getPlayerId());
-				loggerUtils.log("info", "Calculating scores team={}, playerId={}. teamplayer={}, playerscore={}, teamscore={}",
+				loggerUtils.log("debug", "Calculating scores team={}, playerId={}. teamplayer={}, playerscore={}, teamscore={}",
 							player.getTeamCode(), player.getPlayerId(), player.getTeamPlayerId(), scores.get(player.getPlayerId()), teamScore);
 
 			}

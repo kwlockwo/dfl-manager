@@ -31,7 +31,7 @@ public class AflFixtureLoaderHandler extends BaseHandler {
 			aflFixtureHtmlHandler = new AflFixtureHtmlHandler();
 			ensureLoggingConfigured();
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in AflFixtureLoaderHandler constructor", ex);
 		}
 	}
 	
@@ -49,12 +49,12 @@ public class AflFixtureLoaderHandler extends BaseHandler {
 			String aflFixtureUrl = aflFixtureUrlParts.get(0) + aflRoundUri;
 			allGames.addAll(aflFixtureHtmlHandler.execute(aflRound, aflFixtureUrl));
 		}
-		
-		loggerUtils.log("info", "Saveing data to DB");
-		
+
+		loggerUtils.log("info", "Saving {} games to DB across {} rounds", allGames.size(), aflRounds.size());
+
 		aflFixtureService.updateLoadedFixtures(allGames);
-		
-		loggerUtils.log("info", "AflFixtureLoader Complete");
+
+		loggerUtils.log("info", "AflFixtureLoader complete");
 	}
 		
 	// For internal testing

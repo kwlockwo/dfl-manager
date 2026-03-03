@@ -125,7 +125,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 			loggerUtils.log("info", "Email Selections Handler Completed");
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in EmailSelectionsHandler.execute()", ex);
 		}
 	}
 
@@ -147,7 +147,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 		for (int i = 0; i < messages.length; i++) {
 
-			loggerUtils.log("info", "Handling message {}", i);
+			loggerUtils.log("debug", "Handling message {}", i);
 
 			SelectedTeamValidation validationResult = null;
 
@@ -205,7 +205,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 					}
 				}
 			} catch (Exception ex) {
-				loggerUtils.logException("Error in ... ", ex);
+				loggerUtils.logException("Error in EmailSelectionsHandler processing message " + i + " from inbox", ex);
 				try {
 					String from = InternetAddress.toString(messages[i].getFrom());
 					validationResult = new SelectedTeamValidation();
@@ -217,7 +217,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 					validationResults.add(validationResult);
 					loggerUtils.log("info", "Message from {} ... FAILURE with EXCEPTION!", from);
 				} catch (MessagingException ex2) {
-					loggerUtils.log("error", "Error in ... ", ex2);
+					loggerUtils.log("error", "Error retrieving sender address for failed message", ex2);
 				}
 			}
 		}
@@ -398,7 +398,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 						teamCode = line;
 					}
 				}
-				loggerUtils.log("info", "Selections for team: {}", teamCode);
+				loggerUtils.log("debug", "Selections for team: {}", teamCode);
 			}
 
 			if (line.toLowerCase().contains(TAG_ROUND)) {
@@ -413,7 +413,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 						round = Integer.parseInt(line);
 					}
 				}
-				loggerUtils.log("info", "Selections for round: {}", round);
+				loggerUtils.log("debug", "Selections for round: {}", round);
 			}
 
 			if (line.toLowerCase().contains(TAG_IN)) {
@@ -429,7 +429,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 						ins.add(Integer.parseInt(line));
 					}
 				}
-				loggerUtils.log("info", "Selection in: {}", ins);
+				loggerUtils.log("debug", "Selection in: {}", ins);
 			}
 
 			if (line.toLowerCase().contains(TAG_OUT)) {
@@ -445,7 +445,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 						outs.add(Integer.parseInt(line));
 					}
 				}
-				loggerUtils.log("info", "Selection out: {}", outs);
+				loggerUtils.log("debug", "Selection out: {}", outs);
 			}
 
 			if (line.toLowerCase().contains(TAG_EMG)) {
@@ -469,7 +469,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 						emgs.add(emg);
 					}
 				}
-				loggerUtils.log("info", "Selection emergencies: {}", emgs);
+				loggerUtils.log("debug", "Selection emergencies: {}", emgs);
 			}
 		}
 		}
@@ -509,7 +509,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 						teamCode = line;
 					}
 				}
-				loggerUtils.log("info", "Selections for team: {}", teamCode);
+				loggerUtils.log("debug", "Selections for team: {}", teamCode);
 			}
 
 			if (line.toLowerCase().contains(TAG_ROUND)) {
@@ -524,7 +524,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 						round = Integer.parseInt(line);
 					}
 				}
-				loggerUtils.log("info", "Selections for round: {}", round);
+				loggerUtils.log("debug", "Selections for round: {}", round);
 			}
 
 			if (line.toLowerCase().contains(TAG_IN)) {
@@ -541,11 +541,11 @@ public class EmailSelectionsHandler extends BaseHandler {
 						if (in > 0) {
 							ins.add(in);
 						} else {
-							loggerUtils.log("info", "Couldn't get player number for INs, No.={}", in);
+							loggerUtils.log("debug", "Couldn't get player number for INs, No.={}", in);
 						}
 					}
 				}
-				loggerUtils.log("info", "Selection in: {}", ins);
+				loggerUtils.log("debug", "Selection in: {}", ins);
 			}
 
 			if (line.toLowerCase().contains(TAG_OUT)) {
@@ -562,11 +562,11 @@ public class EmailSelectionsHandler extends BaseHandler {
 						if (out > 0) {
 							outs.add(out);
 						} else {
-							loggerUtils.log("info", "Couldn't get player number for OUTs, No.={}", out);
+							loggerUtils.log("debug", "Couldn't get player number for OUTs, No.={}", out);
 						}
 					}
 				}
-				loggerUtils.log("info", "Selection out: {}", outs);
+				loggerUtils.log("debug", "Selection out: {}", outs);
 			}
 
 			if (line.toLowerCase().contains(TAG_EMG)) {
@@ -590,11 +590,11 @@ public class EmailSelectionsHandler extends BaseHandler {
 							}
 							emgs.add(emg);
 						} else {
-							loggerUtils.log("info", "Couldn't get player number for OUTs, No.={}", emg);
+							loggerUtils.log("debug", "Couldn't get player number for OUTs, No.={}", emg);
 						}
 					}
 				}
-				loggerUtils.log("info", "Selection emergencies: {}", emgs);
+				loggerUtils.log("debug", "Selection emergencies: {}", emgs);
 			}
 		}
 

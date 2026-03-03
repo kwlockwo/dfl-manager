@@ -24,7 +24,7 @@ public class DflFixtureGeneratorHandler extends BaseHandler {
 		try{
 			ensureLoggingConfigured();
 			
-			loggerUtils.log("info", "DflFixtureGeneratorHandler excuting....");
+			loggerUtils.log("info", "DflFixtureGeneratorHandler executing");
 			
 			loggerUtils.log("info", "Generating DFL Fixture");
 			generateFixture();
@@ -32,7 +32,7 @@ public class DflFixtureGeneratorHandler extends BaseHandler {
 			loggerUtils.log("info", "DflFixtureGeneratorHandler completed");
 			
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in DflFixtureGeneratorHandler.execute()", ex);
 		}
 	}
 	

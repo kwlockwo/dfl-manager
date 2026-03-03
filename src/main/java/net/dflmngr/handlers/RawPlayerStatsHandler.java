@@ -68,10 +68,10 @@ public class RawPlayerStatsHandler extends BaseHandler {
 			statsRoundPlayerStatsService.close();
 			rawPlayerStatsService.close();
 
-			loggerUtils.log("info", "Player stats downaloded");
+			loggerUtils.log("info", "Player stats downloaded");
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in RawPlayerStatsHandler.execute(), round=" + round, ex);
 		}
 	}
 

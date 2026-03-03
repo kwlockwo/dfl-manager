@@ -46,7 +46,7 @@ public class PredictionHandler extends BaseHandler {
 		try{
 			ensureLoggingConfigured();
 
-			loggerUtils.log("info", "PredictionHandler excuting, round={} ....", round);
+			loggerUtils.log("info", "PredictionHandler executing, round={}", round);
 
 			if(doPlayers) {
 				calculatePlayerPredictions(round);
@@ -63,7 +63,7 @@ public class PredictionHandler extends BaseHandler {
 			dflSelectedTeamService.close();
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in PredictionHandler.execute(), round=" + round + " teamCode=" + teamCode, ex);
 		}
 	}
 

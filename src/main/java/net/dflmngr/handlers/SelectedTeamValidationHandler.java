@@ -77,7 +77,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 			aflFixtureService.close();
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in SelectedTeamValidationHandler.execute(), round=" + round + " teamCode=" + teamCode, ex);
 		}
 
 		return validationResult;

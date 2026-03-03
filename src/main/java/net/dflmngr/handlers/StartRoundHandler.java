@@ -99,7 +99,7 @@ public class StartRoundHandler extends BaseHandler {
 			aflFixtureService.close();
 		
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in StartRoundHandler.execute(), round=" + round, ex);
 		}
 	}
 		

@@ -720,6 +720,15 @@ public class EmailSelectionsHandler extends BaseHandler {
 				+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getAflClub() + "\n";
 	}
 
+	private void appendWarning(StringBuilder body, boolean condition, String message, List<DflPlayer> players) {
+		if (condition) {
+			body.append(message);
+			for (DflPlayer player : players) {
+				body.append(formatPlayerLine(player));
+			}
+		}
+	}
+
 	private void setSuccessMessage(Message message, SelectedTeamValidation validationResult) throws MessagingException {
 		message.setSubject("Selections received - SUCCESS!");
 
@@ -727,73 +736,39 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 		if (validationResult.areWarnings()) {
 			messageBody.append("\n");
-
-			if (validationResult.selectedWarning) {
-				messageBody.append("\tWarning: You have seleted a player who is already selected.  You may be playing short! Players:\n");
-				for (DflPlayer player : validationResult.selectedWarnPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.droppedWarning) {
-				messageBody.append("\tWarning: You have dropped a player who is not selected.  Your team may not be as you expect or invalid! Players:\n");
-				for (DflPlayer player : validationResult.droppedWarnPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyFfWarning) {
-				messageBody.append("\tWarning: You have selcted a Full Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgFfPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyFwdWarning) {
-				messageBody.append("\tWarning: You have selcted a Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgFwdPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyRckWarning) {
-				messageBody.append("\tWarning: You have selcted a Ruck as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgRckPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyMidWarning) {
-				messageBody.append("\tWarning: You have selcted a Midfielder as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgMidPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyDefWarning) {
-				messageBody.append("\tWarning: You have selcted a Defender as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgDefPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyFbWarning) {
-				messageBody.append("\tWarning: You have selcted a Full Back as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgFbPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.duplicateIns) {
-				messageBody.append("\tWarning: You have selected duplicate ins, one will be ignored.  Ins:\n");
-				for (DflPlayer player : validationResult.dupInPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.duplicateOuts) {
-				messageBody.append("\tWarning: You have selected duplicate outs, one will be ignored.  Outs:\n");
-				for (DflPlayer player : validationResult.dupOutPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.duplicateEmgs) {
-				messageBody.append("\tWarning: You have selected duplicate emergencies, one will be ignored.  Emergencies:\n");
-				for (DflPlayer player : validationResult.dupEmgPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
+			appendWarning(messageBody, validationResult.selectedWarning,
+					"\tWarning: You have seleted a player who is already selected.  You may be playing short! Players:\n",
+					validationResult.selectedWarnPlayers);
+			appendWarning(messageBody, validationResult.droppedWarning,
+					"\tWarning: You have dropped a player who is not selected.  Your team may not be as you expect or invalid! Players:\n",
+					validationResult.droppedWarnPlayers);
+			appendWarning(messageBody, validationResult.emergencyFfWarning,
+					"\tWarning: You have selcted a Full Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgFfPlayers);
+			appendWarning(messageBody, validationResult.emergencyFwdWarning,
+					"\tWarning: You have selcted a Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgFwdPlayers);
+			appendWarning(messageBody, validationResult.emergencyRckWarning,
+					"\tWarning: You have selcted a Ruck as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgRckPlayers);
+			appendWarning(messageBody, validationResult.emergencyMidWarning,
+					"\tWarning: You have selcted a Midfielder as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgMidPlayers);
+			appendWarning(messageBody, validationResult.emergencyDefWarning,
+					"\tWarning: You have selcted a Defender as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgDefPlayers);
+			appendWarning(messageBody, validationResult.emergencyFbWarning,
+					"\tWarning: You have selcted a Full Back as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgFbPlayers);
+			appendWarning(messageBody, validationResult.duplicateIns,
+					"\tWarning: You have selected duplicate ins, one will be ignored.  Ins:\n",
+					validationResult.dupInPlayers);
+			appendWarning(messageBody, validationResult.duplicateOuts,
+					"\tWarning: You have selected duplicate outs, one will be ignored.  Outs:\n",
+					validationResult.dupOutPlayers);
+			appendWarning(messageBody, validationResult.duplicateEmgs,
+					"\tWarning: You have selected duplicate emergencies, one will be ignored.  Emergencies:\n",
+					validationResult.dupEmgPlayers);
 		}
 
 		messageBody.append("\n\nHave a nice day. \n\nDFL Manager Admin");

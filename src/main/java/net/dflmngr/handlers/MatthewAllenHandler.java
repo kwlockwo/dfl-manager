@@ -78,6 +78,10 @@ public class MatthewAllenHandler extends BaseHandler {
 		List<DflMatthewAllen> votes = new ArrayList<>();
 
 		for(int voteValue = 3; voteValue > 0; voteValue--) {
+			if (selectedPlayerScores.size() < 2) {
+				loggerUtils.log("warn", "Not enough player scores to assign {} votes, round={}, game={}", voteValue, round, game);
+				break;
+			}
 			DflPlayerScores playerScore = selectedPlayerScores.get(0);
 			DflPlayerScores playerScoreNext = selectedPlayerScores.get(1);
 

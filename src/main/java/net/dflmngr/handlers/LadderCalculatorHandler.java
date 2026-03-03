@@ -84,8 +84,14 @@ public class LadderCalculatorHandler extends BaseHandler {
 				awayTeamScore = calculateLiveTeamScore(round, awayTeamCode);
 			} else {
 				loggerUtils.log("info", "End round ladder calculation homeTeam={}, awayTeam={}", homeTeamCode, awayTeamCode);
-				homeTeamScore = roundTeamScores.get(homeTeamCode).getScore();
-				awayTeamScore = roundTeamScores.get(awayTeamCode).getScore();				
+				DflTeamScores homeScores = roundTeamScores.get(homeTeamCode);
+				DflTeamScores awayScores = roundTeamScores.get(awayTeamCode);
+				if (homeScores == null || awayScores == null) {
+					loggerUtils.log("warn", "Missing team scores for round={}, homeTeam={}, awayTeam={}", round, homeTeamCode, awayTeamCode);
+					continue;
+				}
+				homeTeamScore = homeScores.getScore();
+				awayTeamScore = awayScores.getScore();
 			}
 			
 			DflLadder homeTeamLadder = calculateLadder(round, homeTeamCode, previousLadder.get(homeTeamCode), homeTeamScore, awayTeamScore, liveLadderOveride);

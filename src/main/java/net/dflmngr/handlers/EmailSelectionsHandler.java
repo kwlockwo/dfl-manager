@@ -47,6 +47,14 @@ import net.freeutils.tnef.TNEFInputStream;
 
 public class EmailSelectionsHandler extends BaseHandler {
 
+	private static final String TAG_TEAM = "[team]";
+	private static final String TAG_END = "[end]";
+	private static final String TAG_START_ID = "[start id=";
+	private static final String TAG_ROUND = "[round]";
+	private static final String TAG_IN = "[in]";
+	private static final String TAG_OUT = "[out]";
+	private static final String TAG_EMG = "[emg]";
+
 	private String dflmngrEmailAddr;
 	private String incomingMailHost;
 	private int incomingMailPort;
@@ -280,20 +288,20 @@ public class EmailSelectionsHandler extends BaseHandler {
 	private SelectedTeamValidation handleTextEmailContent(String text, String from) {
 		SelectedTeamValidation validationResult = null;
 
-		if (text.indexOf("[team]") == 0 && text.indexOf("[end]") != -1) {
-			text = text.substring(0, text.indexOf("[end]"));
+		if (text.startsWith(TAG_TEAM) && text.contains(TAG_END)) {
+			text = text.substring(0, text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
 				validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
-		} else if (text.indexOf("[start id=") != -1 && text.indexOf("[end]") != -1) {
-			text = text.substring(text.indexOf("[start id="), text.indexOf("[end]"));
+		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
+			text = text.substring(text.indexOf(TAG_START_ID), text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			String idLine = lines[0];
-			String id = idLine.split("=")[1].trim().replaceAll("]", "");
+			String id = idLine.split("=")[1].trim().replace("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
 				validationResult = handleSelectionEmailText(lines, id);
@@ -316,20 +324,20 @@ public class EmailSelectionsHandler extends BaseHandler {
 		String text = Jsoup.clean(s, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false))
 				.trim();
 
-		if (text.indexOf("[team]") == 0 && text.indexOf("[end]") != -1) {
-			text = text.substring(0, text.indexOf("[end]"));
+		if (text.startsWith(TAG_TEAM) && text.contains(TAG_END)) {
+			text = text.substring(0, text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in html body", from);
 				validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
-		} else if (text.indexOf("[start id=") != -1 && text.indexOf("[end]") != -1) {
-			text = text.substring(text.indexOf("[start id="), text.indexOf("[end]"));
+		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
+			text = text.substring(text.indexOf(TAG_START_ID), text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			String idLine = lines[0];
-			String id = idLine.split("=")[1].trim().replaceAll("]", "");
+			String id = idLine.split("=")[1].trim().replace("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
 				validationResult = handleSelectionEmailText(lines, id);
@@ -379,12 +387,12 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 		while ((line = reader.readLine()) != null) {
 
-			if (line.toLowerCase().contains("[team]")) {
+			if (line.toLowerCase().contains(TAG_TEAM)) {
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[round]")) {
+					if (line.toLowerCase().contains(TAG_ROUND)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						teamCode = line;
@@ -393,13 +401,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selections for team: {}", teamCode);
 			}
 
-			if (line.toLowerCase().contains("[round]")) {
+			if (line.toLowerCase().contains(TAG_ROUND)) {
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[in]") || line.toLowerCase().contains("[out]")
-							|| line.toLowerCase().contains("[emg]")) {
+					if (line.toLowerCase().contains(TAG_IN) || line.toLowerCase().contains(TAG_OUT)
+							|| line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						round = Integer.parseInt(line);
@@ -408,14 +416,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selections for round: {}", round);
 			}
 
-			if (line.toLowerCase().contains("[in]")) {
+			if (line.toLowerCase().contains(TAG_IN)) {
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[out]")) {
+					if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
-					} else if (line.toLowerCase().contains("[emg]")) {
+					} else if (line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						ins.add(Integer.parseInt(line));
@@ -424,14 +432,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selection in: {}", ins);
 			}
 
-			if (line.toLowerCase().contains("[out]")) {
+			if (line.toLowerCase().contains(TAG_OUT)) {
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[in]")) {
+					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
-					} else if (line.toLowerCase().contains("[emg]")) {
+					} else if (line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						outs.add(Integer.parseInt(line));
@@ -440,15 +448,15 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selection out: {}", outs);
 			}
 
-			if (line.toLowerCase().contains("[emg]")) {
+			if (line.toLowerCase().contains(TAG_EMG)) {
 				int emgCount = 1;
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[in]")) {
+					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
-					} else if (line.toLowerCase().contains("[out]")) {
+					} else if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						double emg = Double.parseDouble(line);
@@ -489,12 +497,12 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 			line = emailLines[i];
 
-			if (line.toLowerCase().contains("[team]")) {
+			if (line.toLowerCase().contains(TAG_TEAM)) {
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[round]")) {
+					if (line.toLowerCase().contains(TAG_ROUND)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						teamCode = line;
@@ -503,13 +511,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selections for team: {}", teamCode);
 			}
 
-			if (line.toLowerCase().contains("[round]")) {
+			if (line.toLowerCase().contains(TAG_ROUND)) {
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[in]") || line.toLowerCase().contains("[out]")
-							|| line.toLowerCase().contains("[emg]")) {
+					if (line.toLowerCase().contains(TAG_IN) || line.toLowerCase().contains(TAG_OUT)
+							|| line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						round = Integer.parseInt(line);
@@ -518,14 +526,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selections for round: {}", round);
 			}
 
-			if (line.toLowerCase().contains("[in]")) {
+			if (line.toLowerCase().contains(TAG_IN)) {
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[out]")) {
+					if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
-					} else if (line.toLowerCase().contains("[emg]")) {
+					} else if (line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						int in = getPlayerNo(line);
@@ -539,14 +547,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selection in: {}", ins);
 			}
 
-			if (line.toLowerCase().contains("[out]")) {
+			if (line.toLowerCase().contains(TAG_OUT)) {
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[in]")) {
+					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
-					} else if (line.toLowerCase().contains("[emg]")) {
+					} else if (line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						int out = getPlayerNo(line);
@@ -560,15 +568,15 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selection out: {}", outs);
 			}
 
-			if (line.toLowerCase().contains("[emg]")) {
+			if (line.toLowerCase().contains(TAG_EMG)) {
 				int emgCount = 1;
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[in]")) {
+					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
-					} else if (line.toLowerCase().contains("[out]")) {
+					} else if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						double emg = getPlayerNo(line);

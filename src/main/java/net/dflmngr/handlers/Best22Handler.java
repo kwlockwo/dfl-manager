@@ -235,13 +235,18 @@ class ValueComparator<K, V extends Comparable<V>> implements Comparator<K>{
  
 	@Override
 	public int compare(K s1, K s2) {
-		int c = map.get(s1).compareTo(map.get(s2));
+		V v1 = map.get(s1);
+		V v2 = map.get(s2);
+		if (v1 == null || v2 == null) {
+			return 0;
+		}
+		int c = v1.compareTo(v2);
 		if(c > 0) {
 			return -1;
 		} else if(c < 0) {
 			return 1;
 		} else {
 			return 0;
-		}	
+		}
 	}
 }

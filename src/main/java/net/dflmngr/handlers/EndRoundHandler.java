@@ -27,6 +27,7 @@ import net.dflmngr.model.entity.DflRoundMapping;
 import net.dflmngr.model.entity.DflSelectedPlayer;
 import net.dflmngr.model.entity.DflTeam;
 import net.dflmngr.model.entity.DflTeamPlayer;
+import net.dflmngr.model.entity.DflTeamScores;
 import net.dflmngr.model.entity.InsAndOuts;
 import net.dflmngr.model.entity.keys.DflFixturePK;
 import net.dflmngr.model.entity.keys.DflTeamScoresPK;
@@ -356,6 +357,11 @@ public class EndRoundHandler extends BaseHandler {
 		List<DflLadder> ladder = dflLadderService.getLadderForRound(round);
 		Collections.sort(ladder, Collections.reverseOrder());
 
+		if (ladder.size() < 5) {
+			loggerUtils.log("warn", "Not enough teams on ladder for finals week 1, round={}, size={}", round, ladder.size());
+			return;
+		}
+
 		DflLadder first = ladder.get(0);
 		DflLadder second = ladder.get(1);
 		DflLadder third = ladder.get(2);
@@ -397,16 +403,26 @@ public class EndRoundHandler extends BaseHandler {
 		dflFixturePK.setGame(2);
 		DflFixture week1Game2 = dflFixtureService.get(dflFixturePK);
 
+		if (week1Game1 == null || week1Game2 == null) {
+			loggerUtils.log("warn", "Missing finals week 1 fixtures for round={}", round);
+			return;
+		}
+
 		String game1Winner;
 		String game1Loser;
 
 		DflTeamScoresPK dflTeamScorePK = new DflTeamScoresPK();
 		dflTeamScorePK.setRound(round);
 		dflTeamScorePK.setTeamCode(week1Game1.getHomeTeam());
-		int homeTeamScore = dflTeamScoresService.get(dflTeamScorePK).getScore();
-
+		DflTeamScores homeScores1 = dflTeamScoresService.get(dflTeamScorePK);
 		dflTeamScorePK.setTeamCode(week1Game1.getAwayTeam());
-		int awayTeamScore = dflTeamScoresService.get(dflTeamScorePK).getScore();
+		DflTeamScores awayScores1 = dflTeamScoresService.get(dflTeamScorePK);
+		if (homeScores1 == null || awayScores1 == null) {
+			loggerUtils.log("warn", "Missing team scores for finals week 1 game 1, round={}", round);
+			return;
+		}
+		int homeTeamScore = homeScores1.getScore();
+		int awayTeamScore = awayScores1.getScore();
 
 		if (homeTeamScore >= awayTeamScore) {
 			game1Winner = week1Game1.getHomeTeam();
@@ -420,10 +436,15 @@ public class EndRoundHandler extends BaseHandler {
 		String game2Loser;
 
 		dflTeamScorePK.setTeamCode(week1Game2.getHomeTeam());
-		homeTeamScore = dflTeamScoresService.get(dflTeamScorePK).getScore();
-
+		DflTeamScores homeScores2 = dflTeamScoresService.get(dflTeamScorePK);
 		dflTeamScorePK.setTeamCode(week1Game2.getAwayTeam());
-		awayTeamScore = dflTeamScoresService.get(dflTeamScorePK).getScore();
+		DflTeamScores awayScores2 = dflTeamScoresService.get(dflTeamScorePK);
+		if (homeScores2 == null || awayScores2 == null) {
+			loggerUtils.log("warn", "Missing team scores for finals week 1 game 2, round={}", round);
+			return;
+		}
+		homeTeamScore = homeScores2.getScore();
+		awayTeamScore = awayScores2.getScore();
 
 		if (homeTeamScore >= awayTeamScore) {
 			game2Winner = week1Game2.getHomeTeam();
@@ -473,15 +494,25 @@ public class EndRoundHandler extends BaseHandler {
 		dflFixturePK.setGame(2);
 		DflFixture week2Game2 = dflFixtureService.get(dflFixturePK);
 
+		if (week2Game1 == null || week2Game2 == null) {
+			loggerUtils.log("warn", "Missing finals week 2 fixtures for round={}", round);
+			return;
+		}
+
 		String game1Loser;
 
 		DflTeamScoresPK dflTeamScorePK = new DflTeamScoresPK();
 		dflTeamScorePK.setRound(round);
 		dflTeamScorePK.setTeamCode(week2Game1.getHomeTeam());
-		int homeTeamScore = dflTeamScoresService.get(dflTeamScorePK).getScore();
-
+		DflTeamScores homeScores1 = dflTeamScoresService.get(dflTeamScorePK);
 		dflTeamScorePK.setTeamCode(week2Game1.getAwayTeam());
-		int awayTeamScore = dflTeamScoresService.get(dflTeamScorePK).getScore();
+		DflTeamScores awayScores1 = dflTeamScoresService.get(dflTeamScorePK);
+		if (homeScores1 == null || awayScores1 == null) {
+			loggerUtils.log("warn", "Missing team scores for finals week 2 game 1, round={}", round);
+			return;
+		}
+		int homeTeamScore = homeScores1.getScore();
+		int awayTeamScore = awayScores1.getScore();
 
 		if (homeTeamScore >= awayTeamScore) {
 			game1Loser = week2Game1.getAwayTeam();
@@ -493,10 +524,15 @@ public class EndRoundHandler extends BaseHandler {
 		String game2Loser;
 
 		dflTeamScorePK.setTeamCode(week2Game2.getHomeTeam());
-		homeTeamScore = dflTeamScoresService.get(dflTeamScorePK).getScore();
-
+		DflTeamScores homeScores2 = dflTeamScoresService.get(dflTeamScorePK);
 		dflTeamScorePK.setTeamCode(week2Game2.getAwayTeam());
-		awayTeamScore = dflTeamScoresService.get(dflTeamScorePK).getScore();
+		DflTeamScores awayScores2 = dflTeamScoresService.get(dflTeamScorePK);
+		if (homeScores2 == null || awayScores2 == null) {
+			loggerUtils.log("warn", "Missing team scores for finals week 2 game 2, round={}", round);
+			return;
+		}
+		homeTeamScore = homeScores2.getScore();
+		awayTeamScore = awayScores2.getScore();
 
 		if (homeTeamScore >= awayTeamScore) {
 			game2Winner = week2Game2.getHomeTeam();

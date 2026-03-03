@@ -61,8 +61,6 @@ public class EmailSelectionsHandler extends BaseHandler {
 	DflTeamService dflTeamService;
 	DflTeamPlayerService dflTeamPlayerService;
 
-	boolean selectionsFileAttached;
-
 	List<SelectedTeamValidation> validationResults;
 	Map<String, String> selectionsIdsCurrent;
 
@@ -94,7 +92,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 			this.emailOveride = "";
 
-			if (!System.getenv("ENV").equals("production")) {
+			if (!"production".equals(System.getenv("ENV"))) {
 				this.dflmngrEmailAddr = System.getenv("DFL_MNGR_EMAIL");
 				this.mailUsername = System.getenv("DFL_MNGR_EMAIL");
 				this.emailOveride = System.getenv("EMAIL_OVERIDE");
@@ -103,7 +101,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			loggerUtils.log("info",
 					"Email config: dflmngrEmailAddr={}; incomingMailHost={}; incomingMailPort={}; outgoingMailHost={}; outgoingMailHost={}; mailUsername={}; mailPassword={}",
 					dflmngrEmailAddr, incomingMailHost, incomingMailPort, outgoingMailHost, outgoingMailPort,
-					mailUsername, mailPassword);
+					mailUsername, "*".repeat(mailPassword != null ? mailPassword.length() : 0));
 
 			OAuth2Authenticator.initialize();
 
@@ -145,13 +143,11 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 			SelectedTeamValidation validationResult = null;
 
-			selectionsFileAttached = false;
-
 			try {
 
 				Message message = messages[i];
 				String from = InternetAddress.toString(message.getFrom());
-				Instant instant = message.getReceivedDate().toInstant();
+				Instant instant = message.getReceivedDate() != null ? message.getReceivedDate().toInstant() : Instant.now();
 				ZonedDateTime receivedDate = ZonedDateTime.ofInstant(instant, ZoneId.of(DflmngrUtils.defaultTimezone));
 
 				if(message.isMimeType("multipart/*")) {
@@ -249,8 +245,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 					loggerUtils.log("info", "Attachement found, name={}", attachementName);
 					if (attachementName.equalsIgnoreCase("selections.txt")) {
 						loggerUtils.log("info", "Message from {}, has selection attachment", from);
-						selectionsFileAttached = true;
-						validationResult = handleSelectionFile(part.getInputStream());
+							validationResult = handleSelectionFile(part.getInputStream());
 						validationResult.setFrom(from);
 						validationResults.add(validationResult);
 						loggerUtils.log("info", "Message from {} handled with ... SUCCESS!", from);
@@ -290,8 +285,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-			selectionsFileAttached = true;
-			validationResult = handleSelectionEmailText(lines, "noid");
+				validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		} else if (text.indexOf("[start id=") != -1 && text.indexOf("[end]") != -1) {
@@ -302,8 +296,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String id = idLine.split("=")[1].trim().replaceAll("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-			selectionsFileAttached = true;
-			validationResult = handleSelectionEmailText(lines, id);
+				validationResult = handleSelectionEmailText(lines, id);
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		}
@@ -328,8 +321,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in html body", from);
-			selectionsFileAttached = true;
-			validationResult = handleSelectionEmailText(lines, "noid");
+				validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		} else if (text.indexOf("[start id=") != -1 && text.indexOf("[end]") != -1) {
@@ -340,8 +332,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String id = idLine.split("=")[1].trim().replaceAll("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-			selectionsFileAttached = true;
-			validationResult = handleSelectionEmailText(lines, id);
+				validationResult = handleSelectionEmailText(lines, id);
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		}
@@ -660,12 +651,12 @@ public class EmailSelectionsHandler extends BaseHandler {
 		return playerNo;
 	}
 
-	private void sendResponses() throws Exception {
+	private void sendResponses() throws MessagingException {
 		for (SelectedTeamValidation validationResult : validationResults) {
 
 			String to = "";
 
-			if (!System.getenv("ENV").equals("production")) {
+			if (!"production".equals(System.getenv("ENV"))) {
 				to = this.emailOveride;
 			} else {
 				to = validationResult.getFrom();
@@ -715,203 +706,141 @@ public class EmailSelectionsHandler extends BaseHandler {
 		}
 	}
 
-	private void setSuccessMessage(Message message, SelectedTeamValidation validationResult) throws Exception {
+	private String formatPlayerLine(DflPlayer player) {
+		DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
+		return "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
+				+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getAflClub() + "\n";
+	}
+
+	private void setSuccessMessage(Message message, SelectedTeamValidation validationResult) throws MessagingException {
 		message.setSubject("Selections received - SUCCESS!");
 
-		String messageBody = "Coach, \n\n" + "Your selections have been stored in the database ....\n";
+		StringBuilder messageBody = new StringBuilder("Coach, \n\nYour selections have been stored in the database ....\n");
 
 		if (validationResult.areWarnings()) {
-			messageBody = messageBody + "\n";
+			messageBody.append("\n");
 
 			if (validationResult.selectedWarning) {
-				messageBody = messageBody
-						+ "\tWarning: You have seleted a player who is already selected.  You may be playing short! Players:\n";
+				messageBody.append("\tWarning: You have seleted a player who is already selected.  You may be playing short! Players:\n");
 				for (DflPlayer player : validationResult.selectedWarnPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.droppedWarning) {
-				messageBody = messageBody
-						+ "\tWarning: You have dropped a player who is not selected.  Your team may not be as you expect or invalid! Players:\n";
+				messageBody.append("\tWarning: You have dropped a player who is not selected.  Your team may not be as you expect or invalid! Players:\n");
 				for (DflPlayer player : validationResult.droppedWarnPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
-
 			if (validationResult.emergencyFfWarning) {
-				messageBody = messageBody
-						+ "\tWarning: You have selcted a Full Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n";
+				messageBody.append("\tWarning: You have selcted a Full Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
 				for (DflPlayer player : validationResult.emgFfPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.emergencyFwdWarning) {
-				messageBody = messageBody
-						+ "\tWarning: You have selcted a Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n";
+				messageBody.append("\tWarning: You have selcted a Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
 				for (DflPlayer player : validationResult.emgFwdPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.emergencyRckWarning) {
-				messageBody = messageBody
-						+ "\tWarning: You have selcted a Ruck as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n";
+				messageBody.append("\tWarning: You have selcted a Ruck as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
 				for (DflPlayer player : validationResult.emgRckPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.emergencyMidWarning) {
-				messageBody = messageBody
-						+ "\tWarning: You have selcted a Midfielder as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n";
+				messageBody.append("\tWarning: You have selcted a Midfielder as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
 				for (DflPlayer player : validationResult.emgMidPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.emergencyDefWarning) {
-				messageBody = messageBody
-						+ "\tWarning: You have selcted a Defender as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n";
+				messageBody.append("\tWarning: You have selcted a Defender as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
 				for (DflPlayer player : validationResult.emgDefPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.emergencyFbWarning) {
-				messageBody = messageBody
-						+ "\tWarning: You have selcted a Full Back as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n";
+				messageBody.append("\tWarning: You have selcted a Full Back as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
 				for (DflPlayer player : validationResult.emgFbPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.duplicateIns) {
-				messageBody = messageBody + "\tWarning: You have selected duplicate ins, one will be ignored.  Ins:\n";
+				messageBody.append("\tWarning: You have selected duplicate ins, one will be ignored.  Ins:\n");
 				for (DflPlayer player : validationResult.dupInPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.duplicateOuts) {
-				messageBody = messageBody + "\tWarning: You have selected duplicate outs, one will be ignored.  Ins:\n";
-				for (DflPlayer player : validationResult.dupInPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+				messageBody.append("\tWarning: You have selected duplicate outs, one will be ignored.  Outs:\n");
+				for (DflPlayer player : validationResult.dupOutPlayers) {
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 			if (validationResult.duplicateEmgs) {
-				messageBody = messageBody
-						+ "\tWarning: You have selected duplicate emergencies, one will be ignored.  Ins:\n";
-				for (DflPlayer player : validationResult.dupInPlayers) {
-
-					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-					messageBody = messageBody + "\t\t" + teamPlayer.getTeamPlayerId() + " " + player.getFirstName()
-							+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getPosition()
-							+ "\n";
+				messageBody.append("\tWarning: You have selected duplicate emergencies, one will be ignored.  Emergencies:\n");
+				for (DflPlayer player : validationResult.dupEmgPlayers) {
+					messageBody.append(formatPlayerLine(player));
 				}
 			}
 		}
 
-		messageBody = messageBody + "\n\nHave a nice day. \n\n" + "DFL Manager Admin";
+		messageBody.append("\n\nHave a nice day. \n\nDFL Manager Admin");
 
-		message.setContent(messageBody, "text/plain");
+		message.setContent(messageBody.toString(), "text/plain");
 	}
 
-	private void setFailureMessage(Message message, SelectedTeamValidation validationResult) throws Exception {
+	private void setFailureMessage(Message message, SelectedTeamValidation validationResult) throws MessagingException {
 		message.setSubject("Selections received - FAILED!");
 
-		String messageBody = "Coach,\n\n"
-				+ "Your selections have not been stored in the database .... The reasons for this are:\n";
+		StringBuilder messageBody = new StringBuilder("Coach,\n\nYour selections have not been stored in the database .... The reasons for this are:\n");
 
 		if (validationResult.playedSelections) {
-			messageBody = messageBody
-					+ "\t- You have selected/dropped a player who has already played and was not included in your previous selections.\n";
+			messageBody.append("\t- You have selected/dropped a player who has already played and was not included in your previous selections.\n");
 		} else if (validationResult.selectionFileMissing) {
-			messageBody = messageBody
-					+ "\t- You sent the email with no selections.txt or the selections were missing from the emil body\n";
+			messageBody.append("\t- You sent the email with no selections.txt or the selections were missing from the emil body\n");
 		} else if (validationResult.roundCompleted) {
-			messageBody = messageBody + "\t- The round you have in your selections.txt has past\n";
+			messageBody.append("\t- The round you have in your selections.txt has past\n");
 		} else if (validationResult.lockedOut) {
-			messageBody = messageBody + "\t- The round you have in your selections as had all AFL games completed.\n";
+			messageBody.append("\t- The round you have in your selections as had all AFL games completed.\n");
 		} else if (validationResult.unknownError) {
-			messageBody = messageBody + "\t- Some exception occured follow up with email to xdfl google group.\n";
+			messageBody.append("\t- Some exception occured follow up with email to xdfl google group.\n");
 		} else if (validationResult.duplicateSubmissionId) {
-			messageBody = messageBody + "\t- Already processed selection for your selection id.\n";
+			messageBody.append("\t- Already processed selection for your selection id.\n");
 		} else if (!validationResult.teamPlayerCheckOk) {
-			messageBody = messageBody + "\t- The ins and/or outs numbers sent are not correct\n";
+			messageBody.append("\t- The ins and/or outs numbers sent are not correct\n");
 		} else {
 			if (!validationResult.ffCheckOk) {
-				messageBody = messageBody + "\t- You have too many Full Forwards\n";
+				messageBody.append("\t- You have too many Full Forwards\n");
 			}
 			if (!validationResult.fwdCheckOk) {
-				messageBody = messageBody + "\t- You have too many Forwards\n";
+				messageBody.append("\t- You have too many Forwards\n");
 			}
 			if (!validationResult.rckCheckOk) {
-				messageBody = messageBody + "\t- You have too many Rucks\n";
+				messageBody.append("\t- You have too many Rucks\n");
 			}
 			if (!validationResult.midCheckOk) {
-				messageBody = messageBody + "\t- You have too many Midfielders\n";
+				messageBody.append("\t- You have too many Midfielders\n");
 			}
 			if (!validationResult.fbCheckOk) {
-				messageBody = messageBody + "\t- You have too many Full Backs\n";
+				messageBody.append("\t- You have too many Full Backs\n");
 			}
 			if (!validationResult.defCheckOk) {
-				messageBody = messageBody + "\t- You have too many Defenders\n";
+				messageBody.append("\t- You have too many Defenders\n");
 			}
 			if (!validationResult.benchCheckOk) {
-				messageBody = messageBody + "\t- You have too many on the bench.\n";
+				messageBody.append("\t- You have too many on the bench.\n");
 			}
 		}
 
-		messageBody = messageBody + "\nPlease check your selections.txt file and try again.  "
+		messageBody.append("\nPlease check your selections.txt file and try again.  "
 				+ "If it fails again, send an email to the google group and maybe if you are lucky someone will sort it out.\n\n"
-				+ "DFL Manager Admin";
+				+ "DFL Manager Admin");
 
-		message.setContent(messageBody, "text/plain");
+		message.setContent(messageBody.toString(), "text/plain");
 	}
 
 	// internal testing

@@ -381,7 +381,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 		List<Integer> ins = new ArrayList<>();
 		List<Integer> outs = new ArrayList<>();
 		List<Double> emgs = new ArrayList<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
 		loggerUtils.log("info", "Handling selections form file attachement");
 
@@ -471,6 +471,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 				}
 				loggerUtils.log("info", "Selection emergencies: {}", emgs);
 			}
+		}
 		}
 
 		Map<String, List<Integer>> insAndOuts = new HashMap<>();
@@ -694,11 +695,15 @@ public class EmailSelectionsHandler extends BaseHandler {
 			if (validationResult.isValid()) {
 				if (teamCode != null && !teamCode.equals("")) {
 					DflTeam team = dflTeamService.get(teamCode);
-					String teamTo = team.getCoachEmail();
-					loggerUtils.log("info", "Team email: {}", teamTo);
-					if (!to.toLowerCase().contains(teamTo.toLowerCase())) {
-						loggerUtils.log("info", "Adding team email");
-						message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(teamTo));
+					if (team != null) {
+						String teamTo = team.getCoachEmail();
+						loggerUtils.log("info", "Team email: {}", teamTo);
+						if (!to.toLowerCase().contains(teamTo.toLowerCase())) {
+							loggerUtils.log("info", "Adding team email");
+							message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(teamTo));
+						}
+					} else {
+						loggerUtils.log("warn", "No team found for teamCode: {}", teamCode);
 					}
 				}
 				loggerUtils.log("info", "Message is for SUCCESS");

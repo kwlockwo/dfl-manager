@@ -24,8 +24,8 @@ import java.security.Security;
 import java.util.Properties;
 //import java.util.logging.Logger;
 
-import javax.mail.Session;
-import javax.mail.URLName;
+import jakarta.mail.Session;
+import jakarta.mail.URLName;
 
 /**
  * Performs OAuth2 authentication.

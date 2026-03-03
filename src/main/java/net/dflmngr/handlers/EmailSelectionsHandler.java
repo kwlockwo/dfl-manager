@@ -15,18 +15,18 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.BodyPart;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.Part;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import com.sun.mail.imap.IMAPFolder;
 
 import org.jsoup.Jsoup;
@@ -46,6 +46,14 @@ import net.freeutils.tnef.Attachment;
 import net.freeutils.tnef.TNEFInputStream;
 
 public class EmailSelectionsHandler extends BaseHandler {
+
+	private static final String TAG_TEAM = "[team]";
+	private static final String TAG_END = "[end]";
+	private static final String TAG_START_ID = "[start id=";
+	private static final String TAG_ROUND = "[round]";
+	private static final String TAG_IN = "[in]";
+	private static final String TAG_OUT = "[out]";
+	private static final String TAG_EMG = "[emg]";
 
 	private String dflmngrEmailAddr;
 	private String incomingMailHost;
@@ -280,20 +288,20 @@ public class EmailSelectionsHandler extends BaseHandler {
 	private SelectedTeamValidation handleTextEmailContent(String text, String from) {
 		SelectedTeamValidation validationResult = null;
 
-		if (text.indexOf("[team]") == 0 && text.indexOf("[end]") != -1) {
-			text = text.substring(0, text.indexOf("[end]"));
+		if (text.startsWith(TAG_TEAM) && text.contains(TAG_END)) {
+			text = text.substring(0, text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
 				validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
-		} else if (text.indexOf("[start id=") != -1 && text.indexOf("[end]") != -1) {
-			text = text.substring(text.indexOf("[start id="), text.indexOf("[end]"));
+		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
+			text = text.substring(text.indexOf(TAG_START_ID), text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			String idLine = lines[0];
-			String id = idLine.split("=")[1].trim().replaceAll("]", "");
+			String id = idLine.split("=")[1].trim().replace("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
 				validationResult = handleSelectionEmailText(lines, id);
@@ -316,20 +324,20 @@ public class EmailSelectionsHandler extends BaseHandler {
 		String text = Jsoup.clean(s, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false))
 				.trim();
 
-		if (text.indexOf("[team]") == 0 && text.indexOf("[end]") != -1) {
-			text = text.substring(0, text.indexOf("[end]"));
+		if (text.startsWith(TAG_TEAM) && text.contains(TAG_END)) {
+			text = text.substring(0, text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in html body", from);
 				validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
-		} else if (text.indexOf("[start id=") != -1 && text.indexOf("[end]") != -1) {
-			text = text.substring(text.indexOf("[start id="), text.indexOf("[end]"));
+		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
+			text = text.substring(text.indexOf(TAG_START_ID), text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			String idLine = lines[0];
-			String id = idLine.split("=")[1].trim().replaceAll("]", "");
+			String id = idLine.split("=")[1].trim().replace("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
 				validationResult = handleSelectionEmailText(lines, id);
@@ -379,12 +387,12 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 		while ((line = reader.readLine()) != null) {
 
-			if (line.toLowerCase().contains("[team]")) {
+			if (line.toLowerCase().contains(TAG_TEAM)) {
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[round]")) {
+					if (line.toLowerCase().contains(TAG_ROUND)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						teamCode = line;
@@ -393,13 +401,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selections for team: {}", teamCode);
 			}
 
-			if (line.toLowerCase().contains("[round]")) {
+			if (line.toLowerCase().contains(TAG_ROUND)) {
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[in]") || line.toLowerCase().contains("[out]")
-							|| line.toLowerCase().contains("[emg]")) {
+					if (line.toLowerCase().contains(TAG_IN) || line.toLowerCase().contains(TAG_OUT)
+							|| line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						round = Integer.parseInt(line);
@@ -408,14 +416,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selections for round: {}", round);
 			}
 
-			if (line.toLowerCase().contains("[in]")) {
+			if (line.toLowerCase().contains(TAG_IN)) {
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[out]")) {
+					if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
-					} else if (line.toLowerCase().contains("[emg]")) {
+					} else if (line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						ins.add(Integer.parseInt(line));
@@ -424,14 +432,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selection in: {}", ins);
 			}
 
-			if (line.toLowerCase().contains("[out]")) {
+			if (line.toLowerCase().contains(TAG_OUT)) {
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[in]")) {
+					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
-					} else if (line.toLowerCase().contains("[emg]")) {
+					} else if (line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						outs.add(Integer.parseInt(line));
@@ -440,15 +448,15 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selection out: {}", outs);
 			}
 
-			if (line.toLowerCase().contains("[emg]")) {
+			if (line.toLowerCase().contains(TAG_EMG)) {
 				int emgCount = 1;
 				while (reader.ready()) {
 					line = reader.readLine().trim();
-					if (line.toLowerCase().contains("[in]")) {
+					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
-					} else if (line.toLowerCase().contains("[out]")) {
+					} else if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						double emg = Double.parseDouble(line);
@@ -489,12 +497,12 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 			line = emailLines[i];
 
-			if (line.toLowerCase().contains("[team]")) {
+			if (line.toLowerCase().contains(TAG_TEAM)) {
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[round]")) {
+					if (line.toLowerCase().contains(TAG_ROUND)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						teamCode = line;
@@ -503,13 +511,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selections for team: {}", teamCode);
 			}
 
-			if (line.toLowerCase().contains("[round]")) {
+			if (line.toLowerCase().contains(TAG_ROUND)) {
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[in]") || line.toLowerCase().contains("[out]")
-							|| line.toLowerCase().contains("[emg]")) {
+					if (line.toLowerCase().contains(TAG_IN) || line.toLowerCase().contains(TAG_OUT)
+							|| line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						round = Integer.parseInt(line);
@@ -518,14 +526,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selections for round: {}", round);
 			}
 
-			if (line.toLowerCase().contains("[in]")) {
+			if (line.toLowerCase().contains(TAG_IN)) {
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[out]")) {
+					if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
-					} else if (line.toLowerCase().contains("[emg]")) {
+					} else if (line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						int in = getPlayerNo(line);
@@ -539,14 +547,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selection in: {}", ins);
 			}
 
-			if (line.toLowerCase().contains("[out]")) {
+			if (line.toLowerCase().contains(TAG_OUT)) {
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[in]")) {
+					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
-					} else if (line.toLowerCase().contains("[emg]")) {
+					} else if (line.toLowerCase().contains(TAG_EMG)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						int out = getPlayerNo(line);
@@ -560,15 +568,15 @@ public class EmailSelectionsHandler extends BaseHandler {
 				loggerUtils.log("info", "Selection out: {}", outs);
 			}
 
-			if (line.toLowerCase().contains("[emg]")) {
+			if (line.toLowerCase().contains(TAG_EMG)) {
 				int emgCount = 1;
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
-					if (line.toLowerCase().contains("[in]")) {
+					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
-					} else if (line.toLowerCase().contains("[out]")) {
+					} else if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
-					} else if (line.equalsIgnoreCase("")) {
+					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
 						double emg = getPlayerNo(line);
@@ -671,7 +679,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			properties.setProperty("mail.smtp.starttls.enable", "true");
 			properties.setProperty("mail.smtp.auth", "true");
 
-			Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+			Session session = Session.getInstance(properties, new jakarta.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(mailUsername, mailPassword);
 				}
@@ -712,6 +720,15 @@ public class EmailSelectionsHandler extends BaseHandler {
 				+ " " + player.getLastName() + " " + player.getPosition() + " " + player.getAflClub() + "\n";
 	}
 
+	private void appendWarning(StringBuilder body, boolean condition, String message, List<DflPlayer> players) {
+		if (condition) {
+			body.append(message);
+			for (DflPlayer player : players) {
+				body.append(formatPlayerLine(player));
+			}
+		}
+	}
+
 	private void setSuccessMessage(Message message, SelectedTeamValidation validationResult) throws MessagingException {
 		message.setSubject("Selections received - SUCCESS!");
 
@@ -719,73 +736,39 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 		if (validationResult.areWarnings()) {
 			messageBody.append("\n");
-
-			if (validationResult.selectedWarning) {
-				messageBody.append("\tWarning: You have seleted a player who is already selected.  You may be playing short! Players:\n");
-				for (DflPlayer player : validationResult.selectedWarnPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.droppedWarning) {
-				messageBody.append("\tWarning: You have dropped a player who is not selected.  Your team may not be as you expect or invalid! Players:\n");
-				for (DflPlayer player : validationResult.droppedWarnPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyFfWarning) {
-				messageBody.append("\tWarning: You have selcted a Full Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgFfPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyFwdWarning) {
-				messageBody.append("\tWarning: You have selcted a Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgFwdPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyRckWarning) {
-				messageBody.append("\tWarning: You have selcted a Ruck as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgRckPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyMidWarning) {
-				messageBody.append("\tWarning: You have selcted a Midfielder as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgMidPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyDefWarning) {
-				messageBody.append("\tWarning: You have selcted a Defender as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgDefPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.emergencyFbWarning) {
-				messageBody.append("\tWarning: You have selcted a Full Back as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n");
-				for (DflPlayer player : validationResult.emgFbPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.duplicateIns) {
-				messageBody.append("\tWarning: You have selected duplicate ins, one will be ignored.  Ins:\n");
-				for (DflPlayer player : validationResult.dupInPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.duplicateOuts) {
-				messageBody.append("\tWarning: You have selected duplicate outs, one will be ignored.  Outs:\n");
-				for (DflPlayer player : validationResult.dupOutPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
-			if (validationResult.duplicateEmgs) {
-				messageBody.append("\tWarning: You have selected duplicate emergencies, one will be ignored.  Emergencies:\n");
-				for (DflPlayer player : validationResult.dupEmgPlayers) {
-					messageBody.append(formatPlayerLine(player));
-				}
-			}
+			appendWarning(messageBody, validationResult.selectedWarning,
+					"\tWarning: You have seleted a player who is already selected.  You may be playing short! Players:\n",
+					validationResult.selectedWarnPlayers);
+			appendWarning(messageBody, validationResult.droppedWarning,
+					"\tWarning: You have dropped a player who is not selected.  Your team may not be as you expect or invalid! Players:\n",
+					validationResult.droppedWarnPlayers);
+			appendWarning(messageBody, validationResult.emergencyFfWarning,
+					"\tWarning: You have selcted a Full Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgFfPlayers);
+			appendWarning(messageBody, validationResult.emergencyFwdWarning,
+					"\tWarning: You have selcted a Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgFwdPlayers);
+			appendWarning(messageBody, validationResult.emergencyRckWarning,
+					"\tWarning: You have selcted a Ruck as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgRckPlayers);
+			appendWarning(messageBody, validationResult.emergencyMidWarning,
+					"\tWarning: You have selcted a Midfielder as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgMidPlayers);
+			appendWarning(messageBody, validationResult.emergencyDefWarning,
+					"\tWarning: You have selcted a Defender as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgDefPlayers);
+			appendWarning(messageBody, validationResult.emergencyFbWarning,
+					"\tWarning: You have selcted a Full Back as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
+					validationResult.emgFbPlayers);
+			appendWarning(messageBody, validationResult.duplicateIns,
+					"\tWarning: You have selected duplicate ins, one will be ignored.  Ins:\n",
+					validationResult.dupInPlayers);
+			appendWarning(messageBody, validationResult.duplicateOuts,
+					"\tWarning: You have selected duplicate outs, one will be ignored.  Outs:\n",
+					validationResult.dupOutPlayers);
+			appendWarning(messageBody, validationResult.duplicateEmgs,
+					"\tWarning: You have selected duplicate emergencies, one will be ignored.  Emergencies:\n",
+					validationResult.dupEmgPlayers);
 		}
 
 		messageBody.append("\n\nHave a nice day. \n\nDFL Manager Admin");

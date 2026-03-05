@@ -37,7 +37,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 			ensureLoggingConfigured();
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in AflPlayerLoaderHandler constructor", ex);
 		}
 	}
 
@@ -54,7 +54,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 			loggerUtils.log("info", "AflPlayerLoader Complete");
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in AflPlayerLoaderHandler.execute()", ex);
 		}
 
 	}
@@ -96,10 +96,10 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 		aflPlayers = removeDuplicates(aflPlayers);
 
-		loggerUtils.log("info", "Saving players to database ...");
+		loggerUtils.log("info", "Saving {} players to database", aflPlayers.size());
 		aflPlayerService.replaceAll(aflPlayers);
 
-		loggerUtils.log("info", "Creating afl-dfl player cross references");
+		loggerUtils.log("info", "Creating afl-dfl player cross references for {} players", aflPlayers.size());
 		crossRefAflDflPlayers(aflPlayers);
 
 		loggerUtils.log("info", "AFL players loaded");
@@ -118,7 +118,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 				}
 			}
 			if(playerExists) {
-				loggerUtils.log("info", "Player EXISTS!!; Player: {}", player);
+				loggerUtils.log("debug", "Skipping duplicate player: {}", player);
 			} else {
 				checkedPlayers.add(player);
 			}
@@ -137,7 +137,6 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 		for(AflPlayer aflPlayer : aflPlayers) {
 			String aflPlayerCrossRef = (aflPlayer.getName().replaceAll(NOT_ALPHA_REGEX, "") + "-" + aflPlayer.getTeamId()).toLowerCase();
-			loggerUtils.log("info", "Searching for player: {}", aflPlayerCrossRef);
 			DflPlayer dflPlayer = dflPlayerCrossRefs.get(aflPlayerCrossRef);
 
 			if(dflPlayer != null) {
@@ -145,14 +144,14 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 				int dflPlayerId = dflPlayer.getPlayerId();
 				String aflPlayerId = aflPlayer.getPlayerId();
 
-				loggerUtils.log("info", "Matched player - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", aflPlayerCrossRef, dflPlayerId, aflPlayerId);
+				loggerUtils.log("debug", "Matched player - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", aflPlayerCrossRef, dflPlayerId, aflPlayerId);
 
 				dflPlayerUpdates.put(aflPlayerId, dflPlayer);
 				aflPlayerUpdates.put(dflPlayerId, aflPlayer);
 
 				dflPlayerCrossRefs.remove(aflPlayerCrossRef);
 			} else {
-				loggerUtils.log("info", "Unmatched AFL player: {}", aflPlayer);
+				loggerUtils.log("warn", "Unmatched AFL player (no DFL cross-reference found): {}", aflPlayer);
 				aflUnmatchedPlayers.add(aflPlayer);
 			}
 		}
@@ -175,13 +174,12 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 
 		    	String aflCheckOne = (aflPlayer.getName().replaceAll(NOT_ALPHA_REGEX, "") + "-" + aflTeamName).toLowerCase();
 
-		    	loggerUtils.log("info", "Check one {} vs {}", dflCheckOne, aflCheckOne);
 
 		    	if(dflCheckOne.equals(aflCheckOne)) {
 		    		int dflPlayerId = dflPlayer.getPlayerId();
 					String aflPlayerId = aflPlayer.getPlayerId();
 
-					loggerUtils.log("info", "Matched player on Check One - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
+					loggerUtils.log("debug", "Matched player on check one - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
 
 					dflPlayerUpdates.put(aflPlayerId, dflPlayer);
 					aflPlayerUpdates.put(dflPlayerId, aflPlayer);
@@ -192,13 +190,12 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 		    	if(!matched) {
 		    		String aflCheckTwo = (aflPlayer.getSecondName().replaceAll(NOT_ALPHA_REGEX, "") + "-" + aflTeamName).toLowerCase();
 
-		    		loggerUtils.log("info", "Check two {} vs {}", dflCheckTwo, aflCheckTwo);
 
 		    		if(dflCheckTwo.equals(aflCheckTwo)) {
 			    		int dflPlayerId = dflPlayer.getPlayerId();
 						String aflPlayerId = aflPlayer.getPlayerId();
 
-						loggerUtils.log("info", "Matched player on Check Two - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
+						loggerUtils.log("debug", "Matched player on check two - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
 
 						dflPlayerUpdates.put(aflPlayerId, dflPlayer);
 						aflPlayerUpdates.put(dflPlayerId, aflPlayer);
@@ -210,13 +207,12 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 		    	if(!matched) {
 		    		String aflCheckThree = (aflPlayer.getFirstName().replaceAll(NOT_ALPHA_REGEX, "") + "-" + aflTeamName).toLowerCase();
 
-		    		loggerUtils.log("info", "Check three {} vs {}", dflCheckThree, aflCheckThree);
 
 		    		if(dflCheckThree.equals(aflCheckThree)) {
 			    		int dflPlayerId = dflPlayer.getPlayerId();
 						String aflPlayerId = aflPlayer.getPlayerId();
 
-						loggerUtils.log("info", "Matched player on Check Two - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
+						loggerUtils.log("debug", "Matched player on check three - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
 
 						dflPlayerUpdates.put(aflPlayerId, dflPlayer);
 						aflPlayerUpdates.put(dflPlayerId, aflPlayer);
@@ -231,7 +227,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 		    }
 
 		    if(!matched) {
-			    loggerUtils.log("info", "Unmatched player: {}", crossRef);
+			    loggerUtils.log("warn", "Unmatched DFL player after all checks (will be saved as unmatched): {}", crossRef);
 
 			    DflUnmatchedPlayer unmatchedPlayer = new DflUnmatchedPlayer();
 			    unmatchedPlayer.setPlayerId(dflPlayer.getPlayerId());

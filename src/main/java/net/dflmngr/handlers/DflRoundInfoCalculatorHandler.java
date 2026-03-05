@@ -59,7 +59,7 @@ public class DflRoundInfoCalculatorHandler extends BaseHandler {
 			configureStatsRoundTracking();
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in DflRoundInfoCalculatorHandler constructor", ex);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class DflRoundInfoCalculatorHandler extends BaseHandler {
 			
 			loggerUtils.log("info", "DflRoundInfoCalculator Complete");
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in DflRoundInfoCalculatorHandler.execute()", ex);
 		}
 	}
 

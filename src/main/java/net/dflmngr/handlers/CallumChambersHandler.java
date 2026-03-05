@@ -63,7 +63,7 @@ public class CallumChambersHandler extends BaseHandler {
 			globalsService.close();
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in CallumChambersHandler.execute(), round=" + round, ex);
 		}
 	}
 

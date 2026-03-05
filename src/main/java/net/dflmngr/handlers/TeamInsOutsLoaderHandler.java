@@ -50,7 +50,7 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 			dflTeamPlayerService.close();
 						
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in TeamInsOutsLoaderHandler.execute(), round=" + round + " teamCode=" + teamCode, ex);
 		}
 	}
 

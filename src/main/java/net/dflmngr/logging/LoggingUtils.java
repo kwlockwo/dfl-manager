@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoggingUtils {
-	
+
 	private Logger logger;
 	private String process;
 
@@ -12,39 +12,38 @@ public class LoggingUtils {
 		this.process = process;
 
 		boolean logToSyslog = Boolean.parseBoolean(System.getenv().getOrDefault("LOG_TO_SYSLOG", "false"));
-		
+
 		if(logToSyslog) {
 			logger = LoggerFactory.getLogger("stdout-with-syslog-logger");
 		} else {
 			logger = LoggerFactory.getLogger("stdout-logger");
 		}
 	}
-	
+
 	public void log(String level, String msg, Object...arguments) {
-
-		String callingClass = Thread.currentThread().getStackTrace()[2].getClassName();
-		String callingClassShort = callingClass.substring(callingClass.lastIndexOf(".")+1, callingClass.length());
-		String callingMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
-		int lineNo = Thread.currentThread().getStackTrace()[2].getLineNumber();
-		
-		String loggerMsg = "[" + process + "]" + "[" + callingClassShort + "." +  callingMethod + "(Line:" + lineNo +")] - " + msg;
-
-		try {
-			switch (level) {
-				case "info" : logger.info(loggerMsg, arguments); break;
-				case "error" : logger.error(loggerMsg, arguments); break;
-				default : logger.debug(loggerMsg, arguments); break;
-			}
-		} catch (Exception ex) {
-			logger.error("Error in ... ", ex);
+		switch (level) {
+			case "info"  : if (logger.isInfoEnabled())  logger.info(callerMsg(msg), prepend(process, arguments)); break;
+			case "warn"  : if (logger.isWarnEnabled())  logger.warn(callerMsg(msg), prepend(process, arguments)); break;
+			case "error" : if (logger.isErrorEnabled()) logger.error(callerMsg(msg), prepend(process, arguments)); break;
+			default      : if (logger.isDebugEnabled()) logger.debug(callerMsg(msg), prepend(process, arguments)); break;
 		}
 	}
 
 	public void logException(String msg, Throwable ex) {
-		try {
-			logger.error(msg, ex);
-		} catch (Exception intEx) {
-			logger.error("Error in ... ", intEx);
-		}
+		logger.error("[{}] {}", process, msg, ex);
+	}
+
+	private String callerMsg(String msg) {
+		StackTraceElement caller = Thread.currentThread().getStackTrace()[3];
+		String shortClass = caller.getClassName();
+		shortClass = shortClass.substring(shortClass.lastIndexOf('.') + 1);
+		return "[{}][" + shortClass + "." + caller.getMethodName() + "(Line:" + caller.getLineNumber() + ")] - " + msg;
+	}
+
+	private Object[] prepend(Object first, Object[] rest) {
+		Object[] args = new Object[rest.length + 1];
+		args[0] = first;
+		System.arraycopy(rest, 0, args, 1, rest.length);
+		return args;
 	}
 }

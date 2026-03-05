@@ -45,7 +45,7 @@ public class AflGameCompletionCheckerHandler extends BaseHandler {
 		try {
 			ensureLoggingConfigured();
 
-			loggerUtils.log("info", "AflGameCompletionChecker excuting ....");
+			loggerUtils.log("info", "AflGameCompletionChecker executing");
 
 			List<AflFixture> incompleteFixtures = aflFixtureService.getIncompleteFixtures();
 
@@ -85,10 +85,10 @@ public class AflGameCompletionCheckerHandler extends BaseHandler {
 			aflFixtureService.close();
 			globalsService.close();
 
-			loggerUtils.log("info", "AflGameCompletionChecker comlpeted");
+			loggerUtils.log("info", "AflGameCompletionChecker completed");
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in AflGameCompletionCheckerHandler.execute()", ex);
 		}
 	}
 

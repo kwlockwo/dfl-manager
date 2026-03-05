@@ -106,7 +106,7 @@ public class StatsDownloaderHandler extends BaseHandler {
 				loggerUtils.log("info", "Player stats were not downloaded");
 			}
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in StatsDownloaderHandler.execute(), homeTeam=" + homeTeam + " awayTeam=" + awayTeam, ex);
 		} finally {
 			rawPlayerStatsService.close();
 			statsRoundPlayerStatsService.close();

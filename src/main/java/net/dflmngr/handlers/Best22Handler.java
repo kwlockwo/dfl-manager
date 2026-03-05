@@ -41,7 +41,7 @@ public class Best22Handler extends BaseHandler {
 		try{
 			ensureLoggingConfigured();
 			
-			loggerUtils.log("info", "Best22Handler excuting, round={} ....", round);
+			loggerUtils.log("info", "Best22Handler executing, round={}", round);
 			
 			calculateBest22(round);
 			
@@ -50,7 +50,7 @@ public class Best22Handler extends BaseHandler {
 			loggerUtils.log("info", "Best22Handler complete");
 			
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in Best22Handler.execute(), round=" + round, ex);
 		}
 	}
 	

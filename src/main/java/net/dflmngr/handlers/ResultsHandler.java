@@ -43,7 +43,7 @@ public class ResultsHandler extends BaseHandler {
 		try{
 			ensureLoggingConfigured();
 			
-			loggerUtils.log("info", "ResultsHandler excuting ....");
+			loggerUtils.log("info", "ResultsHandler executing");
 
 			if(emailOverride != null && !emailOverride.equals("")) {
 				loggerUtils.log("info", "Overriding email with: {}", emailOverride);
@@ -71,7 +71,7 @@ public class ResultsHandler extends BaseHandler {
 			loggerUtils.log("info", "ResultsHandler complete");
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in ResultsHandler.execute(), inputRound=" + inputRound, ex);
 		}
 	}
 

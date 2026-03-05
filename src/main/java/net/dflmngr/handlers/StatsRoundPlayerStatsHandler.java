@@ -61,10 +61,10 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 			aflFixtureService.close();
 			globalsService.close();
 
-			loggerUtils.log("info", "Stats round player stats downaloded");
+			loggerUtils.log("info", "Stats round player stats downloaded");
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in StatsRoundPlayerStatsHandler.execute(), round=" + round, ex);
 		}
 	}
 

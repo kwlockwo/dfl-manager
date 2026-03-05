@@ -58,7 +58,7 @@ public class SelectionsHandler extends BaseHandler {
 			loggerUtils.log("info", "Team selections created");
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in SelectionsHandler.execute(), round=" + round, ex);
 		}
 	}
 

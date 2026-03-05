@@ -58,7 +58,7 @@ public class LadderCalculatorHandler extends BaseHandler {
 			loggerUtils.log("info", "LadderCalculatorHandler completed");
 			
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in LadderCalculatorHandler.execute(), round=" + round, ex);
 		}
 	}
 		

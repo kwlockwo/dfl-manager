@@ -62,7 +62,7 @@ public class AdamGoodesHandler extends BaseHandler {
 			dflSelectedTeamService.close();
 	
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in AdamGoodesHandler.execute(), round=" + round, ex);
 		}
 	}
 	

@@ -161,7 +161,7 @@ public class EndRoundHandler extends BaseHandler {
 			loggerUtils.log("info", "End round completed");
 
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in EndRoundHandler.execute(), round=" + round, ex);
 		}
 
 	}

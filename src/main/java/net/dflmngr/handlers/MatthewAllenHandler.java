@@ -46,7 +46,7 @@ public class MatthewAllenHandler extends BaseHandler {
 		try{
 			ensureLoggingConfigured();
 			
-			loggerUtils.log("info", "MatthewAllenHandler excuting, rount={} ....", round);
+			loggerUtils.log("info", "MatthewAllenHandler executing, round={}", round);
 			
 			List<DflFixture> roundFixtures = dflFixtureService.getFixturesForRound(round);
 			dflMatthewAllenService.deleteForRound(round);
@@ -60,7 +60,7 @@ public class MatthewAllenHandler extends BaseHandler {
 			loggerUtils.log("info", "MatthewAllenHandler complete");
 			
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in ... ", ex);
+			loggerUtils.logException("Error in MatthewAllenHandler.execute(), round=" + round, ex);
 		}
 	}
 	

@@ -144,7 +144,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 				int dflPlayerId = dflPlayer.getPlayerId();
 				String aflPlayerId = aflPlayer.getPlayerId();
 
-				loggerUtils.log("info", "Matched player - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", aflPlayerCrossRef, dflPlayerId, aflPlayerId);
+				loggerUtils.log("debug", "Matched player - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", aflPlayerCrossRef, dflPlayerId, aflPlayerId);
 
 				dflPlayerUpdates.put(aflPlayerId, dflPlayer);
 				aflPlayerUpdates.put(dflPlayerId, aflPlayer);
@@ -179,7 +179,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 		    		int dflPlayerId = dflPlayer.getPlayerId();
 					String aflPlayerId = aflPlayer.getPlayerId();
 
-					loggerUtils.log("info", "Matched player on check one - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
+					loggerUtils.log("debug", "Matched player on check one - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
 
 					dflPlayerUpdates.put(aflPlayerId, dflPlayer);
 					aflPlayerUpdates.put(dflPlayerId, aflPlayer);
@@ -195,7 +195,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 			    		int dflPlayerId = dflPlayer.getPlayerId();
 						String aflPlayerId = aflPlayer.getPlayerId();
 
-						loggerUtils.log("info", "Matched player on check two - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
+						loggerUtils.log("debug", "Matched player on check two - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
 
 						dflPlayerUpdates.put(aflPlayerId, dflPlayer);
 						aflPlayerUpdates.put(dflPlayerId, aflPlayer);
@@ -212,7 +212,7 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 			    		int dflPlayerId = dflPlayer.getPlayerId();
 						String aflPlayerId = aflPlayer.getPlayerId();
 
-						loggerUtils.log("info", "Matched player on check three - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
+						loggerUtils.log("debug", "Matched player on check three - CrossRef: {}, DflPlayerId: {}, AflPlayerId {}", crossRef, dflPlayerId, aflPlayerId);
 
 						dflPlayerUpdates.put(aflPlayerId, dflPlayer);
 						aflPlayerUpdates.put(dflPlayerId, aflPlayer);

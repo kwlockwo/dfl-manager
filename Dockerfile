@@ -36,7 +36,7 @@ COPY bin/*.sh bin/
 # Create SSH directory
 RUN mkdir -p "$HOME"/.ssh && chmod 700 "$HOME"/.ssh
 
-ENV OTEL_SERVICE_NAME=dfl-manager-scheduler
+ENV OTEL_SERVICE_NAME=dfl-manager-worker
 ENV OTEL_LOGS_EXPORTER=none
 ENV OTEL_METRICS_EXPORTER=otlp
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317

@@ -12,8 +12,11 @@ public class LoggingUtils {
 		this.process = process;
 
 		boolean logToSyslog = Boolean.parseBoolean(System.getenv().getOrDefault("LOG_TO_SYSLOG", "false"));
+		boolean logToLoki = Boolean.parseBoolean(System.getenv().getOrDefault("LOG_TO_LOKI", "false"));
 
-		if(logToSyslog) {
+		if(logToLoki) {
+			logger = LoggerFactory.getLogger("stdout-with-loki-logger");
+		} else if(logToSyslog) {
 			logger = LoggerFactory.getLogger("stdout-with-syslog-logger");
 		} else {
 			logger = LoggerFactory.getLogger("stdout-logger");

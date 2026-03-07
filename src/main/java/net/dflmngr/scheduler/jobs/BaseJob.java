@@ -4,6 +4,7 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.MDC;
 
 import net.dflmngr.logging.LoggingUtils;
 
@@ -18,6 +19,7 @@ public abstract class BaseJob implements Job {
 	@Override
 	public final void execute(JobExecutionContext context) throws JobExecutionException {
 		loggerUtils = new LoggingUtils("Scheduler");
+		MDC.put("job", getJobName());
 
 		try {
 			loggerUtils.log("info", "{} starting ...", getJobName());
@@ -30,6 +32,8 @@ public abstract class BaseJob implements Job {
 			loggerUtils.log("info", "{} completed", getJobName());
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in " + getJobName(), ex);
+		} finally {
+			MDC.remove("job");
 		}
 	}
 

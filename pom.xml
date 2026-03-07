@@ -68,6 +68,11 @@
 
 		<!-- Logging -->
 		<dependency>
+			<groupId>pl.tkowalcz.tjahzi</groupId>
+			<artifactId>log4j2-appender</artifactId>
+			<version>0.9.32</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>

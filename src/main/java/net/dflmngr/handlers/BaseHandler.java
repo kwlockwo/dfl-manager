@@ -1,5 +1,7 @@
 package net.dflmngr.handlers;
 
+import org.slf4j.MDC;
+
 import net.dflmngr.logging.LoggingUtils;
 import net.dflmngr.service.ServiceFactory;
 
@@ -37,6 +39,9 @@ public abstract class BaseHandler {
 		this.loggerName = loggerName;
 		this.logfile = logfile;
 		this.isExecutable = true;
+		MDC.put("handler", logfile);
+		MDC.put("mdcKey", mdcKey);
+		MDC.put("loggerName", loggerName);
 	}
 
 	/**

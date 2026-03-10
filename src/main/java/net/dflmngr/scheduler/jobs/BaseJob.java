@@ -19,21 +19,24 @@ public abstract class BaseJob implements Job {
 	@Override
 	public final void execute(JobExecutionContext context) throws JobExecutionException {
 		loggerUtils = new LoggingUtils("Scheduler");
-		MDC.put("job", getJobName());
+		String jobName = context.getJobDetail().getKey().getName();
+		MDC.put("scheduler_job", jobName);
+		MDC.put("scheduler_job_class", getJobName());
 
 		try {
-			loggerUtils.log("info", "{} starting ...", getJobName());
+			loggerUtils.log("info", "{} starting ...", jobName);
 
 			JobDataMap data = context.getJobDetail().getJobDataMap();
 
 			// Subclass implements specific job logic
 			executeJob(data);
 
-			loggerUtils.log("info", "{} completed", getJobName());
+			loggerUtils.log("info", "{} completed", jobName);
 		} catch (Exception ex) {
-			loggerUtils.logException("Error in " + getJobName(), ex);
+			loggerUtils.logException("Error in " + jobName, ex);
 		} finally {
-			MDC.remove("job");
+			MDC.remove("scheduler_job");
+			MDC.remove("scheduler_job_class");
 		}
 	}
 

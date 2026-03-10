@@ -25,7 +25,7 @@ Configuration:
       PatternLayout:
         Pattern: "%m%n"
       Label:
-        Pattern: "app=DFLManager,level=%p,job=%X{job},handler=%X{handler},mdcKey=%X{mdcKey},loggerName=%X{loggerName}"
+        Pattern: "app=DFLManager,level=%p,scheduler_job=%X{scheduler_job},scheduler_job_class=%X{scheduler_job_class},handler=%X{handler},mdcKey=%X{mdcKey},loggerName=%X{loggerName}"
 
   Loggers:
     Logger:

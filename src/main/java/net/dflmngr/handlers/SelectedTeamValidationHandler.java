@@ -437,13 +437,6 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		List<String> emergencyPositions = new ArrayList<>();
 		List<DflPlayer> emgPlayers = new ArrayList<>();
 
-		List<DflPlayer> emgFfPlayers = new ArrayList<>();
-		List<DflPlayer> emgFwdPlayers = new ArrayList<>();
-		List<DflPlayer> emgMidPlayers = new ArrayList<>();
-		List<DflPlayer> emgDefPlayers = new ArrayList<>();
-		List<DflPlayer> emgFbPlayers = new ArrayList<>();
-		List<DflPlayer> emgRckPlayers = new ArrayList<>();
-
 		for(DflSelectedPlayer selectedPlayer : selectedTeam) {
 			DflTeamPlayer teamPlayer = dflTeamPlayerService.getTeamPlayerForTeam(selectedPlayer.getTeamCode(), selectedPlayer.getTeamPlayerId());
 			DflPlayer player = dflPlayerService.get(teamPlayer.getPlayerId());
@@ -533,7 +526,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 
 		loggerUtils.log("info", "Bench count={};", benchCount);
 
-		if(benchCount <= 4) {
+		if(benchCount <= 5) {
 			validationResult.benchCheckOk = true;
 		}
 
@@ -564,205 +557,31 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		if(ffCount > 2 || fwdCount > 6 || midCount > 6 || defCount > 6 || fbCount > 2 || rckCount > 2) {
 			List<Double> emgs = validationResult.getEmergencies();
 			for(DflPlayer player : emgPlayers) {
-				switch(player.getPosition().toLowerCase()) {
-					case "ff" :
-						if(ffCount > 2) {
-							validationResult.emergencyFfWarning = true;
-							emgFfPlayers.add(player);
+				String pos = player.getPosition().toLowerCase();
+				boolean invalid = switch(pos) {
+					case "ff"  -> ffCount > 2;
+					case "fwd" -> fwdCount > 6;
+					case "rck" -> rckCount > 2;
+					case "mid" -> midCount > 6;
+					case "def" -> defCount > 6;
+					case "fb"  -> fbCount > 2;
+					default -> throw new UnknownPositionException(pos);
+				};
 
-							loggerUtils.log("info", "Invalid emergency, player={};", player);
+				if(invalid) {
+					validationResult.emergencyWarning = true;
+					loggerUtils.log("info", "Invalid emergency, player={};", player);
 
-							int emg1 = 0;
-							int emg2 = 0;
+					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
+					int emg1 = emgs.size() >= 1 ? emgs.get(0).intValue() : 0;
 
-							if(emgs.size() >= 1) {
-								emg1 = emgs.get(0).intValue();
-							}
-							if(emgs.size() >= 2) {
-								emg2 = emgs.get(1).intValue();
-							}
-
-							DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-							if(emg1 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(0);
-								loggerUtils.log("info", "Removed emergency 1, player={};", teamPlayer);
-							}
-							if(emg2 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(1);
-								loggerUtils.log("info", "Removed emergency 2, player={};", teamPlayer);
-							}
-						}
-						break;
-					case "fwd" :
-						if(fwdCount > 6) {
-							validationResult.emergencyFwdWarning = true;
-							emgFwdPlayers.add(player);
-
-							loggerUtils.log("info", "Invalid emergency, player={};", player);
-
-							int emg1 = 0;
-							int emg2 = 0;
-
-							if(emgs.size() >= 1) {
-								emg1 = emgs.get(0).intValue();
-							}
-							if(emgs.size() >= 2) {
-								emg2 = emgs.get(1).intValue();
-							}
-
-							DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-							if(emg1 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(0);
-								loggerUtils.log("info", "Removed emergency 1, player={};", teamPlayer);
-							}
-							if(emg2 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(1);
-								loggerUtils.log("info", "Removed emergency 2, player={};", teamPlayer);
-							}
-						}
-						break;
-					case "rck" :
-						if(rckCount > 2) {
-							validationResult.emergencyRckWarning = true;
-							emgRckPlayers.add(player);
-
-							loggerUtils.log("info", "Invalid emergency, player={};", player);
-
-							int emg1 = 0;
-							int emg2 = 0;
-
-							if(emgs.size() >= 1) {
-								emg1 = emgs.get(0).intValue();
-							}
-							if(emgs.size() >= 2) {
-								emg2 = emgs.get(1).intValue();
-							}
-
-							DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-							if(emg1 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(0);
-								loggerUtils.log("info", "Removed emergency 1, player={};", teamPlayer);
-							}
-							if(emg2 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(1);
-								loggerUtils.log("info", "Removed emergency 2, player={};", teamPlayer);
-							}
-						}
-						break;
-					case "mid" :
-						if(midCount > 6) {
-							validationResult.emergencyMidWarning = true;
-							emgMidPlayers.add(player);
-
-							loggerUtils.log("info", "Invalid emergency, player={};", player);
-
-							int emg1 = 0;
-							int emg2 = 0;
-
-							if(emgs.size() >= 1) {
-								emg1 = emgs.get(0).intValue();
-							}
-							if(emgs.size() >= 2) {
-								emg2 = emgs.get(1).intValue();
-							}
-
-							DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-							if(emg1 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(0);
-								loggerUtils.log("info", "Removed emergency 1, player={};", teamPlayer);
-							}
-							if(emg2 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(1);
-								loggerUtils.log("info", "Removed emergency 2, player={};", teamPlayer);
-							}
-						}
-						break;
-					case "def" :
-						if(defCount > 6) {
-							validationResult.emergencyDefWarning = true;
-							emgDefPlayers.add(player);
-
-							loggerUtils.log("info", "Invalid emergency, player={};", player);
-
-							int emg1 = 0;
-							int emg2 = 0;
-
-							if(emgs.size() >= 1) {
-								emg1 = emgs.get(0).intValue();
-							}
-							if(emgs.size() >= 2) {
-								emg2 = emgs.get(1).intValue();
-							}
-
-							DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-							if(emg1 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(0);
-								loggerUtils.log("info", "Removed emergency 1, player={};", teamPlayer);
-							}
-							if(emg2 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(1);
-								loggerUtils.log("info", "Removed emergency 2, player={};", teamPlayer);
-							}
-						}
-						break;
-					case "fb" :
-						if(fbCount > 2) {
-							validationResult.emergencyFbWarning = true;
-							emgFbPlayers.add(player);
-
-							loggerUtils.log("info", "Invalid emergency, player={};", player);
-
-							int emg1 = 0;
-							int emg2 = 0;
-
-							if(emgs.size() >= 1) {
-								emg1 = emgs.get(0).intValue();
-							}
-							if(emgs.size() >= 2) {
-								emg2 = emgs.get(1).intValue();
-							}
-
-							DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-
-							if(emg1 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(0);
-								loggerUtils.log("info", "Removed emergency 1, player={};", teamPlayer);
-							}
-							if(emg2 == teamPlayer.getTeamPlayerId()) {
-								emgs.remove(1);
-								loggerUtils.log("info", "Removed emergency 2, player={};", teamPlayer);
-							}
-						}
-						break;
-					default: throw new UnknownPositionException(player.getPosition());
+					if(emg1 == teamPlayer.getTeamPlayerId()) {
+						emgs.remove(0);
+						loggerUtils.log("info", "Removed emergency, player={};", teamPlayer);
+					}
 				}
-
-				validationResult.setEmergencies(emgs);
 			}
-		}
-
-		if(validationResult.emergencyFfWarning) {
-			validationResult.emgFfPlayers = emgFfPlayers;
-		}
-		if(validationResult.emergencyFwdWarning) {
-			validationResult.emgFwdPlayers = emgFwdPlayers;
-		}
-		if(validationResult.emergencyRckWarning) {
-			validationResult.emgRckPlayers = emgRckPlayers;
-		}
-		if(validationResult.emergencyMidWarning) {
-			validationResult.emgMidPlayers = emgMidPlayers;
-		}
-		if(validationResult.emergencyDefWarning) {
-			validationResult.emgDefPlayers = emgDefPlayers;
-		}
-		if(validationResult.emergencyFbWarning) {
-			validationResult.emgFbPlayers = emgFbPlayers;
+			validationResult.setEmergencies(emgs);
 		}
 
 		return validationResult;

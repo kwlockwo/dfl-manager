@@ -23,12 +23,7 @@ public class SelectedTeamValidation {
 	
 	public boolean teamPlayerCheckOk;
 	
-	public boolean emergencyFfWarning;
-	public boolean emergencyFwdWarning;
-	public boolean emergencyRckWarning;
-	public boolean emergencyMidWarning;
-	public boolean emergencyFbWarning;
-	public boolean emergencyDefWarning;
+	public boolean emergencyWarning;
 	
 	public boolean duplicateSubmissionId;
 	
@@ -55,13 +50,6 @@ public class SelectedTeamValidation {
 	public List<DflPlayer> rckPlayers;
 	public List<DflPlayer> benchPlayers;
 	
-	public List<DflPlayer> emgFfPlayers;
-	public List<DflPlayer> emgFwdPlayers;
-	public List<DflPlayer> emgMidPlayers;
-	public List<DflPlayer> emgDefPlayers;
-	public List<DflPlayer> emgFbPlayers;
-	public List<DflPlayer> emgRckPlayers;
-	
 	public boolean duplicateIns;
 	public boolean duplicateOuts;
 	public boolean duplicateEmgs;
@@ -86,12 +74,7 @@ public class SelectedTeamValidation {
 		
 		teamPlayerCheckOk = false;
 		
-		emergencyFfWarning = false;
-		emergencyFwdWarning = false;
-		emergencyRckWarning = false;
-		emergencyMidWarning = false;
-		emergencyFbWarning = false;
-		emergencyDefWarning = false;
+		emergencyWarning = false;
 		
 		duplicateSubmissionId = false;
 		
@@ -120,8 +103,7 @@ public class SelectedTeamValidation {
 		
 		boolean warnings = false;
 		
-		if(emergencyFfWarning || emergencyFwdWarning || emergencyRckWarning || emergencyMidWarning || emergencyFbWarning || emergencyDefWarning ||	
-		   selectedWarning || droppedWarning || duplicateIns || 	duplicateOuts || duplicateEmgs) {
+		if(emergencyWarning || selectedWarning || droppedWarning || duplicateIns || duplicateOuts || duplicateEmgs) {
 			warnings = true;
 		}
 		

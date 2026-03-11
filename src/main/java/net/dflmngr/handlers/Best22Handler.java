@@ -176,7 +176,7 @@ public class Best22Handler extends BaseHandler {
 			case "Mid": selectionCount = 5; break;
 			case "FB": selectionCount = 1; break;
 			case "Def": selectionCount = 5; break;
-			case "Bench": selectionCount = 4; break;
+			case "Bench": selectionCount = 5; break;
 			default: throw new UnknownPositionException(position);
 		}
 		

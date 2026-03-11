@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.dflmngr.model.entity.DflPlayer;
-
 class SelectedTeamValidationTest {
 
 	private SelectedTeamValidation validation;
@@ -38,12 +36,7 @@ class SelectedTeamValidationTest {
 		assertFalse(v.defCheckOk);
 		assertFalse(v.benchCheckOk);
 		assertFalse(v.teamPlayerCheckOk);
-		assertFalse(v.emergencyFfWarning);
-		assertFalse(v.emergencyFwdWarning);
-		assertFalse(v.emergencyRckWarning);
-		assertFalse(v.emergencyMidWarning);
-		assertFalse(v.emergencyFbWarning);
-		assertFalse(v.emergencyDefWarning);
+		assertFalse(v.emergencyWarning);
 		assertFalse(v.duplicateSubmissionId);
 		assertFalse(v.unknownError);
 
@@ -201,12 +194,7 @@ class SelectedTeamValidationTest {
 
 	@Test
 	void areWarnings_shouldReturnFalse_whenNoWarnings() {
-		validation.emergencyFfWarning = false;
-		validation.emergencyFwdWarning = false;
-		validation.emergencyRckWarning = false;
-		validation.emergencyMidWarning = false;
-		validation.emergencyFbWarning = false;
-		validation.emergencyDefWarning = false;
+		validation.emergencyWarning = false;
 		validation.selectedWarning = false;
 		validation.droppedWarning = false;
 		validation.duplicateIns = false;
@@ -217,43 +205,8 @@ class SelectedTeamValidationTest {
 	}
 
 	@Test
-	void areWarnings_shouldReturnTrue_whenEmergencyFfWarning() {
-		validation.emergencyFfWarning = true;
-
-		assertTrue(validation.areWarnings());
-	}
-
-	@Test
-	void areWarnings_shouldReturnTrue_whenEmergencyFwdWarning() {
-		validation.emergencyFwdWarning = true;
-
-		assertTrue(validation.areWarnings());
-	}
-
-	@Test
-	void areWarnings_shouldReturnTrue_whenEmergencyRckWarning() {
-		validation.emergencyRckWarning = true;
-
-		assertTrue(validation.areWarnings());
-	}
-
-	@Test
-	void areWarnings_shouldReturnTrue_whenEmergencyMidWarning() {
-		validation.emergencyMidWarning = true;
-
-		assertTrue(validation.areWarnings());
-	}
-
-	@Test
-	void areWarnings_shouldReturnTrue_whenEmergencyFbWarning() {
-		validation.emergencyFbWarning = true;
-
-		assertTrue(validation.areWarnings());
-	}
-
-	@Test
-	void areWarnings_shouldReturnTrue_whenEmergencyDefWarning() {
-		validation.emergencyDefWarning = true;
+	void areWarnings_shouldReturnTrue_whenEmergencyWarning() {
+		validation.emergencyWarning = true;
 
 		assertTrue(validation.areWarnings());
 	}
@@ -295,7 +248,7 @@ class SelectedTeamValidationTest {
 
 	@Test
 	void areWarnings_shouldReturnTrue_whenMultipleWarnings() {
-		validation.emergencyFfWarning = true;
+		validation.emergencyWarning = true;
 		validation.selectedWarning = true;
 		validation.duplicateIns = true;
 
@@ -386,13 +339,7 @@ class SelectedTeamValidationTest {
 
 	@Test
 	void areWarnings_shouldHandleAllWarnings() {
-		// Set all warnings
-		validation.emergencyFfWarning = true;
-		validation.emergencyFwdWarning = true;
-		validation.emergencyRckWarning = true;
-		validation.emergencyMidWarning = true;
-		validation.emergencyFbWarning = true;
-		validation.emergencyDefWarning = true;
+		validation.emergencyWarning = true;
 		validation.selectedWarning = true;
 		validation.droppedWarning = true;
 		validation.duplicateIns = true;
@@ -412,12 +359,6 @@ class SelectedTeamValidationTest {
 		validation.fbPlayers = new ArrayList<>();
 		validation.rckPlayers = new ArrayList<>();
 		validation.benchPlayers = new ArrayList<>();
-		validation.emgFfPlayers = new ArrayList<>();
-		validation.emgFwdPlayers = new ArrayList<>();
-		validation.emgMidPlayers = new ArrayList<>();
-		validation.emgDefPlayers = new ArrayList<>();
-		validation.emgFbPlayers = new ArrayList<>();
-		validation.emgRckPlayers = new ArrayList<>();
 		validation.selectedWarnPlayers = new ArrayList<>();
 		validation.droppedWarnPlayers = new ArrayList<>();
 		validation.dupInPlayers = new ArrayList<>();
@@ -432,12 +373,6 @@ class SelectedTeamValidationTest {
 		assertNotNull(validation.fbPlayers);
 		assertNotNull(validation.rckPlayers);
 		assertNotNull(validation.benchPlayers);
-		assertNotNull(validation.emgFfPlayers);
-		assertNotNull(validation.emgFwdPlayers);
-		assertNotNull(validation.emgMidPlayers);
-		assertNotNull(validation.emgDefPlayers);
-		assertNotNull(validation.emgFbPlayers);
-		assertNotNull(validation.emgRckPlayers);
 		assertNotNull(validation.selectedWarnPlayers);
 		assertNotNull(validation.droppedWarnPlayers);
 		assertNotNull(validation.dupInPlayers);

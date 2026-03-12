@@ -8,7 +8,7 @@ Configuration:
       name: STDOUT
       target: SYSTEM_OUT
       PatternLayout:
-        Pattern: "%p %m%n"
+        Pattern: "%p %m%n%ex"
     Syslog:
       name: SYSLOG
       format: RFC5424
@@ -23,7 +23,7 @@ Configuration:
       name: LOKI
       host: ${env:LOKI_URL:-http://localhost:3100}
       PatternLayout:
-        Pattern: "%m%n"
+        Pattern: "%m%n%ex"
       Label:
         Pattern: "app=DFLManager,level=%p,scheduler_job=%X{scheduler_job},scheduler_job_class=%X{scheduler_job_class},handler=%X{handler},mdcKey=%X{mdcKey},loggerName=%X{loggerName}"
 

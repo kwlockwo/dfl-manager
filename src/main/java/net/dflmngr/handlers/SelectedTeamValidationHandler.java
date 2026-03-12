@@ -397,6 +397,12 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 				validationResult.dupEmgPlayers = dupEmgPlayers;
 			}
 
+			if(selectedTeam.isEmpty()) {
+				loggerUtils.log("info", "Selected team is empty after applying ins and outs");
+				validationResult.selectionFileMissing = true;
+				return validationResult;
+			}
+
 			validationResult = validateTeam(selectedTeam, validationResult);
 
 			if(!selectionId.equalsIgnoreCase("noid")) {

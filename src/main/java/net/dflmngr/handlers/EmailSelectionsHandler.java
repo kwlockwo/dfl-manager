@@ -293,7 +293,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-				validationResult = handleSelectionEmailText(lines, "noid");
+			validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
@@ -304,7 +304,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String id = idLine.split("=")[1].trim().replace("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-				validationResult = handleSelectionEmailText(lines, id);
+			validationResult = handleSelectionEmailText(lines, id);
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		}
@@ -329,7 +329,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in html body", from);
-				validationResult = handleSelectionEmailText(lines, "noid");
+			validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
@@ -340,7 +340,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String id = idLine.split("=")[1].trim().replace("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-				validationResult = handleSelectionEmailText(lines, id);
+			validationResult = handleSelectionEmailText(lines, id);
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		}
@@ -777,6 +777,8 @@ public class EmailSelectionsHandler extends BaseHandler {
 			messageBody.append("\t- You have selected/dropped a player who has already played and was not included in your previous selections.\n");
 		} else if (validationResult.selectionFileMissing) {
 			messageBody.append("\t- You sent the email with no selections.txt or the selections were missing from the emil body\n");
+		} else if (validationResult.emptyTeam) {
+			messageBody.append("\t- Your selections resulted in an empty team after applying ins and outs.\n");
 		} else if (validationResult.roundCompleted) {
 			messageBody.append("\t- The round you have in your selections.txt has past\n");
 		} else if (validationResult.lockedOut) {

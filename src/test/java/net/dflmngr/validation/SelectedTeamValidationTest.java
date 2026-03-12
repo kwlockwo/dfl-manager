@@ -38,6 +38,7 @@ class SelectedTeamValidationTest {
 		assertFalse(v.teamPlayerCheckOk);
 		assertFalse(v.emergencyWarning);
 		assertFalse(v.duplicateSubmissionId);
+		assertFalse(v.emptyTeam);
 		assertFalse(v.unknownError);
 
 		// Should be true by default
@@ -154,6 +155,14 @@ class SelectedTeamValidationTest {
 	void isValid_shouldReturnFalse_whenTeamPlayerCheckFails() {
 		setAllValidationChecksToPass();
 		validation.teamPlayerCheckOk = false;
+
+		assertFalse(validation.isValid());
+	}
+
+	@Test
+	void isValid_shouldReturnFalse_whenEmptyTeam() {
+		setAllValidationChecksToPass();
+		validation.emptyTeam = true;
 
 		assertFalse(validation.isValid());
 	}

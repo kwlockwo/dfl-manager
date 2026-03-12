@@ -399,7 +399,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 
 			if(selectedTeam.isEmpty()) {
 				loggerUtils.log("info", "Selected team is empty after applying ins and outs");
-				validationResult.selectionFileMissing = true;
+				validationResult.emptyTeam = true;
 				return validationResult;
 			}
 

@@ -639,6 +639,8 @@ public class EmailSelectionsHandler extends BaseHandler {
 		int playerNo;
 		String playerNoStr;
 
+		line = line.replaceAll("^[|\\s]+", "");
+
 		Pattern pattern = Pattern.compile("[\\s:\\-\\.\\W]");
 		Matcher matcher = pattern.matcher(line);
 

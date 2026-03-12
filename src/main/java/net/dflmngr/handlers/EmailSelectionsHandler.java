@@ -747,24 +747,9 @@ public class EmailSelectionsHandler extends BaseHandler {
 			appendWarning(messageBody, validationResult.droppedWarning,
 					"\tWarning: You have dropped a player who is not selected.  Your team may not be as you expect or invalid! Players:\n",
 					validationResult.droppedWarnPlayers);
-			appendWarning(messageBody, validationResult.emergencyFfWarning,
-					"\tWarning: You have selcted a Full Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgFfPlayers);
-			appendWarning(messageBody, validationResult.emergencyFwdWarning,
-					"\tWarning: You have selcted a Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgFwdPlayers);
-			appendWarning(messageBody, validationResult.emergencyRckWarning,
-					"\tWarning: You have selcted a Ruck as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgRckPlayers);
-			appendWarning(messageBody, validationResult.emergencyMidWarning,
-					"\tWarning: You have selcted a Midfielder as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgMidPlayers);
-			appendWarning(messageBody, validationResult.emergencyDefWarning,
-					"\tWarning: You have selcted a Defender as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgDefPlayers);
-			appendWarning(messageBody, validationResult.emergencyFbWarning,
-					"\tWarning: You have selcted a Full Back as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgFbPlayers);
+			if(validationResult.emergencyWarning) {
+				messageBody.append("\tWarning: Your emergency is invalid as the position is full on your bench.  It will be ignored.\n");
+			}
 			appendWarning(messageBody, validationResult.duplicateIns,
 					"\tWarning: You have selected duplicate ins, one will be ignored.  Ins:\n",
 					validationResult.dupInPlayers);

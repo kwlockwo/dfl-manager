@@ -123,17 +123,11 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 			DflEarlyInsAndOuts emg = new DflEarlyInsAndOuts();
 			emg.setRound(round);
 			emg.setTeamCode(teamCode);
-			
+
 			int eid = e.intValue();
 			emg.setTeamPlayerId(eid);
-			
-			int e1e2 = Integer.parseInt(Double.toString(e).split("\\.")[1].substring(0, 1));
-			if(e1e2 == 1) {
-				emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
-			} else {
-				emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG2);
-			}
-			
+			emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
+
 			earlyEmgs.add(emg);
 		}
 
@@ -179,18 +173,11 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 			InsAndOuts emg = new InsAndOuts();
 			emg.setRound(round);
 			emg.setTeamCode(teamCode);
-			
+
 			int eid = e.intValue();
 			emg.setTeamPlayerId(eid);
-			
-			
-			int e1e2 = Integer.parseInt(Double.toString(e).split("\\.")[1].substring(0, 1));
-			if(e1e2 == 1) {
-				emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
-			} else {
-				emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG2);
-			}
-			
+			emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
+
 			fullEmgs.add(emg);
 		}
 

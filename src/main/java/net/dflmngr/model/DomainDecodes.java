@@ -7,7 +7,6 @@ public class DomainDecodes {
 			public static final String IN = "I";
 			public static final String OUT = "O";
 			public static final String EMG1 = "E1";
-			public static final String EMG2 = "E2";
 		}
 	}
 	

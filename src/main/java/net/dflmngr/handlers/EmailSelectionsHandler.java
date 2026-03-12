@@ -639,9 +639,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 		int playerNo;
 		String playerNoStr;
 
-		line = line.replaceAll("^[|\\s]+", "");
+		line = line.replaceAll("^[|\\s\u00A0]+", "").trim();
 
-		Pattern pattern = Pattern.compile("[\\s:\\-\\.\\W]");
+		if (line.isEmpty()) {
+			return 0;
+		}
+
+		Pattern pattern = Pattern.compile("[\\s\u00A0:\\-\\.\\W]");
 		Matcher matcher = pattern.matcher(line);
 
 		if (matcher.find()) {

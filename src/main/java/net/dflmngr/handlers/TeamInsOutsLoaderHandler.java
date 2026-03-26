@@ -77,11 +77,15 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		insAndOuts.addAll(setOuts(teamCode, round, outs));
 		insAndOuts.addAll(setEmgs(teamCode, round, emgs));
 
-		loggerUtils.log("info", "Saving ins and outs to database: ", insAndOuts);
-		insAndOutsService.saveTeamInsAndOuts(insAndOuts);
-		loggerUtils.log("info", "Ins and outs saved");
+		if(!insAndOuts.isEmpty()) {
+			loggerUtils.log("info", "Saving ins and outs to database: ", insAndOuts);
+			insAndOutsService.saveTeamInsAndOuts(insAndOuts);
+			loggerUtils.log("info", "Ins and outs saved");
 
-		createTeamSelections(round, teamCode, insAndOuts);
+			createTeamSelections(round, teamCode, insAndOuts);
+		} else {
+			loggerUtils.log("info", "No ins and outs to save for teamCode={}; round={}", teamCode, round);
+		}
 	}
 
 	private List<DflEarlyInsAndOuts> setEarlyIns(String teamCode, int round, List<Integer> ins) {

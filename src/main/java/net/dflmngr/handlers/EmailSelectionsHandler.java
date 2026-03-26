@@ -288,6 +288,8 @@ public class EmailSelectionsHandler extends BaseHandler {
 	private SelectedTeamValidation handleTextEmailContent(String text, String from) {
 		SelectedTeamValidation validationResult = null;
 
+		text = normaliseTagsToLines(text);
+
 		if (text.startsWith(TAG_TEAM) && text.contains(TAG_END)) {
 			text = text.substring(0, text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
@@ -310,6 +312,16 @@ public class EmailSelectionsHandler extends BaseHandler {
 		}
 
 		return validationResult;
+	}
+
+	private String normaliseTagsToLines(String text) {
+		String[] tags = { TAG_TEAM, TAG_ROUND, TAG_IN, TAG_OUT, TAG_EMG, TAG_END, TAG_START_ID };
+		for (String tag : tags) {
+			text = text.replaceAll("(?i)(?<!\n)(" + Pattern.quote(tag) + ")", "\n$1");
+		}
+		// Split concatenated players e.g. "21 HARDWICK41 PINK" -> "21 HARDWICK\n41 PINK"
+		text = text.replaceAll("(?<=[A-Za-z])(?=\\d)", "\n");
+		return text.trim();
 	}
 
 	private SelectedTeamValidation handleHtmlEmailContent(String content, String from) {

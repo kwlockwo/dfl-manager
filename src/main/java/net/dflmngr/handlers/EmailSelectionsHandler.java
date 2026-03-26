@@ -316,8 +316,12 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 	private String normaliseTagsToLines(String text) {
 		String[] tags = { TAG_TEAM, TAG_ROUND, TAG_IN, TAG_OUT, TAG_EMG, TAG_END, TAG_START_ID };
+		String[] tagsNeedingTrailingNewline = { TAG_TEAM, TAG_ROUND, TAG_IN, TAG_OUT, TAG_EMG, TAG_END };
 		for (String tag : tags) {
 			text = text.replaceAll("(?i)(?<!\n)(" + Pattern.quote(tag) + ")", "\n$1");
+		}
+		for (String tag : tagsNeedingTrailingNewline) {
+			text = text.replaceAll("(?i)(" + Pattern.quote(tag) + ")(?!\n)", "$1\n");
 		}
 		// Split concatenated players e.g. "21 HARDWICK41 PINK" -> "21 HARDWICK\n41 PINK"
 		text = text.replaceAll("(?<=[A-Za-z])(?=\\d)", "\n");

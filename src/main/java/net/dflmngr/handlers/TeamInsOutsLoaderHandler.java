@@ -77,11 +77,15 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		insAndOuts.addAll(setOuts(teamCode, round, outs));
 		insAndOuts.addAll(setEmgs(teamCode, round, emgs));
 
-		loggerUtils.log("info", "Saving ins and outs to database: ", insAndOuts);
-		insAndOutsService.saveTeamInsAndOuts(insAndOuts);
-		loggerUtils.log("info", "Ins and outs saved");
+		if(!insAndOuts.isEmpty()) {
+			loggerUtils.log("info", "Saving ins and outs to database: ", insAndOuts);
+			insAndOutsService.saveTeamInsAndOuts(insAndOuts);
+			loggerUtils.log("info", "Ins and outs saved");
 
-		createTeamSelections(round, teamCode, insAndOuts);
+			createTeamSelections(round, teamCode, insAndOuts);
+		} else {
+			loggerUtils.log("info", "No ins and outs to save for teamCode={}; round={}", teamCode, round);
+		}
 	}
 
 	private List<DflEarlyInsAndOuts> setEarlyIns(String teamCode, int round, List<Integer> ins) {
@@ -123,17 +127,11 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 			DflEarlyInsAndOuts emg = new DflEarlyInsAndOuts();
 			emg.setRound(round);
 			emg.setTeamCode(teamCode);
-			
+
 			int eid = e.intValue();
 			emg.setTeamPlayerId(eid);
-			
-			int e1e2 = Integer.parseInt(Double.toString(e).split("\\.")[1].substring(0, 1));
-			if(e1e2 == 1) {
-				emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
-			} else {
-				emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG2);
-			}
-			
+			emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
+
 			earlyEmgs.add(emg);
 		}
 
@@ -179,18 +177,11 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 			InsAndOuts emg = new InsAndOuts();
 			emg.setRound(round);
 			emg.setTeamCode(teamCode);
-			
+
 			int eid = e.intValue();
 			emg.setTeamPlayerId(eid);
-			
-			
-			int e1e2 = Integer.parseInt(Double.toString(e).split("\\.")[1].substring(0, 1));
-			if(e1e2 == 1) {
-				emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
-			} else {
-				emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG2);
-			}
-			
+			emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
+
 			fullEmgs.add(emg);
 		}
 

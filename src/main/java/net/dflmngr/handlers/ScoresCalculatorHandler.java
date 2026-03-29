@@ -1,7 +1,6 @@
 package net.dflmngr.handlers;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -329,9 +328,6 @@ public class ScoresCalculatorHandler extends BaseHandler {
 		loggerUtils.log("info", "DNPs={} -- Size:{}", dnpPlayers, dnpPlayers.size());
 		loggerUtils.log("info", "Emergencies={} -- Size:{}", emergencies, emergencies.size());
 
-		Comparator<DflSelectedPlayer> emgsComparator = Comparator.comparingInt(DflSelectedPlayer::isEmergency);
-		emergencies.sort(emgsComparator);
-
 		if(ffCount == 2) {
 			benchPositions.add("ff");
 		}
@@ -383,13 +379,8 @@ public class ScoresCalculatorHandler extends BaseHandler {
 						if(replacement != null) {
 							emergencies.remove(replacement);
 							replacement.setScoreUsed(true);
-							if(replacement.isEmergency() == 1) {
-								replacement.setReplacementInd("*");
-								dnpPlayer.setReplacementInd("*");
-							} else {
-								replacement.setReplacementInd("**");
-								dnpPlayer.setReplacementInd("**");
-							}
+							replacement.setReplacementInd("*");
+							dnpPlayer.setReplacementInd("*");
 							played22.add(replacement);
 							replacedDnpPlayers.add(dnpPlayer);
 							loggerUtils.log("info", "Replacing DNP={} with Emergency={} based on position", dnpPlayer, replacement);
@@ -503,13 +494,8 @@ public class ScoresCalculatorHandler extends BaseHandler {
 						if(replacement != null) {
 							emergencies.remove(replacement);
 							replacement.setScoreUsed(true);
-							if(replacement.isEmergency() == 1) {
-								replacement.setReplacementInd("*");
-								dnpPlayer.setReplacementInd("*");
-							} else {
-								replacement.setReplacementInd("**");
-								dnpPlayer.setReplacementInd("**");
-							}
+							replacement.setReplacementInd("*");
+							dnpPlayer.setReplacementInd("*");
 							played22.add(replacement);
 							replacedDnpPlayers.add(dnpPlayer);
 							loggerUtils.log("info", "Emergency position can replace DNP={} with Emergency={}", dnpPlayer, replacement);

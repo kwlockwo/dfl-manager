@@ -41,7 +41,10 @@ ENV OTEL_LOGS_EXPORTER=none
 ENV OTEL_METRICS_EXPORTER=otlp
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 
-CMD ["java", \
-     "-javaagent:/app/opentelemetry-javaagent.jar", \
-     "-classpath", "/app/target/dflmngr.jar:/app/target/dependency/*", \
-     "net.dflmngr.scheduler.JobScheduler"]
+CMD ["sh", "-c", \
+     "BASE_ATTRS=\"app.name=dfl-manager,service.instance.id=${RENDER_INSTANCE_ID:-local},deployment.environment=${ENV:-local}\"; \
+      export OTEL_RESOURCE_ATTRIBUTES=\"${OTEL_RESOURCE_ATTRIBUTES:+${OTEL_RESOURCE_ATTRIBUTES},}${BASE_ATTRS}\"; \
+      exec java \
+      -javaagent:/app/opentelemetry-javaagent.jar \
+      -classpath /app/target/dflmngr.jar:/app/target/dependency/* \
+      net.dflmngr.scheduler.JobScheduler"]

@@ -288,12 +288,14 @@ public class EmailSelectionsHandler extends BaseHandler {
 	private SelectedTeamValidation handleTextEmailContent(String text, String from) {
 		SelectedTeamValidation validationResult = null;
 
+		text = normaliseTagsToLines(text);
+
 		if (text.startsWith(TAG_TEAM) && text.contains(TAG_END)) {
 			text = text.substring(0, text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-				validationResult = handleSelectionEmailText(lines, "noid");
+			validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
@@ -304,12 +306,26 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String id = idLine.split("=")[1].trim().replace("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-				validationResult = handleSelectionEmailText(lines, id);
+			validationResult = handleSelectionEmailText(lines, id);
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		}
 
 		return validationResult;
+	}
+
+	private String normaliseTagsToLines(String text) {
+		String[] tags = { TAG_TEAM, TAG_ROUND, TAG_IN, TAG_OUT, TAG_EMG, TAG_END, TAG_START_ID };
+		String[] tagsNeedingTrailingNewline = { TAG_TEAM, TAG_ROUND, TAG_IN, TAG_OUT, TAG_EMG, TAG_END };
+		for (String tag : tags) {
+			text = text.replaceAll("(?i)(?<!\n)(" + Pattern.quote(tag) + ")", "\n$1");
+		}
+		for (String tag : tagsNeedingTrailingNewline) {
+			text = text.replaceAll("(?i)(" + Pattern.quote(tag) + ")(?!\n)", "$1\n");
+		}
+		// Split concatenated players e.g. "21 HARDWICK41 PINK" -> "21 HARDWICK\n41 PINK"
+		text = text.replaceAll("(?<=[A-Za-z])(?=\\d)", "\n");
+		return text.trim();
 	}
 
 	private SelectedTeamValidation handleHtmlEmailContent(String content, String from) {
@@ -329,7 +345,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String[] lines = text.split("\\R+");
 
 			loggerUtils.log("info", "Message from {}, has selection in html body", from);
-				validationResult = handleSelectionEmailText(lines, "noid");
+			validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
@@ -340,7 +356,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 			String id = idLine.split("=")[1].trim().replace("]", "");
 
 			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-				validationResult = handleSelectionEmailText(lines, id);
+			validationResult = handleSelectionEmailText(lines, id);
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
 		}
@@ -639,7 +655,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 		int playerNo;
 		String playerNoStr;
 
-		Pattern pattern = Pattern.compile("[\\s:\\-\\.\\W]");
+		line = line.replaceAll("^[|\\s\u00A0]+", "").trim();
+
+		if (line.isEmpty()) {
+			return 0;
+		}
+
+		Pattern pattern = Pattern.compile("[\\s\u00A0:\\-\\.\\W]");
 		Matcher matcher = pattern.matcher(line);
 
 		if (matcher.find()) {
@@ -747,24 +769,9 @@ public class EmailSelectionsHandler extends BaseHandler {
 			appendWarning(messageBody, validationResult.droppedWarning,
 					"\tWarning: You have dropped a player who is not selected.  Your team may not be as you expect or invalid! Players:\n",
 					validationResult.droppedWarnPlayers);
-			appendWarning(messageBody, validationResult.emergencyFfWarning,
-					"\tWarning: You have selcted a Full Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgFfPlayers);
-			appendWarning(messageBody, validationResult.emergencyFwdWarning,
-					"\tWarning: You have selcted a Forward as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgFwdPlayers);
-			appendWarning(messageBody, validationResult.emergencyRckWarning,
-					"\tWarning: You have selcted a Ruck as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgRckPlayers);
-			appendWarning(messageBody, validationResult.emergencyMidWarning,
-					"\tWarning: You have selcted a Midfielder as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgMidPlayers);
-			appendWarning(messageBody, validationResult.emergencyDefWarning,
-					"\tWarning: You have selcted a Defender as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgDefPlayers);
-			appendWarning(messageBody, validationResult.emergencyFbWarning,
-					"\tWarning: You have selcted a Full Back as an emergency but already have one on your bench.  It will be ignored.  Emgergency:\n",
-					validationResult.emgFbPlayers);
+			if(validationResult.emergencyWarning) {
+				messageBody.append("\tWarning: Your emergency is invalid as the position is full on your bench.  It will be ignored.\n");
+			}
 			appendWarning(messageBody, validationResult.duplicateIns,
 					"\tWarning: You have selected duplicate ins, one will be ignored.  Ins:\n",
 					validationResult.dupInPlayers);
@@ -790,6 +797,8 @@ public class EmailSelectionsHandler extends BaseHandler {
 			messageBody.append("\t- You have selected/dropped a player who has already played and was not included in your previous selections.\n");
 		} else if (validationResult.selectionFileMissing) {
 			messageBody.append("\t- You sent the email with no selections.txt or the selections were missing from the emil body\n");
+		} else if (validationResult.emptyTeam) {
+			messageBody.append("\t- Your selections resulted in an empty team after applying ins and outs.\n");
 		} else if (validationResult.roundCompleted) {
 			messageBody.append("\t- The round you have in your selections.txt has past\n");
 		} else if (validationResult.lockedOut) {

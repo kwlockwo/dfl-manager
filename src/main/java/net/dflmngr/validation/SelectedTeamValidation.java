@@ -23,12 +23,7 @@ public class SelectedTeamValidation {
 	
 	public boolean teamPlayerCheckOk;
 	
-	public boolean emergencyFfWarning;
-	public boolean emergencyFwdWarning;
-	public boolean emergencyRckWarning;
-	public boolean emergencyMidWarning;
-	public boolean emergencyFbWarning;
-	public boolean emergencyDefWarning;
+	public boolean emergencyWarning;
 	
 	public boolean duplicateSubmissionId;
 	
@@ -37,6 +32,7 @@ public class SelectedTeamValidation {
 	public List<DflPlayer> selectedWarnPlayers;
 	public List<DflPlayer> droppedWarnPlayers;
 	
+	public boolean emptyTeam;
 	public boolean unknownError;
 	
 	private int round;
@@ -54,13 +50,6 @@ public class SelectedTeamValidation {
 	public List<DflPlayer> fbPlayers;
 	public List<DflPlayer> rckPlayers;
 	public List<DflPlayer> benchPlayers;
-	
-	public List<DflPlayer> emgFfPlayers;
-	public List<DflPlayer> emgFwdPlayers;
-	public List<DflPlayer> emgMidPlayers;
-	public List<DflPlayer> emgDefPlayers;
-	public List<DflPlayer> emgFbPlayers;
-	public List<DflPlayer> emgRckPlayers;
 	
 	public boolean duplicateIns;
 	public boolean duplicateOuts;
@@ -86,15 +75,11 @@ public class SelectedTeamValidation {
 		
 		teamPlayerCheckOk = false;
 		
-		emergencyFfWarning = false;
-		emergencyFwdWarning = false;
-		emergencyRckWarning = false;
-		emergencyMidWarning = false;
-		emergencyFbWarning = false;
-		emergencyDefWarning = false;
+		emergencyWarning = false;
 		
 		duplicateSubmissionId = false;
 		
+		emptyTeam = false;
 		unknownError = false;
 	}
 	
@@ -107,7 +92,7 @@ public class SelectedTeamValidation {
 				valid = true;
 			}
 		} else {
-			if(!selectionFileMissing && ffCheckOk && fwdCheckOk && rckCheckOk && midCheckOk && fbCheckOk && defCheckOk && benchCheckOk 
+			if(!selectionFileMissing && !emptyTeam && ffCheckOk && fwdCheckOk && rckCheckOk && midCheckOk && fbCheckOk && defCheckOk && benchCheckOk
 				&& teamPlayerCheckOk && !unknownError && !lockedOut && !roundCompleted && !duplicateSubmissionId) {
 				valid = true;
 			}
@@ -120,8 +105,7 @@ public class SelectedTeamValidation {
 		
 		boolean warnings = false;
 		
-		if(emergencyFfWarning || emergencyFwdWarning || emergencyRckWarning || emergencyMidWarning || emergencyFbWarning || emergencyDefWarning ||	
-		   selectedWarning || droppedWarning || duplicateIns || 	duplicateOuts || duplicateEmgs) {
+		if(emergencyWarning || selectedWarning || droppedWarning || duplicateIns || duplicateOuts || duplicateEmgs) {
 			warnings = true;
 		}
 		

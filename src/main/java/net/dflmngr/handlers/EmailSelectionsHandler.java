@@ -20,6 +20,7 @@ import jakarta.mail.Folder;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.Part;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
@@ -159,7 +160,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 				ZonedDateTime receivedDate = ZonedDateTime.ofInstant(instant, ZoneId.of(DflmngrUtils.defaultTimezone));
 
 				if(message.isMimeType("multipart/*")) {
-					Multipart multipart = (Multipart) message.getContent();
+					Multipart multipart = new MimeMultipart(message.getDataHandler().getDataSource());
 
 					for (int j = 0; j < multipart.getCount(); j++) {
 						BodyPart part = multipart.getBodyPart(j);

@@ -295,8 +295,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 		}
 
 		if (validationResult == null) {
+			Multipart multipart = null;
 			if (content instanceof Multipart) {
-				Multipart multipart = (Multipart) content;
+				multipart = (Multipart) content;
+			} else if (content instanceof InputStream && part.isMimeType("multipart/*")) {
+				multipart = new MimeMultipart(part.getDataHandler().getDataSource());
+			}
+			if (multipart != null) {
 				for (int i = 0; i < multipart.getCount(); i++) {
 					BodyPart bodyPart = multipart.getBodyPart(i);
 					validationResult = scanEmailPartsAndValidate(bodyPart, receivedDate, from);

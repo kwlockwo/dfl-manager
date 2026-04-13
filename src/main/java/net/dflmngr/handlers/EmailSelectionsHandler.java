@@ -160,7 +160,10 @@ public class EmailSelectionsHandler extends BaseHandler {
 				ZonedDateTime receivedDate = ZonedDateTime.ofInstant(instant, ZoneId.of(DflmngrUtils.defaultTimezone));
 
 				if(message.isMimeType("multipart/*")) {
-					Multipart multipart = new MimeMultipart(message.getDataHandler().getDataSource());
+					Object content = message.getContent();
+					Multipart multipart = content instanceof Multipart
+							? (Multipart) content
+							: new MimeMultipart(message.getDataHandler().getDataSource());
 
 					for (int j = 0; j < multipart.getCount(); j++) {
 						BodyPart part = multipart.getBodyPart(j);

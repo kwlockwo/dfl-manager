@@ -249,9 +249,25 @@ public class EmailSelectionsHandler extends BaseHandler {
 		if (content instanceof InputStream || content instanceof String) {
 
 			if (part.isMimeType("text/plain")) {
-				validationResult = handleTextEmailContent(content.toString().trim(), from);
+				String text;
+				if (content instanceof InputStream) {
+					try (BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8))) {
+						text = reader.lines().collect(java.util.stream.Collectors.joining("\n"));
+					}
+				} else {
+					text = content.toString();
+				}
+				validationResult = handleTextEmailContent(text.trim(), from);
 			} else if (part.isMimeType("text/html")) {
-				validationResult = handleHtmlEmailContent(content.toString(), from);
+				String text;
+				if (content instanceof InputStream) {
+					try (BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8))) {
+						text = reader.lines().collect(java.util.stream.Collectors.joining("\n"));
+					}
+				} else {
+					text = content.toString();
+				}
+				validationResult = handleHtmlEmailContent(text, from);
 			}
 
 			if (validationResult == null) {

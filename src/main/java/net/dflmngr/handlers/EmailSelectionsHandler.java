@@ -167,6 +167,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 							? (Multipart) content
 							: new MimeMultipart(message.getDataHandler().getDataSource());
 
+					loggerUtils.log("info", "Multipart has {} parts", multipart.getCount());
 					for (int j = 0; j < multipart.getCount(); j++) {
 						BodyPart part = multipart.getBodyPart(j);
 						validationResult = scanEmailPartsAndValidate(part, receivedDate, from);
@@ -242,6 +243,8 @@ public class EmailSelectionsHandler extends BaseHandler {
 		SelectedTeamValidation validationResult = null;
 
 		Object content = part.getContent();
+
+		loggerUtils.log("info", "scanEmailPartsAndValidate: content-type={}, content-class={}", part.getContentType(), content.getClass().getName());
 
 		if (content instanceof InputStream || content instanceof String) {
 

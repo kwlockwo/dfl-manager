@@ -159,6 +159,8 @@ public class EmailSelectionsHandler extends BaseHandler {
 				Instant instant = message.getReceivedDate() != null ? message.getReceivedDate().toInstant() : Instant.now();
 				ZonedDateTime receivedDate = ZonedDateTime.ofInstant(instant, ZoneId.of(DflmngrUtils.defaultTimezone));
 
+				loggerUtils.log("info", "Message from {}, content-type={}", from, message.getContentType());
+
 				if(message.isMimeType("multipart/*")) {
 					Object content = message.getContent();
 					Multipart multipart = content instanceof Multipart

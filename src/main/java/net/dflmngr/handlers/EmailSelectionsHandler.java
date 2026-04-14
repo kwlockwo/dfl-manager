@@ -160,7 +160,10 @@ public class EmailSelectionsHandler extends BaseHandler {
 				ZonedDateTime receivedDate = ZonedDateTime.ofInstant(instant, ZoneId.of(DflmngrUtils.defaultTimezone));
 
 				if(message.isMimeType("multipart/*")) {
-					Multipart multipart = new MimeMultipart(message.getDataHandler().getDataSource());
+					Object content = message.getContent();
+					Multipart multipart = content instanceof Multipart
+							? (Multipart) content
+							: new MimeMultipart(message.getDataHandler().getDataSource());
 
 					for (int j = 0; j < multipart.getCount(); j++) {
 						BodyPart part = multipart.getBodyPart(j);
@@ -238,12 +241,28 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 		Object content = part.getContent();
 
-		if (content instanceof InputStream || content instanceof String) {
+if (content instanceof InputStream || content instanceof String) {
 
 			if (part.isMimeType("text/plain")) {
-				validationResult = handleTextEmailContent(content.toString().trim(), from);
+				String text;
+				if (content instanceof InputStream) {
+					try (BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8))) {
+						text = reader.lines().collect(java.util.stream.Collectors.joining("\n"));
+					}
+				} else {
+					text = content.toString();
+				}
+				validationResult = handleTextEmailContent(text.trim(), from);
 			} else if (part.isMimeType("text/html")) {
-				validationResult = handleHtmlEmailContent(content.toString(), from);
+				String text;
+				if (content instanceof InputStream) {
+					try (BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8))) {
+						text = reader.lines().collect(java.util.stream.Collectors.joining("\n"));
+					}
+				} else {
+					text = content.toString();
+				}
+				validationResult = handleHtmlEmailContent(text, from);
 			}
 
 			if (validationResult == null) {
@@ -271,8 +290,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 		}
 
 		if (validationResult == null) {
+			Multipart multipart = null;
 			if (content instanceof Multipart) {
-				Multipart multipart = (Multipart) content;
+				multipart = (Multipart) content;
+			} else if (content instanceof InputStream && part.isMimeType("multipart/*")) {
+				multipart = new MimeMultipart(part.getDataHandler().getDataSource());
+			}
+			if (multipart != null) {
 				for (int i = 0; i < multipart.getCount(); i++) {
 					BodyPart bodyPart = multipart.getBodyPart(i);
 					validationResult = scanEmailPartsAndValidate(bodyPart, receivedDate, from);

@@ -159,15 +159,12 @@ public class EmailSelectionsHandler extends BaseHandler {
 				Instant instant = message.getReceivedDate() != null ? message.getReceivedDate().toInstant() : Instant.now();
 				ZonedDateTime receivedDate = ZonedDateTime.ofInstant(instant, ZoneId.of(DflmngrUtils.defaultTimezone));
 
-				loggerUtils.log("info", "Message from {}, content-type={}", from, message.getContentType());
-
 				if(message.isMimeType("multipart/*")) {
 					Object content = message.getContent();
 					Multipart multipart = content instanceof Multipart
 							? (Multipart) content
 							: new MimeMultipart(message.getDataHandler().getDataSource());
 
-					loggerUtils.log("info", "Multipart has {} parts", multipart.getCount());
 					for (int j = 0; j < multipart.getCount(); j++) {
 						BodyPart part = multipart.getBodyPart(j);
 						validationResult = scanEmailPartsAndValidate(part, receivedDate, from);
@@ -244,9 +241,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 		Object content = part.getContent();
 
-		loggerUtils.log("info", "scanEmailPartsAndValidate: content-type={}, content-class={}", part.getContentType(), content.getClass().getName());
-
-		if (content instanceof InputStream || content instanceof String) {
+if (content instanceof InputStream || content instanceof String) {
 
 			if (part.isMimeType("text/plain")) {
 				String text;

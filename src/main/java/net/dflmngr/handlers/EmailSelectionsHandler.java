@@ -349,7 +349,8 @@ if (content instanceof InputStream || content instanceof String) {
 			text = text.replaceAll("(?i)(" + Pattern.quote(tag) + ")(?!\n)", "$1\n");
 		}
 		// Split concatenated players e.g. "21 HARDWICK41 PINK" -> "21 HARDWICK\n41 PINK"
-		text = text.replaceAll("(?<=[A-Za-z])(?=\\d)", "\n");
+		// Also handles non-breaking space separator e.g. "17 Lipinsky Fwd\u00A07 Caldwell"
+		text = text.replaceAll("(?<=[A-Za-z])[\\s\u00A0]*(?=\\d)", "\n");
 		return text.trim();
 	}
 

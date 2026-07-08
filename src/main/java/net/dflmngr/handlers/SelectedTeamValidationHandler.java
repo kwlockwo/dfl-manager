@@ -337,7 +337,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 						} else {
 							boolean alreadySelected = false;
 							for(DflSelectedPlayer selectedPlayer : selectedTeam) {
-								if(emergency == selectedPlayer.getPlayerId()) {
+								if(emergency == selectedPlayer.getTeamPlayerId()) {
 									alreadySelected = true;
 									break;
 								}
@@ -384,7 +384,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 			if(validationResult.selectedWarning) {
 				validationResult.selectedWarnPlayers = selectedWarnPlayers;
 			}
-			if(validationResult.selectedWarning) {
+			if(validationResult.droppedWarning) {
 				validationResult.droppedWarnPlayers = droppedWarnPlayers;
 			}
 			if(validationResult.duplicateIns) {

@@ -149,9 +149,9 @@ public class LadderCalculatorHandler extends BaseHandler {
 		int pointsAgainst = oppositionScore;
 		float averageAgainst = (float)pointsAgainst / round;
 		int pts = calculateWinLossDrawPts(teamScore, oppositionScore);
-		float percentage = ((float)pointsFor / pointsAgainst) * 100;
-		
-		if(round > 1) {
+		float percentage = calculatePercentage(pointsFor, pointsAgainst);
+
+		if(round > 1 && previousLadder != null) {
 			wins = wins + previousLadder.getWins();
 			losses = losses + previousLadder.getLosses();
 			draws = draws + previousLadder.getDraws();
@@ -160,7 +160,7 @@ public class LadderCalculatorHandler extends BaseHandler {
 			pointsAgainst = pointsAgainst + previousLadder.getPointsAgainst();
 			averageAgainst = (float)pointsAgainst / round;
 			pts = pts + previousLadder.getPts();
-			percentage = ((float)pointsFor / pointsAgainst) * 100;
+			percentage = calculatePercentage(pointsFor, pointsAgainst);
 		}
 
 		newLadder.setRound(round);
@@ -180,6 +180,13 @@ public class LadderCalculatorHandler extends BaseHandler {
 		loggerUtils.log("info", "New ladder={}", newLadder);
 		
 		return newLadder;
+	}
+
+	private float calculatePercentage(int pointsFor, int pointsAgainst) {
+		if(pointsAgainst == 0) {
+			return pointsFor * 100f;
+		}
+		return ((float)pointsFor / pointsAgainst) * 100;
 	}
 
 	private int calculateWinLossDrawPts(int teamScore, int oppositionScore) {

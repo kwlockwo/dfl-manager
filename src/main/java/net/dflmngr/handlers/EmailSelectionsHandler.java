@@ -271,7 +271,9 @@ if (content instanceof InputStream || content instanceof String) {
 						|| (part.getFileName() != null && !part.getFileName().isEmpty())) {
 					String attachementName = part.getFileName();
 					loggerUtils.log("info", "Attachement found, name={}", attachementName);
-					if (attachementName.equalsIgnoreCase("selections.txt")) {
+					if (attachementName == null) {
+						loggerUtils.log("info", "Attachement has no name, skipping");
+					} else if (attachementName.equalsIgnoreCase("selections.txt")) {
 						loggerUtils.log("info", "Message from {}, has selection attachment", from);
 							validationResult = handleSelectionFile(part.getInputStream());
 						validationResult.setFrom(from);
@@ -281,9 +283,13 @@ if (content instanceof InputStream || content instanceof String) {
 							|| attachementName.equalsIgnoreCase("ATT00001.DAT")) {
 						loggerUtils.log("info", "Message from {}, is a TNEF message", from);
 						validationResult = handleTNEFMessage(part.getInputStream(), from);
-						validationResult.setFrom(from);
-						validationResults.add(validationResult);
-						loggerUtils.log("info", "Message from {} handled with ... SUCCESS!", from);
+						if (validationResult != null) {
+							validationResult.setFrom(from);
+							validationResults.add(validationResult);
+							loggerUtils.log("info", "Message from {} handled with ... SUCCESS!", from);
+						} else {
+							loggerUtils.log("info", "Message from {}, TNEF message has no selections.txt", from);
+						}
 					}
 				}
 			}
@@ -402,7 +408,7 @@ if (content instanceof InputStream || content instanceof String) {
 			if (attachment.getNestedMessage() == null) {
 				String filename = attachment.getFilename();
 
-				if (filename.equals("selections.txt")) {
+				if ("selections.txt".equals(filename)) {
 					loggerUtils.log("info", "Message from {}, has selection attachment", from);
 					validationResult = handleSelectionFile(attachment.getRawData());
 				}

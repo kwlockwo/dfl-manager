@@ -283,7 +283,8 @@ public class ScoresCalculatorHandler extends BaseHandler {
 						   				player.getAflClub(), round, selectedPlayer.getRound());
 
 						if(round == selectedPlayer.getRound()) {
-							int score = predictedScores.get(selectedPlayer.getPlayerId()).getPredictedScore();
+							DflPlayerPredictedScores predictedScore = predictedScores.get(selectedPlayer.getPlayerId());
+							int score = predictedScore != null ? predictedScore.getPredictedScore() : 25;
 							scores.put(selectedPlayer.getPlayerId(), score);
 	
 							selectedPlayer.setHasPlayed(true);

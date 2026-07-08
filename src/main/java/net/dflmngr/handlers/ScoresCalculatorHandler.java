@@ -88,6 +88,11 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			loggerUtils.log("info", "Handling team scores");
 			handleTeamScores(round, dflRoundInfo, predictedScores);
 
+			loggerUtils.log("info", "ScoresCalculator completed");
+
+		} catch (Exception ex) {
+			loggerUtils.logException("Error in ScoresCalculatorHandler.execute(), round=" + round, ex);
+		} finally {
 			rawPlayerStatsService.close();
 			dflPlayerService.close();
 			dflTeamPlayerService.close();
@@ -99,11 +104,6 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			aflFixtureService.close();
 			globalsService.close();
 			dflPlayerPredictedScoresService.close();
-
-			loggerUtils.log("info", "ScoresCalculator completed");
-
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ScoresCalculatorHandler.execute(), round=" + round, ex);
 		}
 	}
 

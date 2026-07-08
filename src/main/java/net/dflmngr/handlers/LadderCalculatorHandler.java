@@ -48,17 +48,17 @@ public class LadderCalculatorHandler extends BaseHandler {
 			loggerUtils.log("info", "LadderCalculatorHandler executing round={} ...", round);			
 			handleLadder(round, liveLadderOveride);
 			
-			dflLadderService.close();;
-			dflFixtureService.close();;
-			dflTeamScoresService.close();
-			dflSelectedTeamService.close();
-			dflPlayerScoresService.close();
-			dflPlayerPredictedScoresService.close();
-			
 			loggerUtils.log("info", "LadderCalculatorHandler completed");
 			
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in LadderCalculatorHandler.execute(), round=" + round, ex);
+		} finally {
+			dflLadderService.close();
+			dflFixtureService.close();
+			dflTeamScoresService.close();
+			dflSelectedTeamService.close();
+			dflPlayerScoresService.close();
+			dflPlayerPredictedScoresService.close();
 		}
 	}
 		

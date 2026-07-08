@@ -68,14 +68,6 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 
 			loggerUtils.log("info", "Validation result={}", validationResult);
 
-			dflSelectedTeamService.close();
-			dflTeamPlayerService.close();
-			dflPlayerService.close();
-			globalsService.close();
-			dflRoundInfoService.close();
-			dflEarlyInsAndOutsService.close();
-			aflFixtureService.close();
-
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in SelectedTeamValidationHandler.execute(), round=" + round + " teamCode=" + teamCode, ex);
 			if(validationResult == null) {
@@ -87,6 +79,15 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 				validationResult.setRound(round);
 				validationResult.setTeamCode(teamCode);
 			}
+		} finally {
+			dflSelectedTeamService.close();
+			dflTeamPlayerService.close();
+			dflPlayerService.close();
+			globalsService.close();
+			dflRoundInfoService.close();
+			dflEarlyInsAndOutsService.close();
+			aflFixtureService.close();
+			dflSelectionIdsService.close();
 		}
 
 		return validationResult;

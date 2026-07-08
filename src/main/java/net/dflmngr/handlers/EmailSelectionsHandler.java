@@ -120,13 +120,13 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 			sendResponses();
 
-			globalsService.close();
-			dflTeamService.close();
-			dflTeamPlayerService.close();
-
 			loggerUtils.log("info", "Email Selections Handler Completed");
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in EmailSelectionsHandler.execute()", ex);
+		} finally {
+			globalsService.close();
+			dflTeamService.close();
+			dflTeamPlayerService.close();
 		}
 	}
 
@@ -436,9 +436,9 @@ if (content instanceof InputStream || content instanceof String) {
 		while ((line = reader.readLine()) != null) {
 
 			if (line.toLowerCase().contains(TAG_TEAM)) {
-				while (reader.ready()) {
-					line = reader.readLine().trim();
-					if (line.toLowerCase().contains(TAG_ROUND)) {
+				while ((line = reader.readLine()) != null) {
+					line = line.trim();
+					if (line.toLowerCase().contains(TAG_ROUND) || line.toLowerCase().contains(TAG_END)) {
 						break;
 					} else if (line.isEmpty()) {
 						// ignore blank lines
@@ -447,13 +447,16 @@ if (content instanceof InputStream || content instanceof String) {
 					}
 				}
 				loggerUtils.log("debug", "Selections for team: {}", teamCode);
+				if (line == null) {
+					break;
+				}
 			}
 
 			if (line.toLowerCase().contains(TAG_ROUND)) {
-				while (reader.ready()) {
-					line = reader.readLine().trim();
+				while ((line = reader.readLine()) != null) {
+					line = line.trim();
 					if (line.toLowerCase().contains(TAG_IN) || line.toLowerCase().contains(TAG_OUT)
-							|| line.toLowerCase().contains(TAG_EMG)) {
+							|| line.toLowerCase().contains(TAG_EMG) || line.toLowerCase().contains(TAG_END)) {
 						break;
 					} else if (line.isEmpty()) {
 						// ignore blank lines
@@ -462,14 +465,19 @@ if (content instanceof InputStream || content instanceof String) {
 					}
 				}
 				loggerUtils.log("debug", "Selections for round: {}", round);
+				if (line == null) {
+					break;
+				}
 			}
 
 			if (line.toLowerCase().contains(TAG_IN)) {
-				while (reader.ready()) {
-					line = reader.readLine().trim();
+				while ((line = reader.readLine()) != null) {
+					line = line.trim();
 					if (line.toLowerCase().contains(TAG_OUT)) {
 						break;
 					} else if (line.toLowerCase().contains(TAG_EMG)) {
+						break;
+					} else if (line.toLowerCase().contains(TAG_END)) {
 						break;
 					} else if (line.isEmpty()) {
 						// ignore blank lines
@@ -478,14 +486,19 @@ if (content instanceof InputStream || content instanceof String) {
 					}
 				}
 				loggerUtils.log("debug", "Selection in: {}", ins);
+				if (line == null) {
+					break;
+				}
 			}
 
 			if (line.toLowerCase().contains(TAG_OUT)) {
-				while (reader.ready()) {
-					line = reader.readLine().trim();
+				while ((line = reader.readLine()) != null) {
+					line = line.trim();
 					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
 					} else if (line.toLowerCase().contains(TAG_EMG)) {
+						break;
+					} else if (line.toLowerCase().contains(TAG_END)) {
 						break;
 					} else if (line.isEmpty()) {
 						// ignore blank lines
@@ -494,15 +507,20 @@ if (content instanceof InputStream || content instanceof String) {
 					}
 				}
 				loggerUtils.log("debug", "Selection out: {}", outs);
+				if (line == null) {
+					break;
+				}
 			}
 
 			if (line.toLowerCase().contains(TAG_EMG)) {
 				int emgCount = 1;
-				while (reader.ready()) {
-					line = reader.readLine().trim();
+				while ((line = reader.readLine()) != null) {
+					line = line.trim();
 					if (line.toLowerCase().contains(TAG_IN)) {
 						break;
 					} else if (line.toLowerCase().contains(TAG_OUT)) {
+						break;
+					} else if (line.toLowerCase().contains(TAG_END)) {
 						break;
 					} else if (line.isEmpty()) {
 						// ignore blank lines
@@ -518,6 +536,9 @@ if (content instanceof InputStream || content instanceof String) {
 					}
 				}
 				loggerUtils.log("debug", "Selection emergencies: {}", emgs);
+				if (line == null) {
+					break;
+				}
 			}
 		}
 		}
@@ -725,6 +746,11 @@ if (content instanceof InputStream || content instanceof String) {
 				to = validationResult.getFrom();
 			}
 
+			if (to == null || to.isEmpty()) {
+				loggerUtils.log("warn", "No recipient for response (emailOveride/from not set), skipping response");
+				continue;
+			}
+
 			String teamCode = validationResult.getTeamCode();
 
 			Properties properties = new Properties();
@@ -752,7 +778,7 @@ if (content instanceof InputStream || content instanceof String) {
 					if (team != null) {
 						String teamTo = team.getCoachEmail();
 						loggerUtils.log("info", "Team email: {}", teamTo);
-						if (!to.toLowerCase().contains(teamTo.toLowerCase())) {
+						if (teamTo != null && !to.toLowerCase().contains(teamTo.toLowerCase())) {
 							loggerUtils.log("info", "Adding team email");
 							message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(teamTo));
 						}

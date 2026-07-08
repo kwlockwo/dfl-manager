@@ -90,6 +90,10 @@ public class CronExpressionCreator implements Serializable {
 
             daysString = sb.toString();
 
+            if (daysString.isEmpty()) {
+                throw new IllegalStateException("Recurring cron expression requires at least one day to be set");
+            }
+
             cronExp = "0 " + minutes + " " + hour + " ? * " + daysString;
         } else {
             String startDate = getStartDate();

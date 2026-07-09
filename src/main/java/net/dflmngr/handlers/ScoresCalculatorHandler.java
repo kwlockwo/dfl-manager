@@ -478,7 +478,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 										}
 										break;
 									case "def":
-										if(defCount < 6 && defCount > 4) {
+										if(defCount < 6) {
 											replacement = emergency;
 											defCount++;
 										}

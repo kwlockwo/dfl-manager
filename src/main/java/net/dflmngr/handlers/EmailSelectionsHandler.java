@@ -317,15 +317,17 @@ if (content instanceof InputStream || content instanceof String) {
 	}
 
 	private SelectedTeamValidation handleTextEmailContent(String text, String from) {
-		SelectedTeamValidation validationResult = null;
+		return handleEmailBody(normaliseTagsToLines(text), from, "text");
+	}
 
-		text = normaliseTagsToLines(text);
+	private SelectedTeamValidation handleEmailBody(String text, String from, String source) {
+		SelectedTeamValidation validationResult = null;
 
 		if (text.startsWith(TAG_TEAM) && text.contains(TAG_END)) {
 			text = text.substring(0, text.indexOf(TAG_END));
 			String[] lines = text.split("\\R+");
 
-			loggerUtils.log("info", "Message from {}, has selection in text body", from);
+			loggerUtils.log("info", "Message from {}, has selection in {} body", from, source);
 			validationResult = handleSelectionEmailText(lines, "noid");
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
@@ -336,7 +338,7 @@ if (content instanceof InputStream || content instanceof String) {
 			String idLine = lines[0];
 			String id = idLine.split("=")[1].trim().replace("]", "");
 
-			loggerUtils.log("info", "Message from {}, has selection in text body", from);
+			loggerUtils.log("info", "Message from {}, has selection in {} body", from, source);
 			validationResult = handleSelectionEmailText(lines, id);
 			validationResult.setFrom(from);
 			validationResults.add(validationResult);
@@ -361,8 +363,6 @@ if (content instanceof InputStream || content instanceof String) {
 	}
 
 	private SelectedTeamValidation handleHtmlEmailContent(String content, String from) {
-		SelectedTeamValidation validationResult = null;
-
 		Document document = Jsoup.parse(content);
 		document.outputSettings(new Document.OutputSettings().prettyPrint(false));// makes html() preserve
 																					// linebreaks and spacing
@@ -372,28 +372,7 @@ if (content instanceof InputStream || content instanceof String) {
 		String text = Jsoup.clean(s, "", Safelist.none(), new Document.OutputSettings().prettyPrint(false))
 				.trim();
 
-		if (text.startsWith(TAG_TEAM) && text.contains(TAG_END)) {
-			text = text.substring(0, text.indexOf(TAG_END));
-			String[] lines = text.split("\\R+");
-
-			loggerUtils.log("info", "Message from {}, has selection in html body", from);
-			validationResult = handleSelectionEmailText(lines, "noid");
-			validationResult.setFrom(from);
-			validationResults.add(validationResult);
-		} else if (text.contains(TAG_START_ID) && text.contains(TAG_END)) {
-			text = text.substring(text.indexOf(TAG_START_ID), text.indexOf(TAG_END));
-			String[] lines = text.split("\\R+");
-
-			String idLine = lines[0];
-			String id = idLine.split("=")[1].trim().replace("]", "");
-
-			loggerUtils.log("info", "Message from {}, has selection in text body", from);
-			validationResult = handleSelectionEmailText(lines, id);
-			validationResult.setFrom(from);
-			validationResults.add(validationResult);
-		}
-
-		return validationResult;
+		return handleEmailBody(normaliseTagsToLines(text), from, "html");
 	}
 
 	private SelectedTeamValidation handleTNEFMessage(InputStream inputStream, String from)
@@ -423,145 +402,83 @@ if (content instanceof InputStream || content instanceof String) {
 	private SelectedTeamValidation handleSelectionFile(InputStream inputStream)
 			throws Exception {
 
-		String line = "";
-		String teamCode = "";
-		int round = 0;
-		List<Integer> ins = new ArrayList<>();
-		List<Integer> outs = new ArrayList<>();
-		List<Double> emgs = new ArrayList<>();
+		String text;
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-
-		loggerUtils.log("info", "Handling selections form file attachement");
-
-		while ((line = reader.readLine()) != null) {
-
-			if (line.toLowerCase().contains(TAG_TEAM)) {
-				while ((line = reader.readLine()) != null) {
-					line = line.trim();
-					if (line.toLowerCase().contains(TAG_ROUND) || line.toLowerCase().contains(TAG_END)) {
-						break;
-					} else if (line.isEmpty()) {
-						// ignore blank lines
-					} else {
-						teamCode = line;
-					}
-				}
-				loggerUtils.log("debug", "Selections for team: {}", teamCode);
-				if (line == null) {
-					break;
-				}
-			}
-
-			if (line.toLowerCase().contains(TAG_ROUND)) {
-				while ((line = reader.readLine()) != null) {
-					line = line.trim();
-					if (line.toLowerCase().contains(TAG_IN) || line.toLowerCase().contains(TAG_OUT)
-							|| line.toLowerCase().contains(TAG_EMG) || line.toLowerCase().contains(TAG_END)) {
-						break;
-					} else if (line.isEmpty()) {
-						// ignore blank lines
-					} else {
-						round = Integer.parseInt(line);
-					}
-				}
-				loggerUtils.log("debug", "Selections for round: {}", round);
-				if (line == null) {
-					break;
-				}
-			}
-
-			if (line.toLowerCase().contains(TAG_IN)) {
-				while ((line = reader.readLine()) != null) {
-					line = line.trim();
-					if (line.toLowerCase().contains(TAG_OUT)) {
-						break;
-					} else if (line.toLowerCase().contains(TAG_EMG)) {
-						break;
-					} else if (line.toLowerCase().contains(TAG_END)) {
-						break;
-					} else if (line.isEmpty()) {
-						// ignore blank lines
-					} else {
-						ins.add(Integer.parseInt(line));
-					}
-				}
-				loggerUtils.log("debug", "Selection in: {}", ins);
-				if (line == null) {
-					break;
-				}
-			}
-
-			if (line.toLowerCase().contains(TAG_OUT)) {
-				while ((line = reader.readLine()) != null) {
-					line = line.trim();
-					if (line.toLowerCase().contains(TAG_IN)) {
-						break;
-					} else if (line.toLowerCase().contains(TAG_EMG)) {
-						break;
-					} else if (line.toLowerCase().contains(TAG_END)) {
-						break;
-					} else if (line.isEmpty()) {
-						// ignore blank lines
-					} else {
-						outs.add(Integer.parseInt(line));
-					}
-				}
-				loggerUtils.log("debug", "Selection out: {}", outs);
-				if (line == null) {
-					break;
-				}
-			}
-
-			if (line.toLowerCase().contains(TAG_EMG)) {
-				int emgCount = 1;
-				while ((line = reader.readLine()) != null) {
-					line = line.trim();
-					if (line.toLowerCase().contains(TAG_IN)) {
-						break;
-					} else if (line.toLowerCase().contains(TAG_OUT)) {
-						break;
-					} else if (line.toLowerCase().contains(TAG_END)) {
-						break;
-					} else if (line.isEmpty()) {
-						// ignore blank lines
-					} else {
-						double emg = Double.parseDouble(line);
-						if (emgCount == 1) {
-							emg = emg + 0.1;
-							emgCount++;
-						} else {
-							emg = emg + 0.2;
-						}
-						emgs.add(emg);
-					}
-				}
-				loggerUtils.log("debug", "Selection emergencies: {}", emgs);
-				if (line == null) {
-					break;
-				}
-			}
-		}
+			text = reader.lines().collect(java.util.stream.Collectors.joining("\n"));
 		}
 
-		Map<String, List<Integer>> insAndOuts = new HashMap<>();
-		insAndOuts.put("in", ins);
-		insAndOuts.put("out", outs);
+		loggerUtils.log("info", "Handling selections from file attachement");
 
-		SelectedTeamValidationHandler validationHandler = new SelectedTeamValidationHandler();
-		validationHandler.configureLogging(mdcKey, loggerName, logfile);
-		return validationHandler.execute(round, teamCode, insAndOuts, emgs, "noid");
+		return validate(parseSelectionLines(splitSelectionLines(text)), "noid");
+	}
+
+	private String[] splitSelectionLines(String text) {
+		text = normaliseTagsToLines(text);
+		int endIndex = text.toLowerCase().indexOf(TAG_END);
+		if (endIndex >= 0) {
+			text = text.substring(0, endIndex);
+		}
+		return text.split("\\R+");
+	}
+
+	private static class ParsedSelections {
+		private String teamCode = "";
+		private int round = 0;
+		private final List<Integer> ins = new ArrayList<>();
+		private final List<Integer> outs = new ArrayList<>();
+		private final List<Double> emgs = new ArrayList<>();
 	}
 
 	private SelectedTeamValidation handleSelectionEmailText(String[] emailLines, String id) {
 
-		String line = "";
-		String teamCode = "";
-		int round = 0;
-		List<Integer> ins = new ArrayList<>();
-		List<Integer> outs = new ArrayList<>();
-		List<Double> emgs = new ArrayList<>();
-
 		loggerUtils.log("info", "Handling selections from email text.");
+
+		ParsedSelections parsed = parseSelectionLines(emailLines);
+
+		boolean idHandledThisBatch = false;
+
+		if (selectionsIdsCurrent.containsKey(id)) {
+			String team = selectionsIdsCurrent.get(id);
+			if (team.equalsIgnoreCase(parsed.teamCode)) {
+				idHandledThisBatch = true;
+			} else {
+				selectionsIdsCurrent.put(id, parsed.teamCode);
+			}
+		} else {
+			selectionsIdsCurrent.put(id, parsed.teamCode);
+		}
+
+		SelectedTeamValidation validationResult = null;
+
+		if (idHandledThisBatch) {
+			validationResult = new SelectedTeamValidation();
+			validationResult.selectionFileMissing = false;
+			validationResult.roundCompleted = false;
+			validationResult.lockedOut = false;
+			validationResult.duplicateSubmissionId = true;
+			loggerUtils.log("info", "Already handled a selection in this batch for round={}. teamCode={}, id={}", parsed.round,
+					parsed.teamCode, id);
+		} else {
+			validationResult = validate(parsed, id);
+		}
+
+		return validationResult;
+	}
+
+	private SelectedTeamValidation validate(ParsedSelections parsed, String id) {
+		Map<String, List<Integer>> insAndOuts = new HashMap<>();
+		insAndOuts.put("in", parsed.ins);
+		insAndOuts.put("out", parsed.outs);
+
+		SelectedTeamValidationHandler validationHandler = new SelectedTeamValidationHandler();
+		validationHandler.configureLogging(mdcKey, loggerName, logfile);
+		return validationHandler.execute(parsed.round, parsed.teamCode, insAndOuts, parsed.emgs, id);
+	}
+
+	private ParsedSelections parseSelectionLines(String[] emailLines) {
+
+		ParsedSelections parsed = new ParsedSelections();
+		String line = "";
 
 		for (int i = 0; i < emailLines.length; i++) {
 
@@ -575,10 +492,10 @@ if (content instanceof InputStream || content instanceof String) {
 					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
-						teamCode = line;
+						parsed.teamCode = line;
 					}
 				}
-				loggerUtils.log("debug", "Selections for team: {}", teamCode);
+				loggerUtils.log("debug", "Selections for team: {}", parsed.teamCode);
 			}
 
 			if (line.toLowerCase().contains(TAG_ROUND)) {
@@ -590,10 +507,10 @@ if (content instanceof InputStream || content instanceof String) {
 					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
-						round = Integer.parseInt(line);
+						parsed.round = Integer.parseInt(line);
 					}
 				}
-				loggerUtils.log("debug", "Selections for round: {}", round);
+				loggerUtils.log("debug", "Selections for round: {}", parsed.round);
 			}
 
 			if (line.toLowerCase().contains(TAG_IN)) {
@@ -608,13 +525,13 @@ if (content instanceof InputStream || content instanceof String) {
 					} else {
 						int in = getPlayerNo(line);
 						if (in > 0) {
-							ins.add(in);
+							parsed.ins.add(in);
 						} else {
 							loggerUtils.log("debug", "Couldn't get player number for INs, No.={}", in);
 						}
 					}
 				}
-				loggerUtils.log("debug", "Selection in: {}", ins);
+				loggerUtils.log("debug", "Selection in: {}", parsed.ins);
 			}
 
 			if (line.toLowerCase().contains(TAG_OUT)) {
@@ -629,13 +546,13 @@ if (content instanceof InputStream || content instanceof String) {
 					} else {
 						int out = getPlayerNo(line);
 						if (out > 0) {
-							outs.add(out);
+							parsed.outs.add(out);
 						} else {
 							loggerUtils.log("debug", "Couldn't get player number for OUTs, No.={}", out);
 						}
 					}
 				}
-				loggerUtils.log("debug", "Selection out: {}", outs);
+				loggerUtils.log("debug", "Selection out: {}", parsed.outs);
 			}
 
 			if (line.toLowerCase().contains(TAG_EMG)) {
@@ -657,50 +574,17 @@ if (content instanceof InputStream || content instanceof String) {
 							} else {
 								emg = emg + 0.2;
 							}
-							emgs.add(emg);
+							parsed.emgs.add(emg);
 						} else {
-							loggerUtils.log("debug", "Couldn't get player number for OUTs, No.={}", emg);
+							loggerUtils.log("debug", "Couldn't get player number for emergencies, No.={}", emg);
 						}
 					}
 				}
-				loggerUtils.log("debug", "Selection emergencies: {}", emgs);
+				loggerUtils.log("debug", "Selection emergencies: {}", parsed.emgs);
 			}
 		}
 
-		boolean idHandledThisBatch = false;
-
-		if (selectionsIdsCurrent.containsKey(id)) {
-			String team = selectionsIdsCurrent.get(id);
-			if (team.equalsIgnoreCase(teamCode)) {
-				idHandledThisBatch = true;
-			} else {
-				selectionsIdsCurrent.put(id, teamCode);
-			}
-		} else {
-			selectionsIdsCurrent.put(id, teamCode);
-		}
-
-		SelectedTeamValidation validationResult = null;
-
-		if (idHandledThisBatch) {
-			validationResult = new SelectedTeamValidation();
-			validationResult.selectionFileMissing = false;
-			validationResult.roundCompleted = false;
-			validationResult.lockedOut = false;
-			validationResult.duplicateSubmissionId = true;
-			loggerUtils.log("info", "Already handled a selection in this batch for round={}. teamCode={}, id={}", round,
-					teamCode, id);
-		} else {
-			Map<String, List<Integer>> insAndOuts = new HashMap<>();
-			insAndOuts.put("in", ins);
-			insAndOuts.put("out", outs);
-
-			SelectedTeamValidationHandler validationHandler = new SelectedTeamValidationHandler();
-			validationHandler.configureLogging(mdcKey, loggerName, logfile);
-			validationResult = validationHandler.execute(round, teamCode, insAndOuts, emgs, id);
-		}
-
-		return validationResult;
+		return parsed;
 	}
 
 	private int getPlayerNo(String line) {

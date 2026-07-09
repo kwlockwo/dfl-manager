@@ -14,7 +14,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import net.dflmngr.exceptions.MissingGlobalConfig;
-import net.dflmngr.exceptions.UnknownPositionException;
 import net.dflmngr.model.entity.AflFixture;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflPlayerPredictedScores;
@@ -199,7 +198,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 		Map<Integer, Integer> scores = new HashMap<>();
 
 		Map<Integer, String> playerPositions = new HashMap<>();
-		List<String> benchPositions = new ArrayList<>();
+		PositionCounts positionCounts = new PositionCounts();
 
 		List<String> playedTeams = new ArrayList<>();
 		int aflRound = 0;
@@ -221,13 +220,6 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			loggerUtils.log("debug", "Played teams for AFL round={} teams={}", aflRound, playedTeams);
 		}
 
-		int ffCount = 0;
-		int fwdCount = 0;
-		int midCount = 0;
-		int defCount = 0;
-		int fbCount = 0;
-		int rckCount = 0;
-
 		for(DflSelectedPlayer selectedPlayer : selectedTeam) {
 			DflPlayerScoresPK pk = new DflPlayerScoresPK();
 			pk.setPlayerId(selectedPlayer.getPlayerId());
@@ -240,27 +232,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			playerPositions.put(selectedPlayer.getPlayerId(), position);
 
 			if(selectedPlayer.isEmergency() == 0) {
-				switch(position) {
-					case "ff" :
-						ffCount++;
-						break;
-					case "fwd" :
-						fwdCount++;
-						break;
-					case "rck" :
-						rckCount++;
-						break;
-					case "mid" :
-						midCount++;
-						break;
-					case "def" :
-						defCount++;
-						break;
-					case "fb" :
-						fbCount++;
-						break;
-					default: throw new UnknownPositionException(position);
-				}
+				positionCounts.increment(position);
 			}
 
 			selectedPlayer.setReplacementInd(null);
@@ -329,26 +301,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 		loggerUtils.log("info", "DNPs={} -- Size:{}", dnpPlayers, dnpPlayers.size());
 		loggerUtils.log("info", "Emergencies={} -- Size:{}", emergencies, emergencies.size());
 
-		if(ffCount == 2) {
-			benchPositions.add("ff");
-		}
-		if(fwdCount == 6) {
-			benchPositions.add("fwd");
-		}
-		if(midCount == 6) {
-			benchPositions.add("mid");
-		}
-		if(defCount == 6) {
-			benchPositions.add("def");
-		}
-		if(fbCount == 2) {
-			benchPositions.add("fb");
-		}
-		if(rckCount == 2) {
-			benchPositions.add("rck");
-		}
-
-		loggerUtils.log("info", "Bench positions={}", benchPositions);
+		loggerUtils.log("info", "Bench positions={}", positionCounts.benchPositions());
 
 		if(!dnpPlayers.isEmpty()) {
 			if(emergencies.isEmpty()) {
@@ -402,91 +355,18 @@ public class ScoresCalculatorHandler extends BaseHandler {
 
 						boolean allowEmg = false;
 
-						switch(dnpPosition) {
-							case "ff" :
-								if(ffCount > 1) {
-									ffCount--;
-									allowEmg = true;
-								}
-								break;
-							case "fwd" :
-								if(fwdCount > 5) {
-									fwdCount--;
-									allowEmg = true;
-								}
-								break;
-							case "rck" :
-								if(rckCount > 1) {
-									rckCount--;
-									allowEmg = true;
-								}
-								break;
-							case "mid" :
-								if(midCount > 5) {
-									midCount--;
-									allowEmg = true;
-								}
-								break;
-							case "def" :
-								if(defCount > 5) {
-									defCount--;
-									allowEmg = true;
-								}
-								break;
-							case "fb" :
-								if(fbCount > 1) {
-									fbCount--;
-									allowEmg = true;
-								}
-								break;
-							default: throw new UnknownPositionException(dnpPosition);
+						if(positionCounts.isFull(dnpPosition)) {
+							positionCounts.decrement(dnpPosition);
+							allowEmg = true;
 						}
 
 						if(allowEmg) {
 							for(DflSelectedPlayer emergency : emergencies) {
 								String emgPosition = playerPositions.get(emergency.getPlayerId());
 
-								switch(emgPosition) {
-									case "ff":
-										if(ffCount < 2) {
-											replacement = emergency;
-											ffCount++;
-										}
-										break;
-									case "fwd":
-										if(fwdCount < 6) {
-											replacement = emergency;
-											fwdCount++;
-										}
-										break;
-									case "rck":
-										if(rckCount < 2) {
-											replacement = emergency;
-											rckCount++;
-										}
-										break;
-									case "mid":
-										if(midCount < 6) {
-											replacement = emergency;
-											midCount++;
-										}
-										break;
-									case "fb":
-										if(fbCount < 2) {
-											replacement = emergency;
-											fbCount++;
-										}
-										break;
-									case "def":
-										if(defCount < 6) {
-											replacement = emergency;
-											defCount++;
-										}
-										break;
-									default: throw new UnknownPositionException(emgPosition);
-								}
-
-								if(replacement != null) {
+								if(positionCounts.hasRoom(emgPosition)) {
+									replacement = emergency;
+									positionCounts.increment(emgPosition);
 									break;
 								}
 							}

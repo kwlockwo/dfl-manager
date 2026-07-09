@@ -277,9 +277,9 @@ public class ResultsFixtureTabTeamStruct implements Comparator<ResultsFixtureTab
 		int less = -1;
 		int greater = 1;
 		
-		String o1Position = o2.getPosition();
+		String o1Position = o1.getPosition();
 		String o2Position = o2.getPosition();
-		
+
 		if(o1Position.compareTo(o2Position) < 0) {
 			return less;
 		}
@@ -291,15 +291,15 @@ public class ResultsFixtureTabTeamStruct implements Comparator<ResultsFixtureTab
 				if(o2.getScore().equals("dnp")) {
 					return equal;
 				} else {
-					return less;
+					return greater;
 				}
 			}
 			if(o2.getScore().equals("dnp")) {
-				return greater;
+				return less;
 			}
-			
-			int o1Score = Integer.parseInt(o1.getScore());
-			int o2Score = Integer.parseInt(o2.getScore());
+
+			int o1Score = o1.getScore().equals("") ? 0 : Integer.parseInt(o1.getScore());
+			int o2Score = o2.getScore().equals("") ? 0 : Integer.parseInt(o2.getScore());
 			
 			if(o1Score > o2Score) {
 				return less;

@@ -27,8 +27,6 @@ public class DflmngrUtils {
 			defaultTimezone = globalsService.getGroundTimeZone("default");
 	};
 
-	public static final SimpleDateFormat dateDbFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-
 	/*
 	public static Date applyDefaultTimezone(Date date) throws Exception {
 		GlobalsService globalsService = new GlobalsServiceImpl();

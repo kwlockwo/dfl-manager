@@ -88,6 +88,11 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			loggerUtils.log("info", "Handling team scores");
 			handleTeamScores(round, dflRoundInfo, predictedScores);
 
+			loggerUtils.log("info", "ScoresCalculator completed");
+
+		} catch (Exception ex) {
+			loggerUtils.logException("Error in ScoresCalculatorHandler.execute(), round=" + round, ex);
+		} finally {
 			rawPlayerStatsService.close();
 			dflPlayerService.close();
 			dflTeamPlayerService.close();
@@ -99,11 +104,6 @@ public class ScoresCalculatorHandler extends BaseHandler {
 			aflFixtureService.close();
 			globalsService.close();
 			dflPlayerPredictedScoresService.close();
-
-			loggerUtils.log("info", "ScoresCalculator completed");
-
-		} catch (Exception ex) {
-			loggerUtils.logException("Error in ScoresCalculatorHandler.execute(), round=" + round, ex);
 		}
 	}
 
@@ -283,7 +283,8 @@ public class ScoresCalculatorHandler extends BaseHandler {
 						   				player.getAflClub(), round, selectedPlayer.getRound());
 
 						if(round == selectedPlayer.getRound()) {
-							int score = predictedScores.get(selectedPlayer.getPlayerId()).getPredictedScore();
+							DflPlayerPredictedScores predictedScore = predictedScores.get(selectedPlayer.getPlayerId());
+							int score = predictedScore != null ? predictedScore.getPredictedScore() : 25;
 							scores.put(selectedPlayer.getPlayerId(), score);
 	
 							selectedPlayer.setHasPlayed(true);

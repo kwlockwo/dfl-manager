@@ -128,14 +128,16 @@ public class GlobalsServiceImpl extends GenericServiceImpl<Globals, GlobalsPK> i
 	public String getGroundTimeZone(String ground) {
 
 		String timezone = "";
-		String code = ground;
 		String groupCode = "timezone";
 
-		timezone = getValue(code, groupCode);
+		try {
+			timezone = getValue(ground, groupCode);
+		} catch (MissingGlobalConfig e) {
+			timezone = "";
+		}
 
-		if(timezone.equals("")) {
-			code = "default";
-			timezone = getValue(code, groupCode);
+		if(timezone == null || timezone.equals("")) {
+			timezone = getValue("default", groupCode);
 		}
 
 		return timezone;

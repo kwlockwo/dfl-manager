@@ -1,10 +1,10 @@
 package net.dflmngr.handlers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.dflmngr.exceptions.UnknownPositionException;
 import net.dflmngr.model.entity.DflPlayer;
 import net.dflmngr.model.entity.DflRoundInfo;
 import net.dflmngr.model.entity.DflRoundMapping;
@@ -464,20 +464,8 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		validationResult.lockedOut = false;
 		validationResult.teamPlayerCheckOk = true;
 
-		int ffCount = 0;
-		int fwdCount = 0;
-		int midCount = 0;
-		int defCount = 0;
-		int fbCount = 0;
-		int rckCount = 0;
-		int benchCount = 0;
-
-		List<DflPlayer> ffPlayers = new ArrayList<>();
-		List<DflPlayer> fwdPlayers = new ArrayList<>();
-		List<DflPlayer> midPlayers = new ArrayList<>();
-		List<DflPlayer> defPlayers = new ArrayList<>();
-		List<DflPlayer> fbPlayers = new ArrayList<>();
-		List<DflPlayer> rckPlayers = new ArrayList<>();
+		PositionCounts positionCounts = new PositionCounts();
+		Map<String, List<DflPlayer>> playersByPosition = new HashMap<>();
 
 		List<String> emergencyPositions = new ArrayList<>();
 		List<DflPlayer> emgPlayers = new ArrayList<>();
@@ -495,85 +483,42 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 			String position = player.getPosition().toLowerCase();
 
 			if(selectedPlayer.isEmergency() == 0) {
-				switch(position) {
-					case "ff" :
-						ffCount++;
-						ffPlayers.add(player);
-						break;
-					case "fwd" :
-						fwdCount++;
-						fwdPlayers.add(player);
-						break;
-					case "rck" :
-						rckCount++;
-						rckPlayers.add(player);
-						break;
-					case "mid" :
-						midCount++;
-						midPlayers.add(player);
-						break;
-					case "def" :
-						defCount++;
-						defPlayers.add(player);
-						break;
-					case "fb" :
-						fbCount++;
-						fbPlayers.add(player);
-						break;
-					default: throw new UnknownPositionException(position);
-				}
+				positionCounts.increment(position);
+				playersByPosition.computeIfAbsent(position, k -> new ArrayList<>()).add(player);
 			} else {
 				emergencyPositions.add(position);
 				emgPlayers.add(player);
 			}
 		}
 
-		loggerUtils.log("info", "Position counts: ffCount={}; fwdCount={}; midCount={}; defCount={}; fbCount={}; rckCount={}, emergencyPositions={};",
-						ffCount, fwdCount, midCount, defCount, fbCount, rckCount, emergencyPositions);
+		loggerUtils.log("info", "Position counts: {}, emergencyPositions={};", positionCounts, emergencyPositions);
 
-		if(ffCount <= 2) {
+		if(!positionCounts.overLimit("ff")) {
 			validationResult.ffCheckOk = true;
-			validationResult.ffPlayers = ffPlayers;
+			validationResult.ffPlayers = playersByPosition.getOrDefault("ff", new ArrayList<>());
 		}
-		if(fwdCount <= 6) {
+		if(!positionCounts.overLimit("fwd")) {
 			validationResult.fwdCheckOk = true;
-			validationResult.fwdPlayers = fwdPlayers;
+			validationResult.fwdPlayers = playersByPosition.getOrDefault("fwd", new ArrayList<>());
 		}
-		if(midCount <= 6) {
+		if(!positionCounts.overLimit("mid")) {
 			validationResult.midCheckOk = true;
-			validationResult.midPlayers = midPlayers;
+			validationResult.midPlayers = playersByPosition.getOrDefault("mid", new ArrayList<>());
 		}
-		if(defCount <= 6) {
+		if(!positionCounts.overLimit("def")) {
 			validationResult.defCheckOk = true;
-			validationResult.defPlayers = defPlayers;
+			validationResult.defPlayers = playersByPosition.getOrDefault("def", new ArrayList<>());
 		}
-		if(fbCount <= 2) {
+		if(!positionCounts.overLimit("fb")) {
 			validationResult.fbCheckOk = true;
-			validationResult.fbPlayers = fbPlayers;
+			validationResult.fbPlayers = playersByPosition.getOrDefault("fb", new ArrayList<>());
 		}
-		if(rckCount <= 2) {
+		if(!positionCounts.overLimit("rck")) {
 			validationResult.rckCheckOk = true;
-			validationResult.rckPlayers = rckPlayers;
+			validationResult.rckPlayers = playersByPosition.getOrDefault("rck", new ArrayList<>());
 		}
 
-		if(ffCount == 2) {
-			benchCount++;
-		}
-		if(fwdCount == 6) {
-			benchCount++;
-		}
-		if(midCount == 6) {
-			benchCount++;
-		}
-		if(defCount == 6) {
-			benchCount++;
-		}
-		if(fbCount == 2) {
-			benchCount++;
-		}
-		if(rckCount == 2) {
-			benchCount++;
-		}
+		int benchCount = positionCounts.benchCount();
 
 		loggerUtils.log("info", "Bench count={};", benchCount);
 
@@ -582,44 +527,15 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		}
 
 		for(String position : emergencyPositions) {
-			switch(position) {
-				case "ff" :
-					ffCount++;
-					break;
-				case "fwd" :
-					fwdCount++;
-					break;
-				case "rck" :
-					rckCount++;
-					break;
-				case "mid" :
-					midCount++;
-					break;
-				case "def" :
-					defCount++;
-					break;
-				case "fb" :
-					fbCount++;
-					break;
-				default: throw new UnknownPositionException(position);
-			}
+			positionCounts.increment(position);
 		}
 
-		if(ffCount > 2 || fwdCount > 6 || midCount > 6 || defCount > 6 || fbCount > 2 || rckCount > 2) {
+		if(positionCounts.anyOverLimit()) {
 			List<Double> emgs = validationResult.getEmergencies();
 			for(DflPlayer player : emgPlayers) {
 				String pos = player.getPosition().toLowerCase();
-				boolean invalid = switch(pos) {
-					case "ff"  -> ffCount > 2;
-					case "fwd" -> fwdCount > 6;
-					case "rck" -> rckCount > 2;
-					case "mid" -> midCount > 6;
-					case "def" -> defCount > 6;
-					case "fb"  -> fbCount > 2;
-					default -> throw new UnknownPositionException(pos);
-				};
 
-				if(invalid) {
+				if(positionCounts.overLimit(pos)) {
 					validationResult.emergencyWarning = true;
 					loggerUtils.log("info", "Invalid emergency, player={};", player);
 

@@ -35,6 +35,7 @@ class SelectedTeamValidationTest {
 		assertFalse(v.fbCheckOk);
 		assertFalse(v.defCheckOk);
 		assertFalse(v.benchCheckOk);
+		assertFalse(v.emergencyCheckOk);
 		assertFalse(v.teamPlayerCheckOk);
 		assertFalse(v.emergencyWarning);
 		assertFalse(v.duplicateSubmissionId);
@@ -78,6 +79,7 @@ class SelectedTeamValidationTest {
 		validation.fbCheckOk = true;
 		validation.defCheckOk = true;
 		validation.benchCheckOk = true;
+		validation.emergencyCheckOk = true;
 		validation.teamPlayerCheckOk = true;
 		validation.unknownError = false;
 		validation.lockedOut = false;
@@ -296,9 +298,9 @@ class SelectedTeamValidationTest {
 
 	@Test
 	void emergenciesGetterSetter_shouldWorkCorrectly() {
-		List<Emergency> emergencies = new ArrayList<>();
-		emergencies.add(new Emergency(1, 1));
-		emergencies.add(new Emergency(2, 2));
+		List<Integer> emergencies = new ArrayList<>();
+		emergencies.add(1);
+		emergencies.add(2);
 
 		validation.setEmergencies(emergencies);
 
@@ -327,6 +329,7 @@ class SelectedTeamValidationTest {
 		validation.fbCheckOk = true;
 		validation.defCheckOk = true;
 		validation.benchCheckOk = true;
+		validation.emergencyCheckOk = true;
 		validation.teamPlayerCheckOk = true;
 		validation.unknownError = false;
 		validation.lockedOut = false;
@@ -401,6 +404,7 @@ class SelectedTeamValidationTest {
 		validation.fbCheckOk = true;
 		validation.defCheckOk = true;
 		validation.benchCheckOk = true;
+		validation.emergencyCheckOk = true;
 		validation.teamPlayerCheckOk = true;
 		validation.unknownError = false;
 		validation.lockedOut = false;

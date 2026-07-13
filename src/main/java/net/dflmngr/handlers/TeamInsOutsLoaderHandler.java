@@ -15,7 +15,6 @@ import net.dflmngr.model.service.DflEarlyInsAndOutsService;
 import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.InsAndOutsService;
-import net.dflmngr.validation.Emergency;
 
 public class TeamInsOutsLoaderHandler extends BaseHandler {
 
@@ -32,7 +31,7 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		insAndOutsService = manage(serviceFactory.createInsAndOutsService());
 	}
 
-	public void execute(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Emergency> emgs, boolean earlyGames) {
+	public void execute(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Integer> emgs, boolean earlyGames) {
 
 		try {
 			ensureLoggingConfigured();
@@ -53,7 +52,7 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		}
 	}
 
-	private void handleEarlyGames(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Emergency> emgs) {
+	private void handleEarlyGames(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Integer> emgs) {
 		loggerUtils.log("info", "Early Games, saving to early games ins and outs");
 
 		List<DflEarlyInsAndOuts> earlyInsAndOuts = new ArrayList<>();
@@ -67,7 +66,7 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		loggerUtils.log("info", "Ins and outs saved");
 	}
 
-	private void handleWithoutEarlyGames(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Emergency> emgs) {
+	private void handleWithoutEarlyGames(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Integer> emgs) {
 		loggerUtils.log("info", "Not early games, saving to regular ins and outs");
 
 		List<InsAndOuts> insAndOuts = new ArrayList<>();
@@ -119,15 +118,15 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		return earlyOuts;
 	}
 
-	private List<DflEarlyInsAndOuts> setEarlyEmgs(String teamCode, int round, List<Emergency> emgs) {
+	private List<DflEarlyInsAndOuts> setEarlyEmgs(String teamCode, int round, List<Integer> emgs) {
 		List<DflEarlyInsAndOuts> earlyEmgs = new ArrayList<>();
 
-		for(Emergency e : emgs) {
+		for(Integer e : emgs) {
 			DflEarlyInsAndOuts emg = new DflEarlyInsAndOuts();
 			emg.setRound(round);
 			emg.setTeamCode(teamCode);
 
-			int eid = e.playerNo();
+			int eid = e;
 			emg.setTeamPlayerId(eid);
 			emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
 
@@ -169,15 +168,15 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		return fullOuts;
 	}
 
-	private List<InsAndOuts> setEmgs(String teamCode, int round, List<Emergency> emgs) {
+	private List<InsAndOuts> setEmgs(String teamCode, int round, List<Integer> emgs) {
 		List<InsAndOuts> fullEmgs = new ArrayList<>();
 
-		for(Emergency e : emgs) {
+		for(Integer e : emgs) {
 			InsAndOuts emg = new InsAndOuts();
 			emg.setRound(round);
 			emg.setTeamCode(teamCode);
 
-			int eid = e.playerNo();
+			int eid = e;
 			emg.setTeamPlayerId(eid);
 			emg.setInOrOut(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1);
 
@@ -277,11 +276,7 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 		selectedPlayer.setTeamCode(teamCode);
 		selectedPlayer.setTeamPlayerId(inOrOut.getTeamPlayerId());
 				
-		if(inOrOut.getInOrOut().equals(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1)) {
-			selectedPlayer.setEmergency(1);
-		} else {
-			selectedPlayer.setEmergency(2);
-		}
+		selectedPlayer.setEmergency(1);
 
 		selectedPlayer.setDnp(false);
 		selectedPlayer.setScoreUsed(false);

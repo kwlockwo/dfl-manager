@@ -19,7 +19,6 @@ import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflSelectionIdsService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.GlobalsService;
-import net.dflmngr.validation.Emergency;
 import net.dflmngr.validation.SelectedTeamValidation;
 
 public class SelectedTeamValidationHandler extends BaseHandler {
@@ -45,7 +44,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		dflSelectionIdsService = manage(serviceFactory.createDflSelectionIdsService());
 	}
 
-	public SelectedTeamValidation execute(int round, String teamCode, Map<String, List<Integer>> insAndOuts, List<Emergency> emergencies, String selectionId) {
+	public SelectedTeamValidation execute(int round, String teamCode, Map<String, List<Integer>> insAndOuts, List<Integer> emergencies, String selectionId) {
 
 		SelectedTeamValidation validationResult = null;
 
@@ -87,7 +86,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		return validationResult;
 	}
 
-	private SelectedTeamValidation standardValidation(int round, int currentRound, String teamCode, Map<String, List<Integer>> insAndOuts, List<Emergency> emergencies, String selectionId) {
+	private SelectedTeamValidation standardValidation(int round, int currentRound, String teamCode, Map<String, List<Integer>> insAndOuts, List<Integer> emergencies, String selectionId) {
 
 		SelectedTeamValidation validationResult = new SelectedTeamValidation();
 
@@ -100,7 +99,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 
 		List<Integer> checkedIns = new ArrayList<>();
 		List<Integer> checkedOuts = new ArrayList<>();
-		List<Emergency> checkedEmgs = new ArrayList<>();
+		List<Integer> checkedEmgs = new ArrayList<>();
 		boolean playerNumbersOk = true;
 
 		List<DflPlayer> selectedWarnPlayers = new ArrayList<>();
@@ -184,8 +183,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 					}
 				}
 
-				for(Emergency emg : emergencies) {
-					int emergency = emg.playerNo();
+				for(int emergency : emergencies) {
 
 					if(emergency < 1 || emergency > 45) {
 						loggerUtils.log("info", "Emergency player outside player range, teamPlayerId={}.", emergency);
@@ -201,7 +199,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 					}
 					DflPlayer player = dflPlayerService.get(teamPlayer.getPlayerId());
 
-					if(checkedEmgs.contains(emg) || checkedIns.contains(emergency)) {
+					if(checkedEmgs.contains(emergency) || checkedIns.contains(emergency)) {
 						loggerUtils.log("info", "Duplicate emgergency, not included in={}.", emergency);
 						validationResult.duplicateEmgs = true;
 						dupEmgPlayers.add(player);
@@ -212,13 +210,13 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 						selectedPlayer.setRound(round);
 						selectedPlayer.setTeamCode(teamCode);
 						selectedPlayer.setTeamPlayerId(emergency);
-						selectedPlayer.setEmergency(emg.rank());
+						selectedPlayer.setEmergency(1);
 						selectedPlayer.setDnp(false);
 
 						selectedTeam.add(selectedPlayer);
 						loggerUtils.log("info", "Added selectedPlayer={}, as emergency", selectedPlayer);
 
-						checkedEmgs.add(emg);
+						checkedEmgs.add(emergency);
 					}
 				}
 			} else {
@@ -331,8 +329,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 					}
 				}
 
-				for(Emergency emg : emergencies) {
-					int emergency = emg.playerNo();
+				for(int emergency : emergencies) {
 
 					if(emergency < 1 || emergency > 45) {
 						loggerUtils.log("info", "Emergency player outside player range, teamPlayerId={}.", emergency);
@@ -348,7 +345,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 					}
 					DflPlayer player = dflPlayerService.get(teamPlayer.getPlayerId());
 
-					if(checkedEmgs.contains(emg) || checkedIns.contains(emergency)) {
+					if(checkedEmgs.contains(emergency) || checkedIns.contains(emergency)) {
 						loggerUtils.log("info", "Duplicate emgergency, not included emg={}.", emergency);
 						validationResult.duplicateEmgs = true;
 						dupEmgPlayers.add(player);
@@ -370,14 +367,14 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 							selectedPlayer.setTeamCode(teamCode);
 							selectedPlayer.setTeamPlayerId(emergency);
 
-							selectedPlayer.setEmergency(emg.rank());
+							selectedPlayer.setEmergency(1);
 							selectedPlayer.setDnp(false);
 
 							selectedTeam.add(selectedPlayer);
 							loggerUtils.log("info", "Added selectedPlayer={}.", selectedPlayer);
 						}
 
-						checkedEmgs.add(emg);
+						checkedEmgs.add(emergency);
 					}
 				}
 
@@ -507,12 +504,18 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 			validationResult.benchCheckOk = true;
 		}
 
+		if(emergencyPositions.size() <= 1) {
+			validationResult.emergencyCheckOk = true;
+		} else {
+			loggerUtils.log("info", "Too many emergencies selected, count={}; only 1 allowed", emergencyPositions.size());
+		}
+
 		for(String position : emergencyPositions) {
 			positionCounts.increment(position);
 		}
 
 		if(positionCounts.anyOverLimit()) {
-			List<Emergency> emgs = validationResult.getEmergencies();
+			List<Integer> emgs = validationResult.getEmergencies();
 			for(DflPlayer player : emgPlayers) {
 				String pos = player.getPosition().toLowerCase();
 
@@ -521,7 +524,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 					loggerUtils.log("info", "Invalid emergency, player={};", player);
 
 					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-					int emg1 = !emgs.isEmpty() ? emgs.get(0).playerNo() : 0;
+					int emg1 = !emgs.isEmpty() ? emgs.get(0) : 0;
 
 					if(emg1 == teamPlayer.getTeamPlayerId()) {
 						emgs.remove(0);

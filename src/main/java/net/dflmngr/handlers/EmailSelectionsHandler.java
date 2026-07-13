@@ -42,7 +42,6 @@ import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 import net.dflmngr.utils.oauth2.OAuth2Authenticator;
-import net.dflmngr.validation.Emergency;
 import net.dflmngr.validation.SelectedTeamValidation;
 import net.freeutils.tnef.Attachment;
 import net.freeutils.tnef.TNEFInputStream;
@@ -425,7 +424,7 @@ if (content instanceof InputStream || content instanceof String) {
 		private int round = 0;
 		private final List<Integer> ins = new ArrayList<>();
 		private final List<Integer> outs = new ArrayList<>();
-		private final List<Emergency> emgs = new ArrayList<>();
+		private final List<Integer> emgs = new ArrayList<>();
 	}
 
 	private SelectedTeamValidation handleSelectionEmailText(String[] emailLines, String id) {
@@ -555,7 +554,6 @@ if (content instanceof InputStream || content instanceof String) {
 			}
 
 			if (line.toLowerCase().contains(TAG_EMG)) {
-				int emgCount = 1;
 				while (i < emailLines.length) {
 					line = emailLines[i++].trim();
 					if (line.toLowerCase().contains(TAG_IN)) {
@@ -567,8 +565,7 @@ if (content instanceof InputStream || content instanceof String) {
 					} else {
 						int emg = getPlayerNo(line);
 						if (emg > 0) {
-							parsed.emgs.add(new Emergency(emg, emgCount == 1 ? 1 : 2));
-							emgCount++;
+							parsed.emgs.add(emg);
 						} else {
 							loggerUtils.log("debug", "Couldn't get player number for emergencies, No.={}", emg);
 						}
@@ -766,6 +763,9 @@ if (content instanceof InputStream || content instanceof String) {
 			}
 			if (!validationResult.benchCheckOk) {
 				messageBody.append("\t- You have too many on the bench.\n");
+			}
+			if (!validationResult.emergencyCheckOk) {
+				messageBody.append("\t- You have named too many emergencies, only 1 is allowed.\n");
 			}
 		}
 

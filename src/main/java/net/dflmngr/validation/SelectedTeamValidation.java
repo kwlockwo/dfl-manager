@@ -20,7 +20,8 @@ public class SelectedTeamValidation {
 	public boolean fbCheckOk;
 	public boolean defCheckOk;
 	public boolean benchCheckOk;
-	
+	public boolean emergencyCheckOk;
+
 	public boolean teamPlayerCheckOk;
 	
 	public boolean emergencyWarning;
@@ -41,7 +42,7 @@ public class SelectedTeamValidation {
 	private String from;
 	
 	private Map<String, List<Integer>> insAndOuts;
-	private List<Emergency> emergencies;
+	private List<Integer> emergencies;
 	
 	public List<DflPlayer> ffPlayers;
 	public List<DflPlayer> fwdPlayers;
@@ -72,7 +73,8 @@ public class SelectedTeamValidation {
 		fbCheckOk = false;
 		defCheckOk = false;
 		benchCheckOk = false;
-		
+		emergencyCheckOk = false;
+
 		teamPlayerCheckOk = false;
 		
 		emergencyWarning = false;
@@ -93,7 +95,7 @@ public class SelectedTeamValidation {
 			}
 		} else {
 			if(!selectionFileMissing && !emptyTeam && ffCheckOk && fwdCheckOk && rckCheckOk && midCheckOk && fbCheckOk && defCheckOk && benchCheckOk
-				&& teamPlayerCheckOk && !unknownError && !lockedOut && !roundCompleted && !duplicateSubmissionId) {
+				&& emergencyCheckOk && teamPlayerCheckOk && !unknownError && !lockedOut && !roundCompleted && !duplicateSubmissionId) {
 				valid = true;
 			}
 		}
@@ -136,11 +138,11 @@ public class SelectedTeamValidation {
 		this.insAndOuts = insAndOuts;
 	}
 	
-	public List<Emergency> getEmergencies() {
+	public List<Integer> getEmergencies() {
 		return emergencies;
 	}
 
-	public void setEmergencies(List<Emergency> emergencies) {
+	public void setEmergencies(List<Integer> emergencies) {
 		this.emergencies = emergencies;
 	}
 

@@ -120,7 +120,7 @@ public class SelectionsHandler extends BaseHandler {
 			} else if(inOrOut.getInOrOut().equals(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.OUT)) {
 				tmpSelectedTeam.remove(applyOut(tmpSelectedTeam, inOrOut.getTeamPlayerId()));
 			} else {
-				tmpSelectedTeam.add(applyEmg(round, teamCode, inOrOut.getTeamPlayerId(), inOrOut.getInOrOut()));
+				tmpSelectedTeam.add(applyEmg(round, teamCode, inOrOut.getTeamPlayerId()));
 			}
 		}
 
@@ -157,7 +157,7 @@ public class SelectionsHandler extends BaseHandler {
 		return droppedPlayer;
 	}
 
-	private DflSelectedPlayer applyEmg(int round, String teamCode, int teamPlayerId, String emgInd) {
+	private DflSelectedPlayer applyEmg(int round, String teamCode, int teamPlayerId) {
 		DflTeamPlayer teamPlayer = dflTeamPlayerService.getTeamPlayerForTeam(teamCode, teamPlayerId);
 
 		DflSelectedPlayer selectedPlayer = new DflSelectedPlayer();
@@ -166,11 +166,7 @@ public class SelectionsHandler extends BaseHandler {
 		selectedPlayer.setTeamCode(teamCode);
 		selectedPlayer.setTeamPlayerId(teamPlayerId);
 
-		if(emgInd.equals(DomainDecodes.INS_AND_OUTS.IN_OR_OUT.EMG1)) {
-			selectedPlayer.setEmergency(1);
-		} else {
-			selectedPlayer.setEmergency(2);
-		}
+		selectedPlayer.setEmergency(1);
 		selectedPlayer.setDnp(false);
 		selectedPlayer.setScoreUsed(false);
 

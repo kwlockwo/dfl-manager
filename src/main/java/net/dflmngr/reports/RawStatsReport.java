@@ -175,13 +175,7 @@ public class RawStatsReport {
 				   "DFL Manager Admin";
 		}
 		
-		List<String> to = new ArrayList<>();
-		
-		if(emailOverride != null && !emailOverride.equals("")) {
-			to.add(emailOverride);
-		} else {
-			to.add(dflGroupEmail);
-		}
+		List<String> to = EmailUtils.resolveRecipients(emailOverride, List.of(dflGroupEmail));
 		
 		List<String> attachments = new ArrayList<>();
 		attachments.add(reportName);

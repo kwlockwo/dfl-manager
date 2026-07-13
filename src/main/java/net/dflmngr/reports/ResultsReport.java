@@ -832,16 +832,7 @@ public class ResultsReport {
 			body = createEmailBody(round);
 		}
 		
-		List<String> to = new ArrayList<>();
-
-		if(emailOverride != null && !emailOverride.equals("")) {
-			to.add(emailOverride);
-		} else {
-			List<DflTeam> teams = dflTeamService.findAll();
-			for(DflTeam team : teams) {
-				to.add(team.getCoachEmail());
-			}
-		}
+		List<String> to = EmailUtils.resolveRecipients(emailOverride, EmailUtils.coachEmails(dflTeamService.findAll()));
 		
 		List<String> attachments = new ArrayList<>();
 		attachments.add(reportName);

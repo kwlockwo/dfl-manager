@@ -25,10 +25,10 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 
 	public TeamInsOutsLoaderHandler() {
 		super("Selections");
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflEarlyInsAndOutsService = serviceFactory.createDflEarlyInsAndOutsService();
-		insAndOutsService = serviceFactory.createInsAndOutsService();
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
+		dflTeamPlayerService = manage(serviceFactory.createDflTeamPlayerService());
+		dflEarlyInsAndOutsService = manage(serviceFactory.createDflEarlyInsAndOutsService());
+		insAndOutsService = manage(serviceFactory.createInsAndOutsService());
 	}
 
 	public void execute(String teamCode, int round, List<Integer> ins, List<Integer> outs, List<Double> emgs, boolean earlyGames) {
@@ -40,17 +40,15 @@ public class TeamInsOutsLoaderHandler extends BaseHandler {
 			
 			if(earlyGames) {
 				handleEarlyGames(teamCode, round, ins, outs, emgs);
-				dflEarlyInsAndOutsService.close();
 			} else {
 				handleWithoutEarlyGames(teamCode, round, ins, outs, emgs);
-				insAndOutsService.close();
 			}
 
-			dflSelectedTeamService.close();
-			dflTeamPlayerService.close();
 						
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in TeamInsOutsLoaderHandler.execute(), round=" + round + " teamCode=" + teamCode, ex);
+		} finally {
+			closeServices();
 		}
 	}
 

@@ -25,9 +25,9 @@ public class AflFixtureLoaderHandler extends BaseHandler {
 		super("AflFixtureLoader");
 
 		try {
-			globalsService = serviceFactory.createGlobalsService();
-			aflFixtureService = serviceFactory.createAflFixtureService();
-			aflTeamService = serviceFactory.createAflTeamService();
+			globalsService = manage(serviceFactory.createGlobalsService());
+			aflFixtureService = manage(serviceFactory.createAflFixtureService());
+			aflTeamService = manage(serviceFactory.createAflTeamService());
 			aflFixtureHtmlHandler = new AflFixtureHtmlHandler();
 			ensureLoggingConfigured();
 		} catch (Exception ex) {
@@ -36,6 +36,14 @@ public class AflFixtureLoaderHandler extends BaseHandler {
 	}
 	
 	public void execute(List<Integer> aflRounds) {
+		try {
+			doExecute(aflRounds);
+		} finally {
+			closeServices();
+		}
+	}
+
+	private void doExecute(List<Integer> aflRounds) {
 
 		loggerUtils.log("info", "Executing AflFixtureLoader for rounds: {}", aflRounds);
 		

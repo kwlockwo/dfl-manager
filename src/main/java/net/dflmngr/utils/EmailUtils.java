@@ -1,5 +1,6 @@
 package net.dflmngr.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -45,6 +46,24 @@ public class EmailUtils {
 
 	private EmailUtils() {
 		throw new IllegalStateException("Utility class");
+	}
+
+	public static List<String> resolveRecipients(String emailOverride, List<String> defaultRecipients) {
+		List<String> to = new ArrayList<>();
+		if(emailOverride != null && !emailOverride.equals("")) {
+			to.add(emailOverride);
+		} else {
+			to.addAll(defaultRecipients);
+		}
+		return to;
+	}
+
+	public static List<String> coachEmails(List<net.dflmngr.model.entity.DflTeam> teams) {
+		List<String> emails = new ArrayList<>();
+		for(net.dflmngr.model.entity.DflTeam team : teams) {
+			emails.add(team.getCoachEmail());
+		}
+		return emails;
 	}
 
 	public static void sendTextEmail(List<String> to, String from, String subject, String body, List<String> attachments) {

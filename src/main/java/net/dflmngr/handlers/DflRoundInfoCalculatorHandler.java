@@ -48,10 +48,10 @@ public class DflRoundInfoCalculatorHandler extends BaseHandler {
 		super("DflRoundInfoCalculatorHandler");
 
 		try{
-			globalsService = serviceFactory.createGlobalsService();
-			aflFixtureService = serviceFactory.createAflFixtureService();
-			dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-			aflTeamService = serviceFactory.createAflTeamService();
+			globalsService = manage(serviceFactory.createGlobalsService());
+			aflFixtureService = manage(serviceFactory.createAflFixtureService());
+			dflRoundInfoService = manage(serviceFactory.createDflRoundInfoService());
+			aflTeamService = manage(serviceFactory.createAflTeamService());
 
 			String defaultTimezone = globalsService.getGroundTimeZone("default");
 			lockoutFormat.setTimeZone(TimeZone.getTimeZone(defaultTimezone));
@@ -91,6 +91,8 @@ public class DflRoundInfoCalculatorHandler extends BaseHandler {
 			loggerUtils.log("info", "DflRoundInfoCalculator Complete");
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in DflRoundInfoCalculatorHandler.execute()", ex);
+		} finally {
+			closeServices();
 		}
 	}
 

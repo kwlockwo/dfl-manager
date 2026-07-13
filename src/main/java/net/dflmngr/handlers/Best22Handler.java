@@ -31,9 +31,9 @@ public class Best22Handler extends BaseHandler {
 
 	public Best22Handler() {
 		super("Best22Handler");
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflBest22Service = serviceFactory.createDflBest22Service();
+		dflPlayerScoresService = manage(serviceFactory.createDflPlayerScoresService());
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
+		dflBest22Service = manage(serviceFactory.createDflBest22Service());
 	}
 
 	public void execute(int round) {
@@ -45,12 +45,13 @@ public class Best22Handler extends BaseHandler {
 			
 			calculateBest22(round);
 			
-			dflPlayerScoresService.close();
 			
 			loggerUtils.log("info", "Best22Handler complete");
 			
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in Best22Handler.execute(), round=" + round, ex);
+		} finally {
+			closeServices();
 		}
 	}
 	

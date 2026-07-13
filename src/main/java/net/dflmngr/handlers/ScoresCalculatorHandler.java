@@ -54,17 +54,17 @@ public class ScoresCalculatorHandler extends BaseHandler {
 
 	public ScoresCalculatorHandler() {
 		super("RoundProgress");
-		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflTeamService = serviceFactory.createDflTeamService();
-		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
+		rawPlayerStatsService = manage(serviceFactory.createRawPlayerStatsService());
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
+		dflTeamPlayerService = manage(serviceFactory.createDflTeamPlayerService());
+		dflPlayerScoresService = manage(serviceFactory.createDflPlayerScoresService());
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
+		dflTeamService = manage(serviceFactory.createDflTeamService());
+		dflTeamScoresService = manage(serviceFactory.createDflTeamScoresService());
+		dflRoundInfoService = manage(serviceFactory.createDflRoundInfoService());
+		aflFixtureService = manage(serviceFactory.createAflFixtureService());
+		globalsService = manage(serviceFactory.createGlobalsService());
+		dflPlayerPredictedScoresService = manage(serviceFactory.createDflPlayerPredictedScoresService());
 	}
 
 	public void configureLogging(String logfile) {
@@ -92,17 +92,7 @@ public class ScoresCalculatorHandler extends BaseHandler {
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ScoresCalculatorHandler.execute(), round=" + round, ex);
 		} finally {
-			rawPlayerStatsService.close();
-			dflPlayerService.close();
-			dflTeamPlayerService.close();
-			dflPlayerScoresService.close();
-			dflSelectedTeamService.close();
-			dflTeamService.close();
-			dflTeamScoresService.close();
-			dflRoundInfoService.close();
-			aflFixtureService.close();
-			globalsService.close();
-			dflPlayerPredictedScoresService.close();
+			closeServices();
 		}
 	}
 

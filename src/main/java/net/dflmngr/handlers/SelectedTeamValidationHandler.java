@@ -34,14 +34,14 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 
 	public SelectedTeamValidationHandler() {
 		super("SelectedTeamValidationHandler");
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		dflEarlyInsAndOutsService = serviceFactory.createDflEarlyInsAndOutsService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		dflSelectionIdsService = serviceFactory.createDflSelectionIdsService();
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
+		dflTeamPlayerService = manage(serviceFactory.createDflTeamPlayerService());
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
+		globalsService = manage(serviceFactory.createGlobalsService());
+		dflRoundInfoService = manage(serviceFactory.createDflRoundInfoService());
+		dflEarlyInsAndOutsService = manage(serviceFactory.createDflEarlyInsAndOutsService());
+		aflFixtureService = manage(serviceFactory.createAflFixtureService());
+		dflSelectionIdsService = manage(serviceFactory.createDflSelectionIdsService());
 	}
 
 	public SelectedTeamValidation execute(int round, String teamCode, Map<String, List<Integer>> insAndOuts, List<Double> emergencies, String selectionId) {
@@ -80,14 +80,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 				validationResult.setTeamCode(teamCode);
 			}
 		} finally {
-			dflSelectedTeamService.close();
-			dflTeamPlayerService.close();
-			dflPlayerService.close();
-			globalsService.close();
-			dflRoundInfoService.close();
-			dflEarlyInsAndOutsService.close();
-			aflFixtureService.close();
-			dflSelectionIdsService.close();
+			closeServices();
 		}
 
 		return validationResult;

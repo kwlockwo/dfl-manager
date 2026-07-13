@@ -29,7 +29,7 @@ public class AflPlayerLoaderHtmlHandler extends BaseHandler {
 
 	public AflPlayerLoaderHtmlHandler() {
 		super("AflPlayerLoader");
-		globalsService = serviceFactory.createGlobalsService();
+		globalsService = manage(serviceFactory.createGlobalsService());
 		ensureLoggingConfigured();
 	}
 

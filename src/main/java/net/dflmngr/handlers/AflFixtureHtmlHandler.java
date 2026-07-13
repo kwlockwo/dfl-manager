@@ -36,8 +36,8 @@ public class AflFixtureHtmlHandler extends BaseHandler {
     public AflFixtureHtmlHandler() {
         super("AflFixtureLoader");
 
-        globalsService = serviceFactory.createGlobalsService();
-        aflTeamService = serviceFactory.createAflTeamService();
+        globalsService = manage(serviceFactory.createGlobalsService());
+        aflTeamService = manage(serviceFactory.createAflTeamService());
 
         currentYear = globalsService.getCurrentYear();
         defaultTimezone = globalsService.getGroundTimeZone("default");

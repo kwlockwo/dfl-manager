@@ -37,10 +37,10 @@ public class CallumChambersHandler extends BaseHandler {
 		super("CallumChambersHandler");
 		medalStandings = new ArrayList<>();
 
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		globalsService = serviceFactory.createGlobalsService();
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
+		dflPlayerScoresService = manage(serviceFactory.createDflPlayerScoresService());
+		dflTeamPlayerService = manage(serviceFactory.createDflTeamPlayerService());
+		globalsService = manage(serviceFactory.createGlobalsService());
 	}
 
 	public void execute(int round) {
@@ -57,13 +57,11 @@ public class CallumChambersHandler extends BaseHandler {
 
 			calculateStandings(round, players, playerScores);
 
-			dflPlayerService.close();
-			dflPlayerScoresService.close();
-			dflTeamPlayerService.close();
-			globalsService.close();
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in CallumChambersHandler.execute(), round=" + round, ex);
+		} finally {
+			closeServices();
 		}
 	}
 

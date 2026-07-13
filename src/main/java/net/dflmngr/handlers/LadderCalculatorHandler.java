@@ -28,12 +28,12 @@ public class LadderCalculatorHandler extends BaseHandler {
 
 	public LadderCalculatorHandler() {
 		super("RoundProgress");
-		dflLadderService = serviceFactory.createDflLadderService();
-		dflFixtureService = serviceFactory.createDflFixtureService();
-		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
+		dflLadderService = manage(serviceFactory.createDflLadderService());
+		dflFixtureService = manage(serviceFactory.createDflFixtureService());
+		dflTeamScoresService = manage(serviceFactory.createDflTeamScoresService());
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
+		dflPlayerScoresService = manage(serviceFactory.createDflPlayerScoresService());
+		dflPlayerPredictedScoresService = manage(serviceFactory.createDflPlayerPredictedScoresService());
 	}
 
 	public void configureLogging(String logfile) {
@@ -53,12 +53,7 @@ public class LadderCalculatorHandler extends BaseHandler {
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in LadderCalculatorHandler.execute(), round=" + round, ex);
 		} finally {
-			dflLadderService.close();
-			dflFixtureService.close();
-			dflTeamScoresService.close();
-			dflSelectedTeamService.close();
-			dflPlayerScoresService.close();
-			dflPlayerPredictedScoresService.close();
+			closeServices();
 		}
 	}
 		

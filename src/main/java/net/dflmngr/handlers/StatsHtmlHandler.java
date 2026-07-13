@@ -25,7 +25,7 @@ public class StatsHtmlHandler extends BaseHandler {
 
     public StatsHtmlHandler() {
         super("RoundProgress");
-        globalsService = serviceFactory.createGlobalsService();
+        globalsService = manage(serviceFactory.createGlobalsService());
     }
 
     public void configureLogging(String logfile) {
@@ -33,6 +33,15 @@ public class StatsHtmlHandler extends BaseHandler {
     }
 
     public List<RawPlayerStats> execute(int round, String homeTeam, String awayTeam, String statsUrl,
+            boolean includeHomeTeam, boolean includeAwayTeam, String scrapingStatus) {
+        try {
+            return doExecute(round, homeTeam, awayTeam, statsUrl, includeHomeTeam, includeAwayTeam, scrapingStatus);
+        } finally {
+            closeServices();
+        }
+    }
+
+    private List<RawPlayerStats> doExecute(int round, String homeTeam, String awayTeam, String statsUrl,
             boolean includeHomeTeam, boolean includeAwayTeam, String scrapingStatus) {
 
         ensureLoggingConfigured();

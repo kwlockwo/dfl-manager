@@ -296,9 +296,9 @@ class SelectedTeamValidationTest {
 
 	@Test
 	void emergenciesGetterSetter_shouldWorkCorrectly() {
-		List<Double> emergencies = new ArrayList<>();
-		emergencies.add(1.0);
-		emergencies.add(2.0);
+		List<Emergency> emergencies = new ArrayList<>();
+		emergencies.add(new Emergency(1, 1));
+		emergencies.add(new Emergency(2, 2));
 
 		validation.setEmergencies(emergencies);
 

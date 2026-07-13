@@ -42,6 +42,7 @@ import net.dflmngr.model.service.DflTeamService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.utils.DflmngrUtils;
 import net.dflmngr.utils.oauth2.OAuth2Authenticator;
+import net.dflmngr.validation.Emergency;
 import net.dflmngr.validation.SelectedTeamValidation;
 import net.freeutils.tnef.Attachment;
 import net.freeutils.tnef.TNEFInputStream;
@@ -424,7 +425,7 @@ if (content instanceof InputStream || content instanceof String) {
 		private int round = 0;
 		private final List<Integer> ins = new ArrayList<>();
 		private final List<Integer> outs = new ArrayList<>();
-		private final List<Double> emgs = new ArrayList<>();
+		private final List<Emergency> emgs = new ArrayList<>();
 	}
 
 	private SelectedTeamValidation handleSelectionEmailText(String[] emailLines, String id) {
@@ -564,15 +565,10 @@ if (content instanceof InputStream || content instanceof String) {
 					} else if (line.isEmpty()) {
 						// ignore blank lines
 					} else {
-						double emg = getPlayerNo(line);
+						int emg = getPlayerNo(line);
 						if (emg > 0) {
-							if (emgCount == 1) {
-								emg = emg + 0.1;
-								emgCount++;
-							} else {
-								emg = emg + 0.2;
-							}
-							parsed.emgs.add(emg);
+							parsed.emgs.add(new Emergency(emg, emgCount == 1 ? 1 : 2));
+							emgCount++;
 						} else {
 							loggerUtils.log("debug", "Couldn't get player number for emergencies, No.={}", emg);
 						}

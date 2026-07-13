@@ -41,7 +41,7 @@ public class SelectedTeamValidation {
 	private String from;
 	
 	private Map<String, List<Integer>> insAndOuts;
-	private List<Double> emergencies;
+	private List<Emergency> emergencies;
 	
 	public List<DflPlayer> ffPlayers;
 	public List<DflPlayer> fwdPlayers;
@@ -136,11 +136,11 @@ public class SelectedTeamValidation {
 		this.insAndOuts = insAndOuts;
 	}
 	
-	public List<Double> getEmergencies() {
+	public List<Emergency> getEmergencies() {
 		return emergencies;
 	}
 
-	public void setEmergencies(List<Double> emergencies) {
+	public void setEmergencies(List<Emergency> emergencies) {
 		this.emergencies = emergencies;
 	}
 

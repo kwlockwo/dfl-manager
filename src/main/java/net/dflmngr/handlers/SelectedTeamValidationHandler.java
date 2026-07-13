@@ -19,6 +19,7 @@ import net.dflmngr.model.service.DflSelectedTeamService;
 import net.dflmngr.model.service.DflSelectionIdsService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.GlobalsService;
+import net.dflmngr.validation.Emergency;
 import net.dflmngr.validation.SelectedTeamValidation;
 
 public class SelectedTeamValidationHandler extends BaseHandler {
@@ -44,7 +45,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		dflSelectionIdsService = manage(serviceFactory.createDflSelectionIdsService());
 	}
 
-	public SelectedTeamValidation execute(int round, String teamCode, Map<String, List<Integer>> insAndOuts, List<Double> emergencies, String selectionId) {
+	public SelectedTeamValidation execute(int round, String teamCode, Map<String, List<Integer>> insAndOuts, List<Emergency> emergencies, String selectionId) {
 
 		SelectedTeamValidation validationResult = null;
 
@@ -86,7 +87,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		return validationResult;
 	}
 
-	private SelectedTeamValidation standardValidation(int round, int currentRound, String teamCode, Map<String, List<Integer>> insAndOuts, List<Double> emergencies, String selectionId) {
+	private SelectedTeamValidation standardValidation(int round, int currentRound, String teamCode, Map<String, List<Integer>> insAndOuts, List<Emergency> emergencies, String selectionId) {
 
 		SelectedTeamValidation validationResult = new SelectedTeamValidation();
 
@@ -99,7 +100,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 
 		List<Integer> checkedIns = new ArrayList<>();
 		List<Integer> checkedOuts = new ArrayList<>();
-		List<Double> checkedEmgs = new ArrayList<>();
+		List<Emergency> checkedEmgs = new ArrayList<>();
 		boolean playerNumbersOk = true;
 
 		List<DflPlayer> selectedWarnPlayers = new ArrayList<>();
@@ -183,8 +184,8 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 					}
 				}
 
-				for(Double emg : emergencies) {
-					int emergency = emg.intValue();
+				for(Emergency emg : emergencies) {
+					int emergency = emg.playerNo();
 
 					if(emergency < 1 || emergency > 45) {
 						loggerUtils.log("info", "Emergency player outside player range, teamPlayerId={}.", emergency);
@@ -211,14 +212,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 						selectedPlayer.setRound(round);
 						selectedPlayer.setTeamCode(teamCode);
 						selectedPlayer.setTeamPlayerId(emergency);
-
-						int e1e2 = Integer.parseInt(Double.toString(emg).split("\\.")[1].substring(0, 1));
-						if(e1e2 == 1) {
-							selectedPlayer.setEmergency(1);
-						} else {
-							selectedPlayer.setEmergency(2);
-						}
-
+						selectedPlayer.setEmergency(emg.rank());
 						selectedPlayer.setDnp(false);
 
 						selectedTeam.add(selectedPlayer);
@@ -337,8 +331,8 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 					}
 				}
 
-				for(Double emg : emergencies) {
-					int emergency = emg.intValue();
+				for(Emergency emg : emergencies) {
+					int emergency = emg.playerNo();
 
 					if(emergency < 1 || emergency > 45) {
 						loggerUtils.log("info", "Emergency player outside player range, teamPlayerId={}.", emergency);
@@ -376,13 +370,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 							selectedPlayer.setTeamCode(teamCode);
 							selectedPlayer.setTeamPlayerId(emergency);
 
-							int e1e2 = Integer.parseInt(Double.toString(emg).split("\\.")[1].substring(0, 1));
-							if(e1e2 == 1) {
-								selectedPlayer.setEmergency(1);
-							} else {
-								selectedPlayer.setEmergency(2);
-							}
-
+							selectedPlayer.setEmergency(emg.rank());
 							selectedPlayer.setDnp(false);
 
 							selectedTeam.add(selectedPlayer);
@@ -524,7 +512,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 		}
 
 		if(positionCounts.anyOverLimit()) {
-			List<Double> emgs = validationResult.getEmergencies();
+			List<Emergency> emgs = validationResult.getEmergencies();
 			for(DflPlayer player : emgPlayers) {
 				String pos = player.getPosition().toLowerCase();
 
@@ -533,7 +521,7 @@ public class SelectedTeamValidationHandler extends BaseHandler {
 					loggerUtils.log("info", "Invalid emergency, player={};", player);
 
 					DflTeamPlayer teamPlayer = dflTeamPlayerService.get(player.getPlayerId());
-					int emg1 = emgs.size() >= 1 ? emgs.get(0).intValue() : 0;
+					int emg1 = !emgs.isEmpty() ? emgs.get(0).playerNo() : 0;
 
 					if(emg1 == teamPlayer.getTeamPlayerId()) {
 						emgs.remove(0);

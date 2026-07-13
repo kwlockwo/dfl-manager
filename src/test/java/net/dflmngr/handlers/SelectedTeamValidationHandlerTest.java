@@ -41,6 +41,7 @@ import net.dflmngr.model.service.DflSelectionIdsService;
 import net.dflmngr.model.service.DflTeamPlayerService;
 import net.dflmngr.model.service.GlobalsService;
 import net.dflmngr.service.ServiceFactory;
+import net.dflmngr.validation.Emergency;
 import net.dflmngr.validation.SelectedTeamValidation;
 
 @ExtendWith(MockitoExtension.class)
@@ -194,7 +195,7 @@ class SelectedTeamValidationHandlerTest {
 
 		SelectedTeamValidation result = handler.execute(2, TEAM_CODE,
 				insAndOuts(new ArrayList<>(), new ArrayList<>()),
-				new ArrayList<>(List.of(7.1)), "noid");
+				new ArrayList<>(List.of(new Emergency(7, 1))), "noid");
 
 		assertNotNull(result);
 		// the already-selected emergency must not be added to the team again:

@@ -30,10 +30,10 @@ public class SelectionsHandler extends BaseHandler {
 
 	public SelectionsHandler() {
 		super("SelectionsHandler");
-		dflTeamService = serviceFactory.createDflTeamService();
-		insAndOutsService = serviceFactory.createInsAndOutsService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
+		dflTeamService = manage(serviceFactory.createDflTeamService());
+		insAndOutsService = manage(serviceFactory.createInsAndOutsService());
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
+		dflTeamPlayerService = manage(serviceFactory.createDflTeamPlayerService());
 	}
 
 	public void execute(int round) {
@@ -50,15 +50,13 @@ public class SelectionsHandler extends BaseHandler {
 				createTeamSelections(round, team.getTeamCode(), insAndOuts);
 			}
 
-			dflTeamService.close();
-			insAndOutsService.close();
-			dflSelectedTeamService.close();
-			dflTeamPlayerService.close();
 
 			loggerUtils.log("info", "Team selections created");
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in SelectionsHandler.execute(), round=" + round, ex);
+		} finally {
+			closeServices();
 		}
 	}
 

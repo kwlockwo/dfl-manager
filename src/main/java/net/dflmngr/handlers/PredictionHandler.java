@@ -34,11 +34,11 @@ public class PredictionHandler extends BaseHandler {
 
 	public PredictionHandler() {
 		super("Predictions");
-		dflPlayerPredictedScoresService = serviceFactory.createDflPlayerPredictedScoresService();
-		dflTeamPredictedScoresService = serviceFactory.createDflTeamPredictedScoresService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflTeamService = serviceFactory.createDflTeamService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflPlayerPredictedScoresService = manage(serviceFactory.createDflPlayerPredictedScoresService());
+		dflTeamPredictedScoresService = manage(serviceFactory.createDflTeamPredictedScoresService());
+		dflPlayerScoresService = manage(serviceFactory.createDflPlayerScoresService());
+		dflTeamService = manage(serviceFactory.createDflTeamService());
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
 	}
 
 	public void execute(int round, String teamCode, boolean doPlayers) {
@@ -56,14 +56,11 @@ public class PredictionHandler extends BaseHandler {
 
 			loggerUtils.log("info", "PredictionHandler completed");
 
-			dflPlayerPredictedScoresService.close();
-			dflTeamPredictedScoresService.close();
-			dflPlayerScoresService.close();
-			dflTeamService.close();
-			dflSelectedTeamService.close();
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in PredictionHandler.execute(), round=" + round + " teamCode=" + teamCode, ex);
+		} finally {
+			closeServices();
 		}
 	}
 

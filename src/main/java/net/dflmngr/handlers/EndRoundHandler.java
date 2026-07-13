@@ -67,18 +67,18 @@ public class EndRoundHandler extends BaseHandler {
 
 	public EndRoundHandler() {
 		super("EndRound");
-		dflMatthewAllenService = serviceFactory.createDflMatthewAllenService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflTeamService = serviceFactory.createDflTeamService();
-		dflBest22Service = serviceFactory.createDflBest22Service();
-		dflLadderService = serviceFactory.createDflLadderService();
-		dflFixtureService = serviceFactory.createDflFixtureService();
-		dflTeamScoresService = serviceFactory.createDflTeamScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		insAndOutsService = serviceFactory.createInsAndOutsService();
+		dflMatthewAllenService = manage(serviceFactory.createDflMatthewAllenService());
+		globalsService = manage(serviceFactory.createGlobalsService());
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
+		dflTeamPlayerService = manage(serviceFactory.createDflTeamPlayerService());
+		dflTeamService = manage(serviceFactory.createDflTeamService());
+		dflBest22Service = manage(serviceFactory.createDflBest22Service());
+		dflLadderService = manage(serviceFactory.createDflLadderService());
+		dflFixtureService = manage(serviceFactory.createDflFixtureService());
+		dflTeamScoresService = manage(serviceFactory.createDflTeamScoresService());
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
+		dflRoundInfoService = manage(serviceFactory.createDflRoundInfoService());
+		insAndOutsService = manage(serviceFactory.createInsAndOutsService());
 	}
 
 	public void execute(int round, String emailOverride) {
@@ -145,23 +145,13 @@ public class EndRoundHandler extends BaseHandler {
 
 			globalsService.setCurrentRound(round + 1);
 
-			dflMatthewAllenService.close();
-			globalsService.close();
-			dflPlayerService.close();
-			dflTeamPlayerService.close();
-			dflTeamService.close();
-			dflBest22Service.close();
-			dflLadderService.close();
-			dflFixtureService.close();
-			dflTeamScoresService.close();
-			dflSelectedTeamService.close();
-			dflRoundInfoService.close();
-			insAndOutsService.close();
 
 			loggerUtils.log("info", "End round completed");
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in EndRoundHandler.execute(), round=" + round, ex);
+		} finally {
+			closeServices();
 		}
 
 	}
@@ -925,16 +915,7 @@ public class EndRoundHandler extends BaseHandler {
 
 		String dflMngrEmail = globalsService.getEmailConfig().get("dflmngrEmailAddr");
 
-		List<String> to = new ArrayList<>();
-
-		if (emailOverride != null && !emailOverride.equals("")) {
-			to.add(emailOverride);
-		} else {
-			List<DflTeam> teams = dflTeamService.findAll();
-			for (DflTeam team : teams) {
-				to.add(team.getCoachEmail());
-			}
-		}
+		List<String> to = EmailUtils.resolveRecipients(emailOverride, EmailUtils.coachEmails(dflTeamService.findAll()));
 
 		loggerUtils.log("info", "Emailing to={};", to);
 		EmailUtils.sendTextEmail(to, dflMngrEmail, subject, body, null);

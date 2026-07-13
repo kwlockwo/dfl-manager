@@ -29,11 +29,11 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 		super("AflPlayerLoader");
 
 		try {
-			aflTeamService = serviceFactory.createAflTeamService();
-			aflPlayerService = serviceFactory.createAflPlayerService();
-			dflPlayerService = serviceFactory.createDflPlayerService();
-			globalsService = serviceFactory.createGlobalsService();
-			dflUnmatchedPlayerService = serviceFactory.createDflUnmatchedPlayerService();
+			aflTeamService = manage(serviceFactory.createAflTeamService());
+			aflPlayerService = manage(serviceFactory.createAflPlayerService());
+			dflPlayerService = manage(serviceFactory.createDflPlayerService());
+			globalsService = manage(serviceFactory.createGlobalsService());
+			dflUnmatchedPlayerService = manage(serviceFactory.createDflUnmatchedPlayerService());
 
 			ensureLoggingConfigured();
 		} catch (Exception ex) {
@@ -55,6 +55,8 @@ public class AflPlayerLoaderHandler extends BaseHandler {
 			loggerUtils.log("info", "AflPlayerLoader Complete");
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in AflPlayerLoaderHandler.execute()", ex);
+		} finally {
+			closeServices();
 		}
 
 	}

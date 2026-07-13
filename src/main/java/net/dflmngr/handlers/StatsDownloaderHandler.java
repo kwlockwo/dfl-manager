@@ -23,9 +23,9 @@ public class StatsDownloaderHandler extends BaseHandler {
 
 	public StatsDownloaderHandler(int round, String statsUrl) {
 		super("RoundProgress");
-		rawPlayerStatsService = serviceFactory.createRawPlayerStatsService();
-		statsRoundPlayerStatsService = serviceFactory.createStatsRoundPlayerStatsService();
-		globalsService = serviceFactory.createGlobalsService();
+		rawPlayerStatsService = manage(serviceFactory.createRawPlayerStatsService());
+		statsRoundPlayerStatsService = manage(serviceFactory.createStatsRoundPlayerStatsService());
+		globalsService = manage(serviceFactory.createGlobalsService());
 
 		this.round = round;
 		this.statsUrl = statsUrl;
@@ -108,9 +108,7 @@ public class StatsDownloaderHandler extends BaseHandler {
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in StatsDownloaderHandler.execute(), homeTeam=" + homeTeam + " awayTeam=" + awayTeam, ex);
 		} finally {
-			rawPlayerStatsService.close();
-			statsRoundPlayerStatsService.close();
-			globalsService.close();
+			closeServices();
 		}
 	}
 

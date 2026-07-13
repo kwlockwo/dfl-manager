@@ -27,12 +27,20 @@ public class PreSeasonStatsHandler extends BaseHandler {
 
 	public PreSeasonStatsHandler() {
 		super("PreSeasonStats");
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflPreseasonScoresService = serviceFactory.createDflPreseasonScoresService();
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
+		globalsService = manage(serviceFactory.createGlobalsService());
+		dflPreseasonScoresService = manage(serviceFactory.createDflPreseasonScoresService());
 	}
 
 	public void execute(int round) {
+		try {
+			doExecute(round);
+		} finally {
+			closeServices();
+		}
+	}
+
+	private void doExecute(int round) {
 
 		ensureLoggingConfigured();
 		

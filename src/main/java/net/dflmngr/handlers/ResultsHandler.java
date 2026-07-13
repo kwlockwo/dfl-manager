@@ -28,9 +28,9 @@ public class ResultsHandler extends BaseHandler {
 
 	public ResultsHandler() {
 		super("RoundProgress");
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		globalsService = serviceFactory.createGlobalsService();
+		aflFixtureService = manage(serviceFactory.createAflFixtureService());
+		dflRoundInfoService = manage(serviceFactory.createDflRoundInfoService());
+		globalsService = manage(serviceFactory.createGlobalsService());
 	}
 
 	public void configureLogging(String logfile) {
@@ -64,14 +64,13 @@ public class ResultsHandler extends BaseHandler {
 				loggerUtils.log("info", "Handled round={} ....", round);
 			}
 
-			aflFixtureService.close();
-			dflRoundInfoService.close();
-			globalsService.close();
 			
 			loggerUtils.log("info", "ResultsHandler complete");
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in ResultsHandler.execute(), inputRound=" + inputRound, ex);
+		} finally {
+			closeServices();
 		}
 	}
 

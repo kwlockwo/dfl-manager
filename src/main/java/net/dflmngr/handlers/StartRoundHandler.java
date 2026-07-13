@@ -42,15 +42,15 @@ public class StartRoundHandler extends BaseHandler {
 
 	public StartRoundHandler() {
 		super("StartRound");
-		dflTeamService = serviceFactory.createDflTeamService();
-		globalsService = serviceFactory.createGlobalsService();
-		dflFixtureService = serviceFactory.createDflFixtureService();
-		dflTeamPredictedScoresService = serviceFactory.createDflTeamPredictedScoresService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		insAndOutsService = serviceFactory.createInsAndOutsService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
+		dflTeamService = manage(serviceFactory.createDflTeamService());
+		globalsService = manage(serviceFactory.createGlobalsService());
+		dflFixtureService = manage(serviceFactory.createDflFixtureService());
+		dflTeamPredictedScoresService = manage(serviceFactory.createDflTeamPredictedScoresService());
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
+		insAndOutsService = manage(serviceFactory.createInsAndOutsService());
+		dflTeamPlayerService = manage(serviceFactory.createDflTeamPlayerService());
+		dflRoundInfoService = manage(serviceFactory.createDflRoundInfoService());
+		aflFixtureService = manage(serviceFactory.createAflFixtureService());
 	}
 
 	public void execute(int round, String emailOveride, boolean fromScoresCalculator) {
@@ -88,18 +88,11 @@ public class StartRoundHandler extends BaseHandler {
 			
 			loggerUtils.log("info", "Start round completed");
 			
-			dflTeamService.close();
-			globalsService.close();
-			dflFixtureService.close();
-			dflTeamPredictedScoresService.close();
-			dflPlayerService.close();
-			insAndOutsService.close();
-			dflTeamPlayerService.close();
-			dflRoundInfoService.close();
-			aflFixtureService.close();
 		
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in StartRoundHandler.execute(), round=" + round, ex);
+		} finally {
+			closeServices();
 		}
 	}
 		
@@ -145,15 +138,7 @@ public class StartRoundHandler extends BaseHandler {
 		body = body + "<p>DFL Manager Admin</p>\n";
 		body = body + "</body>\n</html>";
 		
-		List<String> to = new ArrayList<>();
-		
-		if(emailOverride != null && !emailOverride.equals("")) {
-			to.add(emailOverride);
-		} else {
-			for(DflTeam team : teams) {
-				to.add(team.getCoachEmail());
-			}
-		}
+		List<String> to = EmailUtils.resolveRecipients(emailOverride, EmailUtils.coachEmails(teams));
 
 		loggerUtils.log("info", "Emailing early games start round to={}", to);
 		EmailUtils.sendHtmlEmail(to, dflMngrEmail, subject, body, null);	

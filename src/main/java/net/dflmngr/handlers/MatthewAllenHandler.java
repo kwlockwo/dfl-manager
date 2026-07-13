@@ -34,11 +34,11 @@ public class MatthewAllenHandler extends BaseHandler {
 
 	public MatthewAllenHandler() {
 		super("RoundProgress");
-		dflFixtureService = serviceFactory.createDflFixtureService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
-		dflMatthewAllenService = serviceFactory.createDflMatthewAllenService();
-		dflPlayerService = serviceFactory.createDflPlayerService();
+		dflFixtureService = manage(serviceFactory.createDflFixtureService());
+		dflPlayerScoresService = manage(serviceFactory.createDflPlayerScoresService());
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
+		dflMatthewAllenService = manage(serviceFactory.createDflMatthewAllenService());
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
 	}
 
 	public void execute(int round) {
@@ -61,6 +61,8 @@ public class MatthewAllenHandler extends BaseHandler {
 			
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in MatthewAllenHandler.execute(), round=" + round, ex);
+		} finally {
+			closeServices();
 		}
 	}
 	

@@ -344,15 +344,7 @@ public class InsAndOutsReport {
 		body = body + "<p>DFL Manager Admin</p>\n";
 		body = body + "</body>\n</html>";
 		
-		List<String> to = new ArrayList<>();
-
-		if(emailOverride != null && !emailOverride.equals("")) {
-			to.add(emailOverride);
-		} else {
-			for(DflTeam team : teams) {
-				to.add(team.getCoachEmail());
-			}
-		}
+		List<String> to = EmailUtils.resolveRecipients(emailOverride, EmailUtils.coachEmails(teams));
 		
 		List<String> attachments = new ArrayList<>();
 		attachments.add(reportName);

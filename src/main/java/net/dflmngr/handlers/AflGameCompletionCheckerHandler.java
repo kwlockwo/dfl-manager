@@ -33,8 +33,8 @@ public class AflGameCompletionCheckerHandler extends BaseHandler {
 
 	public AflGameCompletionCheckerHandler() {
 		super("AflGameCompletionChecker");
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		globalsService = serviceFactory.createGlobalsService();
+		aflFixtureService = manage(serviceFactory.createAflFixtureService());
+		globalsService = manage(serviceFactory.createGlobalsService());
 	}
 
 	public void configureLogging(String logfile) {
@@ -82,13 +82,13 @@ public class AflGameCompletionCheckerHandler extends BaseHandler {
 				loggerUtils.log("info", "All started AFL fixtures are complete");
 			}
 
-			aflFixtureService.close();
-			globalsService.close();
 
 			loggerUtils.log("info", "AflGameCompletionChecker completed");
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in AflGameCompletionCheckerHandler.execute()", ex);
+		} finally {
+			closeServices();
 		}
 	}
 

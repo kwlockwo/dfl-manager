@@ -15,8 +15,8 @@ public class DflFixtureGeneratorHandler extends BaseHandler {
 
 	public DflFixtureGeneratorHandler() {
 		super("DflFixtureGeneratorHandler");
-		globalsService = serviceFactory.createGlobalsService();
-		dflFixtureService = serviceFactory.createDflFixtureService();
+		globalsService = manage(serviceFactory.createGlobalsService());
+		dflFixtureService = manage(serviceFactory.createDflFixtureService());
 	}
 
 	public void execute() {
@@ -33,6 +33,8 @@ public class DflFixtureGeneratorHandler extends BaseHandler {
 			
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in DflFixtureGeneratorHandler.execute()", ex);
+		} finally {
+			closeServices();
 		}
 	}
 	

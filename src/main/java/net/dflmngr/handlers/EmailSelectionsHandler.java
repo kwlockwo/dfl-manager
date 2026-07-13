@@ -75,9 +75,9 @@ public class EmailSelectionsHandler extends BaseHandler {
 
 	public EmailSelectionsHandler() {
 		super("Selections");
-		globalsService = serviceFactory.createGlobalsService();
-		dflTeamService = serviceFactory.createDflTeamService();
-		dflTeamPlayerService = serviceFactory.createDflTeamPlayerService();
+		globalsService = manage(serviceFactory.createGlobalsService());
+		dflTeamService = manage(serviceFactory.createDflTeamService());
+		dflTeamPlayerService = manage(serviceFactory.createDflTeamPlayerService());
 	}
 
 	public void execute() {
@@ -124,9 +124,7 @@ public class EmailSelectionsHandler extends BaseHandler {
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in EmailSelectionsHandler.execute()", ex);
 		} finally {
-			globalsService.close();
-			dflTeamService.close();
-			dflTeamPlayerService.close();
+			closeServices();
 		}
 	}
 

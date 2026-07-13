@@ -37,9 +37,9 @@ public class AdamGoodesHandler extends BaseHandler {
 		medalStandings = new ArrayList<>();
 		topFirstYears = new ArrayList<>();
 
-		dflPlayerService = serviceFactory.createDflPlayerService();
-		dflPlayerScoresService = serviceFactory.createDflPlayerScoresService();
-		dflSelectedTeamService = serviceFactory.createDflSelectedTeamService();
+		dflPlayerService = manage(serviceFactory.createDflPlayerService());
+		dflPlayerScoresService = manage(serviceFactory.createDflPlayerScoresService());
+		dflSelectedTeamService = manage(serviceFactory.createDflSelectedTeamService());
 	}
 
 	public void execute(int round) {
@@ -57,12 +57,11 @@ public class AdamGoodesHandler extends BaseHandler {
 			
 			calculateStandings(round, adamGoodesEligible, playerScores);
 			
-			dflPlayerService.close();
-			dflPlayerScoresService.close();
-			dflSelectedTeamService.close();
 	
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in AdamGoodesHandler.execute(), round=" + round, ex);
+		} finally {
+			closeServices();
 		}
 	}
 	

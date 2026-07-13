@@ -27,9 +27,9 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 
 	public StatsRoundPlayerStatsHandler() {
 		super("RawPlayerStatsHandler");
-		dflRoundInfoService = serviceFactory.createDflRoundInfoService();
-		aflFixtureService = serviceFactory.createAflFixtureService();
-		globalsService = serviceFactory.createGlobalsService();
+		dflRoundInfoService = manage(serviceFactory.createDflRoundInfoService());
+		aflFixtureService = manage(serviceFactory.createAflFixtureService());
+		globalsService = manage(serviceFactory.createGlobalsService());
 	}
 
 	public void execute(int round) {
@@ -57,14 +57,13 @@ public class StatsRoundPlayerStatsHandler extends BaseHandler {
 				}
 			}
 			
-			dflRoundInfoService.close();
-			aflFixtureService.close();
-			globalsService.close();
 
 			loggerUtils.log("info", "Stats round player stats downloaded");
 
 		} catch (Exception ex) {
 			loggerUtils.logException("Error in StatsRoundPlayerStatsHandler.execute(), round=" + round, ex);
+		} finally {
+			closeServices();
 		}
 	}
 
